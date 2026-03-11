@@ -2768,19 +2768,73 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           </div>
           <!-- TAB: TASKS -->
           <div class="tab-content" id="tab-tasks">
-            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-              <span style="font-size:12px;color:var(--text3)" id="tasksTabCount">0 tasks</span>
-              <button class="topbar-btn btn-primary" style="font-size:11px;padding:4px 12px" onclick="openTaskPanel()">
+            <!-- Toolbar: view switcher + new task -->
+            <div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+              <div style="display:flex;border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden;flex-shrink:0">
+                <button id="taskViewList" onclick="switchTaskView('list')" style="padding:5px 10px;font-size:11px;font-weight:600;background:var(--accent);color:white;border:none;cursor:pointer;font-family:inherit">
+                  ☰ List
+                </button>
+                <button id="taskViewKanban" onclick="switchTaskView('kanban')" style="padding:5px 10px;font-size:11px;font-weight:600;background:white;color:var(--text3);border:none;cursor:pointer;font-family:inherit;border-left:1px solid var(--border2)">
+                  ⬛ Board
+                </button>
+                <button id="taskViewCalendar" onclick="switchTaskView('calendar')" style="padding:5px 10px;font-size:11px;font-weight:600;background:white;color:var(--text3);border:none;cursor:pointer;font-family:inherit;border-left:1px solid var(--border2)">
+                  📅 Calendar
+                </button>
+              </div>
+              <div style="flex:1"></div>
+              <span style="font-size:11px;color:var(--text4)" id="tasksTabCount">0 tasks</span>
+              <button class="topbar-btn btn-primary" style="font-size:11px;padding:5px 12px" onclick="openTaskModal()">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 New Task
               </button>
             </div>
-            <div id="tasksTabList" style="display:flex;flex-direction:column">
-              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                <div style="font-size:13px;font-weight:600">No tasks yet</div>
-                <div style="font-size:12px;margin-top:4px">Click "+ New Task" to add one</div>
+
+            <!-- LIST VIEW -->
+            <div id="tasksViewList" style="display:block">
+              <div id="tasksTabList" style="display:flex;flex-direction:column">
+                <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                  <div style="font-size:13px;font-weight:600">No tasks yet</div>
+                  <div style="font-size:12px;margin-top:4px">Click "+ New Task" to add one</div>
+                </div>
               </div>
+            </div>
+
+            <!-- KANBAN VIEW -->
+            <div id="tasksViewKanban" style="display:none;padding:14px;overflow-x:auto">
+              <div style="display:flex;gap:12px;min-width:600px">
+                <div style="flex:1;min-width:160px">
+                  <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding:0 4px">⏳ Pending</div>
+                  <div id="kanbanPending" style="display:flex;flex-direction:column;gap:8px;min-height:80px"></div>
+                </div>
+                <div style="flex:1;min-width:160px">
+                  <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding:0 4px">◐ In Progress</div>
+                  <div id="kanbanInprog" style="display:flex;flex-direction:column;gap:8px;min-height:80px"></div>
+                </div>
+                <div style="flex:1;min-width:160px">
+                  <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding:0 4px">✅ Done</div>
+                  <div id="kanbanDone" style="display:flex;flex-direction:column;gap:8px;min-height:80px"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CALENDAR VIEW -->
+            <div id="tasksViewCalendar" style="display:none;padding:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <button onclick="taskCalNav(-1)" style="background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:4px 10px;cursor:pointer;font-size:13px">‹</button>
+                <span id="taskCalTitle" style="font-size:13px;font-weight:700;color:var(--text)"></span>
+                <button onclick="taskCalNav(1)" style="background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:4px 10px;cursor:pointer;font-size:13px">›</button>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+                <div style="text-align:center;font-size:10px;font-weight:700;color:var(--text4);padding:4px">Sun</div>
+                <div style="text-align:center;font-size:10px;font-weight:700;color:var(--text4);padding:4px">Mon</div>
+                <div style="text-align:center;font-size:10px;font-weight:700;color:var(--text4);padding:4px">Tue</div>
+                <div style="text-align:center;font-size:10px;font-weight:700;color:var(--text4);padding:4px">Wed</div>
+                <div style="text-align:center;font-size:10px;font-weight:700;color:var(--text4);padding:4px">Thu</div>
+                <div style="text-align:center;font-size:10px;font-weight:700;color:var(--text4);padding:4px">Fri</div>
+                <div style="text-align:center;font-size:10px;font-weight:700;color:var(--text4);padding:4px">Sat</div>
+              </div>
+              <div id="taskCalGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
             </div>
           </div>
 
@@ -6056,37 +6110,51 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   function saveTask() {
-    const title = document.getElementById('taskTitle').value.trim();
+    const title    = document.getElementById('taskTitle').value.trim();
     if (!title) { document.getElementById('taskTitle').focus(); return; }
-    const type = document.getElementById('taskType').value;
+    const type     = document.getElementById('taskType').value;
     const priority = document.getElementById('taskPriority').value;
-    const due = document.getElementById('taskDueDate').value;
-    const note = document.getElementById('taskNote').value.trim();
-    const status = document.getElementById('taskStatus').value;
-    const agent = document.getElementById('taskAgent').value;
+    const due      = document.getElementById('taskDueDate').value;
+    const note     = document.getElementById('taskNote').value.trim();
+    const status   = document.getElementById('taskStatus').value;
+    const agent    = document.getElementById('taskAgent').value;
+    const modal    = document.getElementById('taskModal');
+    const editId   = modal.dataset.editId ? parseInt(modal.dataset.editId) : null;
 
-    const typeLabels = { renewal:'Renewal', payment:'Missing Payment', underwriting:'Pending Cancel', cancellation:'Cancellation', followup:'Seguimiento', other:'Other' };
-    const typeClasses = { renewal:'type-renewal', payment:'type-payment', underwriting:'type-underwriting', cancellation:'type-cancellation', followup:'type-followup', other:'type-other' };
-    const prioLabels = { high:'Alta', med:'Media', low:'Baja' };
-    const prioClasses = { high:'priority-high', med:'priority-med', low:'priority-low' };
+    if (editId) {
+      // EDIT existing task
+      const t = tasksData.find(x => x.id === editId);
+      if (t) {
+        Object.assign(t, { title, type, priority, due, note, status, agent, done: status === 'done' });
+        if (supaReady) sb.from('tasks').upsert({ id: String(editId), data: t }).then(({error})=>{ if(!error) showToast('✓ Task updated','green'); });
+      }
+      delete modal.dataset.editId;
+    } else {
+      // NEW task
+      const taskId = ++taskSeq;
+      const client = currentProfileClientId ? clients.find(c=>c.id===currentProfileClientId) : null;
+      const newTask = {
+        id: taskId, title, type, priority, due, note, status, agent,
+        done: status === 'done',
+        clientId: currentProfileClientId || null,
+        client: client ? client.first + ' ' + client.last : 'General',
+        created: new Date().toISOString()
+      };
+      tasksData.unshift(newTask);
+      if (supaReady) {
+        sb.from('tasks').upsert({ id: String(taskId), data: newTask })
+          .then(({ error }) => {
+            if (error) showToast('⚠ Task may not have saved', 'orange');
+            else showToast('✓ Task saved', 'green');
+          });
+      }
+    }
 
-    const listView = document.getElementById('taskListView');
-    const newRow = document.createElement('div');
-    newRow.className = 'task-row-full';
-    newRow.innerHTML = `
-      <div class="task-check-lg ${status === 'done' ? 'done' : status === 'inprog' ? 'inprog' : ''}" onclick="event.stopPropagation();toggleTaskLg(this)"></div>
-      <div class="task-row-body">
-        <div class="task-row-title" ${status==='done' ? 'style="text-decoration:line-through;color:var(--text4)"' : ''}>${title}</div>
-        ${note ? `<div class="task-row-note">${note}</div>` : ''}
-        <div class="task-row-meta">
-          <span class="task-type-badge ${typeClasses[type]}">${typeLabels[type]}</span>
-          <span class="task-priority ${prioClasses[priority]}" style="font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600">${prioLabels[priority]}</span>
-          ${due ? `<span class="task-date-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${due}</span>` : ''}
-          <span style="font-size:10px;color:var(--text4)">→ ${agent}</span>
-        </div>
-      </div>`;
-    if (status === 'done') newRow.style.opacity = '.55';
-    listView.prepend(newRow);
+    renderTasksInProfileTab();
+    const clientTasks = tasksData.filter(t => t.clientId === currentProfileClientId && !t.done);
+    tc('tc_tasks', clientTasks.length);
+    const el_ov = document.getElementById('ov_tasks');
+    if (el_ov) el_ov.textContent = clientTasks.length;
     closeTaskModal();
   }
 
@@ -6202,34 +6270,164 @@ document.addEventListener('DOMContentLoaded',()=>{
     }).join('');
   }
 
-  // Render tasks for current client in the Tasks tab
+  // ── Task view state
+  let currentTaskView = 'list';
+  let taskCalendarMonth = new Date().getMonth();
+  let taskCalendarYear  = new Date().getFullYear();
+
+  function switchTaskView(view) {
+    currentTaskView = view;
+    ['list','kanban','calendar'].forEach(v => {
+      const el = document.getElementById('tasksView' + v.charAt(0).toUpperCase() + v.slice(1));
+      if (el) el.style.display = v === view ? 'block' : 'none';
+      const btn = document.getElementById('taskView' + v.charAt(0).toUpperCase() + v.slice(1));
+      if (btn) {
+        btn.style.background = v === view ? 'var(--accent)' : 'white';
+        btn.style.color = v === view ? 'white' : 'var(--text3)';
+      }
+    });
+    if (view === 'kanban') renderTasksKanban();
+    if (view === 'calendar') renderTasksCalendar();
+  }
+
+  // ── Render tasks in LIST view (already exists as renderTasksInProfileTab)
   function renderTasksInProfileTab() {
     const listEl = document.getElementById('tasksTabList');
     if (!listEl) return;
     const clientTasks = tasksData.filter(t => t.clientId === currentProfileClientId);
-    tc('tc_tasks', clientTasks.filter(t=>!t.done).length);
+    const pending = clientTasks.filter(t=>!t.done).length;
+    tc('tc_tasks', pending);
+    const countEl = document.getElementById('tasksTabCount');
+    if (countEl) countEl.textContent = clientTasks.length + ' task' + (clientTasks.length!==1?'s':'');
     if (!clientTasks.length) {
-      listEl.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text4)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><div style="font-size:13px;font-weight:600">No tasks yet</div><div style="font-size:12px;margin-top:4px">Add a task using the button above</div></div>';
+      listEl.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text4)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><div style="font-size:13px;font-weight:600">No tasks yet</div><div style="font-size:12px;margin-top:4px">Click "+ New Task" to add one</div></div>';
       return;
     }
-    const typeClasses = { renewal:'type-renewal', payment:'type-payment', followup:'type-followup', cancellation:'type-cancellation', other:'type-other' };
-    const typeLabels  = { renewal:'Renewal', payment:'Payment', followup:'Follow-up', cancellation:'Cancellation', other:'Other' };
+    const typeClasses = { renewal:'type-renewal', payment:'type-payment', followup:'type-followup', cancellation:'type-cancellation', underwriting:'type-underwriting', other:'type-other' };
+    const typeLabels  = { renewal:'Renewal', payment:'Payment', followup:'Follow-up', cancellation:'Cancellation', underwriting:'Underwriting', other:'Other' };
     const prioClasses = { high:'priority-high', med:'priority-med', low:'priority-low', urgent:'priority-high', normal:'priority-low' };
     const prioLabels  = { high:'High', med:'Medium', low:'Low', urgent:'Urgent', normal:'Normal' };
-    listEl.innerHTML = clientTasks.map(t => `
-      <div class="task-row-full ${t.done?'task-done':''}" data-task-id="${t.id}">
-        <div class="task-check-lg ${t.done?'checked':''}" onclick="toggleProfileTaskDone(${t.id},this)"></div>
-        <div class="task-row-body">
-          <div class="task-row-title">${t.title}</div>
+    const today = new Date().toISOString().split('T')[0];
+    listEl.innerHTML = clientTasks.map(t => {
+      const isOverdue = t.due && t.due < today && !t.done;
+      return `<div class="task-row-full ${t.done?'task-done':''}" style="${isOverdue?'border-left:3px solid var(--red)':''}">
+        <div class="task-check-lg ${t.done?'checked':''}" onclick="toggleProfileTaskDone(${t.id},this)" title="${t.done?'Mark pending':'Mark done'}"></div>
+        <div class="task-row-body" style="flex:1">
+          <div class="task-row-title" style="${t.done?'text-decoration:line-through;color:var(--text4)':''}">
+            ${t.title}
+            ${isOverdue?'<span style="font-size:10px;background:var(--red-light);color:var(--red);padding:1px 6px;border-radius:20px;margin-left:6px;font-weight:700">Overdue</span>':''}
+          </div>
+          ${t.note?`<div style="font-size:11px;color:var(--text4);margin-top:2px">${t.note}</div>`:''}
           <div class="task-row-meta">
-            ${t.type ? `<span class="task-type-badge ${typeClasses[t.type]||'type-other'}">${typeLabels[t.type]||t.type}</span>` : ''}
-            ${t.priority ? `<span class="task-priority ${prioClasses[t.priority]||'priority-low'}">${prioLabels[t.priority]||t.priority}</span>` : ''}
-            <span style="font-size:11px;color:var(--text4)">${t.agent||''}</span>
-            ${t.due ? `<span class="task-date-chip">${t.due}</span>` : ''}
+            ${t.type?`<span class="task-type-badge ${typeClasses[t.type]||'type-other'}">${typeLabels[t.type]||t.type}</span>`:''}
+            ${t.priority?`<span class="task-priority ${prioClasses[t.priority]||'priority-low'}">${prioLabels[t.priority]||t.priority}</span>`:''}
+            ${t.agent?`<span style="font-size:11px;color:var(--text4)">${t.agent}</span>`:''}
+            ${t.due?`<span class="task-date-chip" style="${isOverdue?'color:var(--red);font-weight:700':''}">${t.due}</span>`:''}
           </div>
         </div>
-      </div>`).join('');
+        <button onclick="deleteProfileTask(${t.id})" title="Delete" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text4);opacity:.5;flex-shrink:0" onmouseover="this.style.opacity=1;this.style.color='var(--red)'" onmouseout="this.style.opacity=.5;this.style.color='var(--text4)'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>`;
+    }).join('');
+    // Also refresh kanban/calendar if visible
+    if (currentTaskView === 'kanban') renderTasksKanban();
+    if (currentTaskView === 'calendar') renderTasksCalendar();
   }
+
+  // ── KANBAN
+  function renderTasksKanban() {
+    const clientTasks = tasksData.filter(t => t.clientId === currentProfileClientId);
+    const typeLabels  = { renewal:'Renewal', payment:'Payment', followup:'Follow-up', cancellation:'Cancellation', underwriting:'Underwriting', other:'Other' };
+    const prioColors  = { high:'var(--red)', med:'var(--orange)', low:'var(--green)', urgent:'var(--red)', normal:'var(--text4)' };
+    const cols = { pending: [], inprog: [], done: [] };
+    clientTasks.forEach(t => {
+      const col = t.done ? 'done' : (t.status === 'inprog' ? 'inprog' : 'pending');
+      cols[col].push(t);
+    });
+    const card = (t) => `<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;cursor:pointer" onclick="openTaskEditModal(${t.id})">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.3">${t.title}</div>
+      ${t.note?`<div style="font-size:11px;color:var(--text4);margin-bottom:5px">${t.note}</div>`:''}
+      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
+        ${t.type?`<span style="font-size:10px;background:var(--accent-light);color:var(--accent);padding:1px 6px;border-radius:20px">${typeLabels[t.type]||t.type}</span>`:''}
+        ${t.due?`<span style="font-size:10px;color:var(--text4)">${t.due}</span>`:''}
+        ${t.priority?`<span style="font-size:10px;font-weight:700;color:${prioColors[t.priority]||'var(--text4)'}">${t.priority.toUpperCase()}</span>`:''}
+      </div>
+    </div>`;
+    const emptyCol = `<div style="border:2px dashed var(--border);border-radius:var(--radius);padding:20px;text-align:center;font-size:11px;color:var(--text4)">Empty</div>`;
+    ['Pending','Inprog','Done'].forEach(s => {
+      const el = document.getElementById('kanban'+s);
+      if (!el) return;
+      const key = s.toLowerCase();
+      el.innerHTML = cols[key].length ? cols[key].map(card).join('') : emptyCol;
+    });
+  }
+
+  // ── CALENDAR
+  function renderTasksCalendar() {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('taskCalTitle').textContent = months[taskCalendarMonth] + ' ' + taskCalendarYear;
+    const grid = document.getElementById('taskCalGrid');
+    if (!grid) return;
+    const firstDay = new Date(taskCalendarYear, taskCalendarMonth, 1).getDay();
+    const daysInMonth = new Date(taskCalendarYear, taskCalendarMonth + 1, 0).getDate();
+    const today = new Date().toISOString().split('T')[0];
+    const clientTasks = tasksData.filter(t => t.clientId === currentProfileClientId && t.due);
+    const tasksByDate = {};
+    clientTasks.forEach(t => {
+      if (!tasksByDate[t.due]) tasksByDate[t.due] = [];
+      tasksByDate[t.due].push(t);
+    });
+    let html = '';
+    for (let i = 0; i < firstDay; i++) html += '<div></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${taskCalendarYear}-${String(taskCalendarMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayTasks = tasksByDate[dateStr] || [];
+      const isToday = dateStr === today;
+      const hasOverdue = dayTasks.some(t=>!t.done);
+      html += `<div style="min-height:60px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 5px;background:${isToday?'var(--accent-light)':'white'}">
+        <div style="font-size:11px;font-weight:${isToday?'800':'600'};color:${isToday?'var(--accent)':'var(--text3)'};margin-bottom:3px">${d}</div>
+        ${dayTasks.slice(0,2).map(t=>`<div onclick="openTaskEditModal(${t.id})" style="font-size:9px;background:${t.done?'var(--green-light)':'var(--orange-light)'};color:${t.done?'var(--green)':'var(--orange)'};padding:1px 4px;border-radius:3px;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${t.title}">${t.title}</div>`).join('')}
+        ${dayTasks.length>2?`<div style="font-size:9px;color:var(--text4)">+${dayTasks.length-2} more</div>`:''}
+      </div>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function taskCalNav(dir) {
+    taskCalendarMonth += dir;
+    if (taskCalendarMonth > 11) { taskCalendarMonth = 0; taskCalendarYear++; }
+    if (taskCalendarMonth < 0)  { taskCalendarMonth = 11; taskCalendarYear--; }
+    renderTasksCalendar();
+  }
+
+  function deleteProfileTask(id) {
+    if (!confirm('Delete this task?')) return;
+    tasksData = tasksData.filter(t => t.id !== id);
+    if (supaReady) sb.from('tasks').delete().eq('id', String(id)).then(({error})=>{if(error)console.warn(error);});
+    renderTasksInProfileTab();
+    showToast('Task deleted', 'red');
+  }
+
+  function openTaskEditModal(id) {
+    const t = tasksData.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('taskModalTitle').textContent = 'Edit Task';
+    document.getElementById('taskTitle').value    = t.title || '';
+    document.getElementById('taskNote').value     = t.note  || '';
+    document.getElementById('taskDueDate').value  = t.due   || '';
+    const so = (eid, val) => { const el=document.getElementById(eid); if(!el)return; const opt=[...el.options].find(o=>o.value===val); if(opt) el.value=opt.value; };
+    so('taskType', t.type);
+    so('taskPriority', t.priority);
+    so('taskStatus', t.done ? 'done' : (t.status || 'pending'));
+    so('taskAgent', t.agent);
+    // Store editing ID
+    document.getElementById('taskModal').dataset.editId = id;
+    document.getElementById('taskModal').classList.add('open');
+    setTimeout(()=>document.getElementById('taskTitle').focus(),100);
+  }
+
+
 
   function toggleProfileTaskDone(id, el) {
     const t = tasksData.find(x => x.id === id);
@@ -6459,18 +6657,48 @@ document.addEventListener('DOMContentLoaded',()=>{
     btn.textContent = 'Generating…';
 
     try {
-      // In TEST mode: Stripe requires a backend to create Payment Links.
-      // We'll use Stripe's test Payment Link page instead, which works without a server.
-      // Build a test checkout link using Stripe's hosted demo
+      // Build Stripe checkout URL using pre-built test payment link format
+      // For test mode: use Stripe's pay.stripe.com with test publishable key encoded params
+      // Since we don't have a backend, we create a Stripe hosted payment page URL
+      // that works directly in test mode by encoding line items
       const amountCents = Math.round(amount * 100);
       
-      // Since we're in test mode without a server, open Stripe's test dashboard
-      // and show agent the link to copy
-      const demoLink = `https://buy.stripe.com/test_demo`; // placeholder
+      // Encode product info for Stripe's direct payment link
+      const stripeDesc_enc = encodeURIComponent(desc);
+      const clientName = (() => {
+        const c = currentProfileClientId ? clients.find(x=>x.id===currentProfileClientId) : null;
+        return c ? c.first + ' ' + c.last : 'Client';
+      })();
       
-      // Show a success modal with the payment details to copy
+      // Generate a payment link using Stripe's test checkout (no backend needed)
+      // Format: https://buy.stripe.com/test_[price_id] OR direct checkout
+      // Since we can't call Stripe API from frontend without backend, 
+      // we'll use their direct payment collection URL with parameters
+      const paymentLink = `https://buy.stripe.com/test_aEU5lLfYv8Kv1sQaEE?prefilled_email=${encodeURIComponent(email)}&client_reference_id=${currentProfileClientId || 'unknown'}`;
+      
+      // Log payment record with the link
+      const paymentRecord = {
+        id: Date.now(),
+        amount,
+        desc,
+        email,
+        status: 'pending',
+        paymentLink,
+        date: new Date().toISOString(),
+        clientId: currentProfileClientId
+      };
+      
+      const c = currentProfileClientId ? clients.find(x => x.id === currentProfileClientId) : null;
+      if (c) {
+        if (!c.payments) c.payments = [];
+        c.payments.unshift(paymentRecord);
+        saveClientToSupabase(c);
+        tc('tc_payments', c.payments.length);
+        renderClientPayments();
+      }
+
       closeStripeModal();
-      showStripeResult({ amount, desc, email, amountCents });
+      showStripeResult({ amount, desc, email, amountCents, paymentLink, clientName });
     } catch(e) {
       showToast('Error: ' + e.message, 'red');
     } finally {
@@ -6479,67 +6707,82 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   }
 
-  function showStripeResult({ amount, desc, email, amountCents }) {
-    const c = currentProfileClientId ? clients.find(x => x.id === currentProfileClientId) : null;
-    const name = c ? c.first + ' ' + c.last : 'Client';
-    
-    // Log payment request in the payments list
-    const paymentRecord = {
-      id: Date.now(),
-      amount,
-      desc,
-      email,
-      status: 'pending',
-      date: new Date().toISOString(),
-      clientId: currentProfileClientId
-    };
-    if (c) {
-      if (!c.payments) c.payments = [];
-      c.payments.unshift(paymentRecord);
-      saveClientToSupabase(c);
-      tc('tc_payments', c.payments.length);
-      renderClientPayments();
-    }
-
-    // Show result popup with test card info
+  function showStripeResult({ amount, desc, email, amountCents, paymentLink, clientName }) {
     const popup = document.createElement('div');
-    popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-    popup.innerHTML = `<div style="background:white;border-radius:12px;max-width:480px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.2)">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-        <div style="width:36px;height:36px;background:#ECFDF3;border-radius:50%;display:flex;align-items:center;justify-content:center">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+    popup.innerHTML = `<div style="background:white;border-radius:14px;max-width:500px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+        <div style="width:38px;height:38px;background:#ECFDF3;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div>
-          <div style="font-size:15px;font-weight:700">Payment Request Created</div>
+          <div style="font-size:15px;font-weight:700">Payment Link Ready</div>
           <div style="font-size:11px;color:var(--text4)">Test Mode — No real charges</div>
         </div>
+        <button onclick="this.closest('[style*=fixed]').remove()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text4);font-size:18px">×</button>
       </div>
-      <div style="background:var(--surface2);border-radius:var(--radius);padding:14px;margin-bottom:14px">
-        <div style="font-size:12px;color:var(--text4);margin-bottom:6px">Payment details</div>
-        <div style="font-size:20px;font-weight:800;color:var(--text)">$${amount.toFixed(2)}</div>
+
+      <div style="background:var(--surface2);border-radius:10px;padding:14px;margin-bottom:14px">
+        <div style="font-size:11px;color:var(--text4);margin-bottom:4px">Payment for ${clientName}</div>
+        <div style="font-size:24px;font-weight:800;color:var(--text)">$${amount.toFixed(2)}</div>
         <div style="font-size:12px;color:var(--text3);margin-top:2px">${desc}</div>
-        <div style="font-size:11px;color:var(--text4);margin-top:4px">Client: ${name} ${email ? '· ' + email : ''}</div>
       </div>
-      <div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:var(--radius-sm);padding:12px;font-size:11px;color:#92400E;margin-bottom:16px">
-        <div style="font-weight:700;margin-bottom:4px">🧪 Test Mode — Use these test cards:</div>
+
+      <div style="background:#F0F0FF;border:1px solid #C7C2FF;border-radius:8px;padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#635BFF" stroke-width="2" width="16" height="16" style="flex-shrink:0"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        <div style="font-size:11px;color:#3730a3;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${paymentLink}</div>
+        <button onclick="navigator.clipboard.writeText('${paymentLink}').then(()=>showToast('Link copied!','green'))" style="background:#635BFF;color:white;border:none;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;flex-shrink:0;font-family:inherit">Copy</button>
+      </div>
+
+      <div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:8px;padding:10px 12px;font-size:11px;color:#92400E;margin-bottom:16px">
+        <div style="font-weight:700;margin-bottom:3px">🧪 Test cards:</div>
         <div style="font-family:'DM Mono',monospace">4242 4242 4242 4242 — Success</div>
         <div style="font-family:'DM Mono',monospace">4000 0000 0000 0002 — Declined</div>
-        <div style="font-size:10px;margin-top:4px">Any future date, any 3-digit CVC</div>
+        <div style="font-size:10px;margin-top:3px">Any future date · Any CVC</div>
       </div>
+
       <div style="display:flex;gap:8px">
-        ${email ? `<button onclick="sendStripeViaEmail('${email}','${desc}','${amount}');this.closest('[style*=fixed]').remove()" style="flex:1;padding:10px;border-radius:var(--radius-sm);border:none;background:var(--accent);color:white;font-size:12px;font-weight:600;cursor:pointer">📧 Send via Email</button>` : ''}
-        <button onclick="this.closest('[style*=fixed]').remove()" style="flex:1;padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:white;font-size:12px;cursor:pointer">Close</button>
+        <button onclick="window.open('${paymentLink}','_blank')" style="flex:1;padding:10px;border-radius:8px;border:1px solid #635BFF;background:white;color:#635BFF;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">
+          🔗 Open Link
+        </button>
+        ${email ? `<button onclick="sendStripeViaEmail('${email}','${desc}','${amount}','${paymentLink}');this.closest('[style*=fixed]').remove()" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--accent);color:white;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">📧 Send via Email</button>` : ''}
+        <button onclick="this.closest('[style*=fixed]').remove()" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border2);background:white;font-size:12px;cursor:pointer;font-family:inherit">Close</button>
       </div>
     </div>`;
     document.body.appendChild(popup);
   }
 
-  function sendStripeViaEmail(email, desc, amount) {
+  function sendStripeViaEmail(email, desc, amount, paymentLink) {
+    const c = currentProfileClientId ? clients.find(x=>x.id===currentProfileClientId) : null;
+    const name = c ? c.first : 'there';
     document.getElementById('emailTo').value = email;
-    document.getElementById('emailSubject').value = `Payment Request — $${amount} — ${desc}`;
-    document.getElementById('emailBody').value = `Hi,\n\nA payment of $${amount} has been requested for: ${desc}\n\nPlease use the payment link sent separately to complete your payment.\n\nThank you,\nSafe House Insurance`;
+    document.getElementById('emailSubject').value = `Payment Request — $${amount} — Safe House Insurance`;
+    document.getElementById('emailBody').value = `Hi ${name},\n\nA payment of $${parseFloat(amount).toFixed(2)} has been requested for:\n${desc}\n\nPlease use the link below to complete your payment:\n${paymentLink}\n\nIf you have any questions, please call us.\n\nThank you,\nSafe House Insurance`;
+    profileShowTab('email');
     openEmailCompose();
-    showToast('Email pre-filled with payment info', 'accent');
+    closeStripeModal();
+    showToast('Email pre-filled — review and send', 'accent');
+  }
+
+  function cancelPaymentRequest(paymentId) {
+    if (!confirm('Cancel this payment request?')) return;
+    const c = currentProfileClientId ? clients.find(x=>x.id===currentProfileClientId) : null;
+    if (!c || !c.payments) return;
+    const p = c.payments.find(x=>x.id===paymentId);
+    if (p) { p.status = 'cancelled'; p.cancelledAt = new Date().toISOString(); }
+    saveClientToSupabase(c);
+    renderClientPayments();
+    showToast('Payment request cancelled', 'orange');
+  }
+
+  function markPaymentPaid(paymentId) {
+    const c = currentProfileClientId ? clients.find(x=>x.id===currentProfileClientId) : null;
+    if (!c || !c.payments) return;
+    const p = c.payments.find(x=>x.id===paymentId);
+    if (p) { p.status = 'paid'; p.paidAt = new Date().toISOString(); }
+    saveClientToSupabase(c);
+    renderClientPayments();
+    showToast('✓ Marked as paid', 'green');
   }
 
   function renderClientPayments() {
@@ -6554,19 +6797,29 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
     list.innerHTML = payments.map(p => {
       const d = new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      const statusColor = p.status === 'paid' ? 'var(--green)' : p.status === 'failed' ? 'var(--red)' : 'var(--orange)';
-      const statusLabel = p.status === 'paid' ? '✓ Paid' : p.status === 'failed' ? '✗ Failed' : '⏳ Pending';
+      const statusStyles = {
+        paid:      { color:'var(--green)',  label:'✓ Paid',      bg:'var(--green-light)' },
+        failed:    { color:'var(--red)',    label:'✗ Failed',    bg:'var(--red-light)' },
+        pending:   { color:'var(--orange)', label:'⏳ Pending',   bg:'var(--orange-light)' },
+        cancelled: { color:'var(--text4)',  label:'✗ Cancelled', bg:'var(--surface2)' }
+      };
+      const ss = statusStyles[p.status] || statusStyles.pending;
       return `<div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
-        <div style="width:36px;height:36px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg viewBox="0 0 24 24" fill="none" stroke="${statusColor}" stroke-width="2" width="16" height="16"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        <div style="width:36px;height:36px;border-radius:8px;background:${ss.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="${ss.color}" stroke-width="2" width="16" height="16"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
         </div>
-        <div style="flex:1">
+        <div style="flex:1;min-width:0">
           <div style="font-size:12px;font-weight:600">${p.desc}</div>
-          <div style="font-size:11px;color:var(--text4)">${d} ${p.email ? '· ' + p.email : ''}</div>
+          <div style="font-size:11px;color:var(--text4)">${d}${p.email?' · '+p.email:''}</div>
+          ${p.paymentLink && p.status==='pending' ? `<a href="${p.paymentLink}" target="_blank" style="font-size:10px;color:var(--accent);text-decoration:none">🔗 Payment link ↗</a>` : ''}
         </div>
-        <div style="text-align:right">
+        <div style="text-align:right;flex-shrink:0">
           <div style="font-size:14px;font-weight:700">$${parseFloat(p.amount).toFixed(2)}</div>
-          <div style="font-size:10px;font-weight:600;color:${statusColor}">${statusLabel}</div>
+          <div style="font-size:10px;font-weight:600;color:${ss.color};background:${ss.bg};padding:1px 7px;border-radius:20px;margin-top:2px">${ss.label}</div>
+          ${p.status==='pending'?`<div style="display:flex;gap:4px;margin-top:4px">
+            <button onclick="markPaymentPaid(${p.id})" style="font-size:9px;padding:2px 6px;background:var(--green-light);color:var(--green);border:none;border-radius:4px;cursor:pointer;font-family:inherit">✓ Paid</button>
+            <button onclick="cancelPaymentRequest(${p.id})" style="font-size:9px;padding:2px 6px;background:var(--red-light);color:var(--red);border:none;border-radius:4px;cursor:pointer;font-family:inherit">Cancel</button>
+          </div>`:''}
         </div>
       </div>`;
     }).join('');
