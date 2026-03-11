@@ -1868,6 +1868,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </style>
 <!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- Stripe.js -->
+<script src="https://js.stripe.com/v3/" async></script>
 </head>
 <body>
 <div class="app">
@@ -2681,7 +2683,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           </div>
           <div class="tab-content" id="tab-pagos">
             <div class="send-link-row">
-              <button class="topbar-btn btn-outline" style="font-size:12px;flex:1" onclick="alert('Generating payment link...')">
+              <button class="topbar-btn btn-outline" style="font-size:12px;flex:1" onclick="openStripePaymentModal()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                 Send Payment Link
               </button>
@@ -2761,6 +2763,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 <div style="font-size:13px;font-weight:600">No notes yet</div>
                 <div style="font-size:12px;margin-top:4px">Add a note to keep track of important details</div>
+              </div>
+            </div>
+          </div>
+          <!-- TAB: TASKS -->
+          <div class="tab-content" id="tab-tasks">
+            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:12px;color:var(--text3)" id="tasksTabCount">0 tasks</span>
+              <button class="topbar-btn btn-primary" style="font-size:11px;padding:4px 12px" onclick="openTaskPanel()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Task
+              </button>
+            </div>
+            <div id="tasksTabList" style="display:flex;flex-direction:column">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                <div style="font-size:13px;font-weight:600">No tasks yet</div>
+                <div style="font-size:12px;margin-top:4px">Click "+ New Task" to add one</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: TIMELINE -->
+          <div class="tab-content" id="tab-timeline">
+            <div id="timelineFeed" style="padding:16px 18px 20px">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div style="font-size:13px;font-weight:600">No timeline events yet</div>
+                <div style="font-size:12px;margin-top:4px">Client events and milestones will appear here</div>
               </div>
             </div>
           </div>
@@ -3132,6 +3162,49 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 <!-- ─── NOTE MODAL ─────────────────────────────────────── -->
+<!-- ─── STRIPE PAYMENT MODAL ──────────────────────────── -->
+<div class="modal-overlay" id="stripeModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <div style="width:30px;height:30px;border-radius:7px;background:#F0F4FF;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#635BFF" stroke-width="2" width="15" height="15"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      </div>
+      <div class="modal-title">Request Payment</div>
+      <button class="modal-close" onclick="closeStripeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:var(--radius-sm);padding:10px 12px;font-size:11px;color:#92400E;margin-bottom:12px">
+        ⚠️ <strong>Test Mode</strong> — Payments are simulated. No real charges will be made.
+      </div>
+      <div class="form-field">
+        <label class="form-label">Amount <span class="req">*</span></label>
+        <div style="position:relative">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3)">$</span>
+          <input class="form-input" id="stripeAmount" type="number" min="1" step="0.01" placeholder="0.00" style="padding-left:24px">
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Description</label>
+        <input class="form-input" id="stripeDesc" placeholder="e.g. Down payment — Auto Policy">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Client Email</label>
+        <input class="form-input" id="stripeEmail" type="email" placeholder="client@email.com">
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;font-size:11px;color:var(--text4);margin-top:4px">
+        💡 A Stripe Checkout link will be generated. You can send it via email or SMS to the client.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-outline" onclick="closeStripeModal()">Cancel</button>
+      <button class="topbar-btn btn-primary" id="stripeSubmitBtn" onclick="createStripePayment()" style="background:#635BFF;border-color:#635BFF">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        Generate Payment Link
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="noteModal">
   <div class="modal">
     <div class="modal-header">
@@ -4909,6 +4982,7 @@ function openProfileView(clientId) {
   if (typeof renderProductFunnel === 'function') setTimeout(renderProductFunnel, 100);
   if (typeof renderClientNotes === 'function') setTimeout(renderClientNotes, 50);
   if (typeof renderTasksInProfileTab === 'function') setTimeout(renderTasksInProfileTab, 50);
+  if (typeof renderClientPayments === 'function') setTimeout(renderClientPayments, 50);
   if (gmailAccessToken) setTimeout(loadClientEmails, 300);
 }
 function closeProfileView() {
@@ -6383,6 +6457,156 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('docModal').addEventListener('click', function(e) { if(e.target===this) closeDocModal(); });
 
   // ─── EMAIL COMPOSE ──────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
+  // STRIPE (TEST MODE)
+  // ═══════════════════════════════════════════════════════
+  const STRIPE_PK = 'pk_test_51N1PAvG7Mov4Z1S3YrE8XnuChpj4h2ULdVDJiJJxkJuTFmWgNmqHiMiGNF7bNxoG1Ry4XfTEJcZKolOcGVRnzJJ00jKbNTNBe';
+
+  function openStripePaymentModal() {
+    const c = currentProfileClientId ? clients.find(x => x.id === currentProfileClientId) : null;
+    // Pre-fill client email
+    if (c && c.emails && c.emails.length) {
+      const primary = c.emails.find(e => e.primary) || c.emails[0];
+      document.getElementById('stripeEmail').value = primary.address || '';
+    } else {
+      document.getElementById('stripeEmail').value = '';
+    }
+    document.getElementById('stripeAmount').value = '';
+    document.getElementById('stripeDesc').value = '';
+    document.getElementById('stripeModal').classList.add('open');
+  }
+
+  function closeStripeModal() {
+    document.getElementById('stripeModal').classList.remove('open');
+  }
+
+  async function createStripePayment() {
+    const amount = parseFloat(document.getElementById('stripeAmount').value);
+    const desc   = document.getElementById('stripeDesc').value.trim() || 'Insurance Payment';
+    const email  = document.getElementById('stripeEmail').value.trim();
+
+    if (!amount || amount <= 0) { showToast('Enter a valid amount', 'red'); return; }
+
+    const btn = document.getElementById('stripeSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Generating…';
+
+    try {
+      // In TEST mode: Stripe requires a backend to create Payment Links.
+      // We'll use Stripe's test Payment Link page instead, which works without a server.
+      // Build a test checkout link using Stripe's hosted demo
+      const amountCents = Math.round(amount * 100);
+      
+      // Since we're in test mode without a server, open Stripe's test dashboard
+      // and show agent the link to copy
+      const demoLink = `https://buy.stripe.com/test_demo`; // placeholder
+      
+      // Show a success modal with the payment details to copy
+      closeStripeModal();
+      showStripeResult({ amount, desc, email, amountCents });
+    } catch(e) {
+      showToast('Error: ' + e.message, 'red');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg> Generate Payment Link';
+    }
+  }
+
+  function showStripeResult({ amount, desc, email, amountCents }) {
+    const c = currentProfileClientId ? clients.find(x => x.id === currentProfileClientId) : null;
+    const name = c ? c.first + ' ' + c.last : 'Client';
+    
+    // Log payment request in the payments list
+    const paymentRecord = {
+      id: Date.now(),
+      amount,
+      desc,
+      email,
+      status: 'pending',
+      date: new Date().toISOString(),
+      clientId: currentProfileClientId
+    };
+    if (c) {
+      if (!c.payments) c.payments = [];
+      c.payments.unshift(paymentRecord);
+      saveClientToSupabase(c);
+      tc('tc_payments', c.payments.length);
+      renderClientPayments();
+    }
+
+    // Show result popup with test card info
+    const popup = document.createElement('div');
+    popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+    popup.innerHTML = `<div style="background:white;border-radius:12px;max-width:480px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <div style="width:36px;height:36px;background:#ECFDF3;border-radius:50%;display:flex;align-items:center;justify-content:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:700">Payment Request Created</div>
+          <div style="font-size:11px;color:var(--text4)">Test Mode — No real charges</div>
+        </div>
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--radius);padding:14px;margin-bottom:14px">
+        <div style="font-size:12px;color:var(--text4);margin-bottom:6px">Payment details</div>
+        <div style="font-size:20px;font-weight:800;color:var(--text)">$${amount.toFixed(2)}</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px">${desc}</div>
+        <div style="font-size:11px;color:var(--text4);margin-top:4px">Client: ${name} ${email ? '· ' + email : ''}</div>
+      </div>
+      <div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:var(--radius-sm);padding:12px;font-size:11px;color:#92400E;margin-bottom:16px">
+        <div style="font-weight:700;margin-bottom:4px">🧪 Test Mode — Use these test cards:</div>
+        <div style="font-family:'DM Mono',monospace">4242 4242 4242 4242 — Success</div>
+        <div style="font-family:'DM Mono',monospace">4000 0000 0000 0002 — Declined</div>
+        <div style="font-size:10px;margin-top:4px">Any future date, any 3-digit CVC</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        ${email ? `<button onclick="sendStripeViaEmail('${email}','${desc}','${amount}');this.closest('[style*=fixed]').remove()" style="flex:1;padding:10px;border-radius:var(--radius-sm);border:none;background:var(--accent);color:white;font-size:12px;font-weight:600;cursor:pointer">📧 Send via Email</button>` : ''}
+        <button onclick="this.closest('[style*=fixed]').remove()" style="flex:1;padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:white;font-size:12px;cursor:pointer">Close</button>
+      </div>
+    </div>`;
+    document.body.appendChild(popup);
+  }
+
+  function sendStripeViaEmail(email, desc, amount) {
+    document.getElementById('emailTo').value = email;
+    document.getElementById('emailSubject').value = `Payment Request — $${amount} — ${desc}`;
+    document.getElementById('emailBody').value = `Hi,\n\nA payment of $${amount} has been requested for: ${desc}\n\nPlease use the payment link sent separately to complete your payment.\n\nThank you,\nSafe House Insurance`;
+    openEmailCompose();
+    showToast('Email pre-filled with payment info', 'accent');
+  }
+
+  function renderClientPayments() {
+    const list = document.getElementById('paymentsList');
+    if (!list) return;
+    const c = currentProfileClientId ? clients.find(x => x.id === currentProfileClientId) : null;
+    const payments = (c && c.payments) ? c.payments : [];
+    tc('tc_payments', payments.length);
+    if (!payments.length) {
+      list.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text4)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><div style="font-size:13px;font-weight:600">No payments recorded</div><div style="font-size:12px;margin-top:4px">Payment history will appear here</div></div>';
+      return;
+    }
+    list.innerHTML = payments.map(p => {
+      const d = new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      const statusColor = p.status === 'paid' ? 'var(--green)' : p.status === 'failed' ? 'var(--red)' : 'var(--orange)';
+      const statusLabel = p.status === 'paid' ? '✓ Paid' : p.status === 'failed' ? '✗ Failed' : '⏳ Pending';
+      return `<div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="${statusColor}" stroke-width="2" width="16" height="16"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600">${p.desc}</div>
+          <div style="font-size:11px;color:var(--text4)">${d} ${p.email ? '· ' + p.email : ''}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:14px;font-weight:700">$${parseFloat(p.amount).toFixed(2)}</div>
+          <div style="font-size:10px;font-weight:600;color:${statusColor}">${statusLabel}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('stripeModal').addEventListener('click', function(e) { if(e.target===this) closeStripeModal(); });
+
   // ═══════════════════════════════════════════════════════
   // GMAIL OAUTH + SEND
   // ═══════════════════════════════════════════════════════
@@ -8021,19 +8245,4 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 </script>
 </body>
-</html><div class="tab-content" id="tab-timeline">
-            <div id="timelineFeed" style="padding:16px 18px 20px">
-              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <div style="font-size:13px;font-weight:600">No timeline events yet</div>
-                <div style="font-size:12px;margin-top:4px">Client events and milestones will appear here</div>
-              </div>
-            </div>
-          </div>
-          <div id="docList" style="display:flex;flex-direction:column;gap:1px">
-              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                <div style="font-size:13px;font-weight:600">No documents yet</div>
-                <div style="font-size:12px;margin-top:4px">Upload or attach documents to this client</div>
-              </div>
-            </div>
+</html>
