@@ -1866,6 +1866,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </style>
 
 </style>
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 <div class="app">
@@ -1937,6 +1939,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="breadcrumb" id="topbarBreadcrumb"><strong>Clients</strong></div>
     <div class="topbar-spacer"></div>
     <div id="syncIndicator" style="font-size:11px;font-weight:600;min-width:80px;text-align:right"></div>
+    <button id="gmailAuthBtn" onclick="gmailSignIn()" title="Connect Gmail" style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:white;font-size:11px;font-weight:600;cursor:pointer;color:var(--text3)">
+      <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115z"/><path fill="#34A853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987z"/><path fill="#4A90E2" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21z"/><path fill="#FBBC05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067z"/></svg>
+      <span id="gmailAuthLabel">Connect Gmail</span>
+    </button>
     <div id="topbarActions">
       <button class="topbar-btn btn-primary" onclick="openNewClientModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Client
@@ -2486,39 +2492,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
             </button>
             <button class="tab-btn" onclick="profileShowTab('polizas')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              Policies <span class="tab-count">3</span>
+              Policies <span class="tab-count" id="tc_policies">0</span>
             </button>
             <button class="tab-btn" onclick="profileShowTab('cotizaciones')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-              Quotes <span class="tab-count">5</span>
+              Quotes <span class="tab-count" id="tc_quotes">0</span>
             </button>
             <button class="tab-btn" onclick="profileShowTab('tasks')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-              Tasks <span class="tab-count">4</span>
+              Tasks <span class="tab-count" id="tc_tasks">0</span>
             </button>
             <button class="tab-btn" onclick="profileShowTab('llamadas')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81"/></svg>
-              Calls <span class="tab-count">8</span>
+              Calls <span class="tab-count" id="tc_calls">0</span>
             </button>
             <button class="tab-btn" onclick="profileShowTab('sms')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-              SMS <span class="tab-count">14</span>
+              SMS <span class="tab-count" id="tc_sms">0</span>
             </button>
             <button class="tab-btn" onclick="profileShowTab('email')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              Emails <span class="tab-count">6</span>
+              Emails <span class="tab-count" id="tc_emails">0</span>
             </button>
             <button class="tab-btn" onclick="profileShowTab('pagos')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-              Payments <span class="tab-count">7</span>
+              Payments <span class="tab-count" id="tc_payments">0</span>
             </button>
             <button class="tab-btn" onclick="profileShowTab('documentos')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-              Documents <span class="tab-count">4</span>
+              Documents <span class="tab-count" id="tc_docs">0</span>
             </button>
             <button class="tab-btn" onclick="profileShowTab('notas')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-              Notes <span class="tab-count">4</span>
+              Notes <span class="tab-count" id="tc_notes">0</span>
             </button>
             <button class="tab-btn" onclick="profileShowTab('timeline')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -2988,7 +2994,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="modal-body">
       <div class="form-field">
         <label class="form-label">To</label>
-        <input type="email" class="form-input" value="maria.lopez@gmail.com" readonly style="background:var(--surface2)">
+        <input type="email" class="form-input" id="emailTo" value="" readonly style="background:var(--surface2)">
       </div>
       <div class="form-field">
         <label class="form-label">Subject</label>
@@ -4750,9 +4756,22 @@ function openProfileView(clientId) {
     statusBadge.style.color = isActive ? 'var(--green)' : 'var(--orange)';
     statusBadge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span> ${c.status}`;
   }
-  // Overview KPIs
+  // Tab counts from real data
+  const tc = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v||0; };
   const clientPolicies = (samplePolicies||[]).filter(p=>p.clientId===id);
   const clientTasks = tasksData.filter(t=>t.clientId===id && !t.done);
+  const clientNotes = (c.notes||[]).length;
+  const clientDocs = (c.docs||[]).length;
+  tc('tc_policies', clientPolicies.length);
+  tc('tc_quotes',   0);
+  tc('tc_tasks',    clientTasks.length);
+  tc('tc_calls',    0);
+  tc('tc_sms',      0);
+  tc('tc_emails',   0);
+  tc('tc_payments', 0);
+  tc('tc_docs',     clientDocs);
+  tc('tc_notes',    clientNotes);
+  // Overview KPIs
   const annualPremium = c.premium || 0;
   const el_ov = (eid,v) => { const e=document.getElementById(eid); if(e) e.textContent=v; };
   el_ov('ov_policies', clientPolicies.length);
@@ -4817,6 +4836,7 @@ function openProfileView(clientId) {
   showView('profile', document.getElementById('nav-clients'));
   profileShowTab('overview');
   if (typeof renderProductFunnel === 'function') setTimeout(renderProductFunnel, 100);
+  if (gmailAccessToken) setTimeout(loadClientEmails, 300);
 }
 function closeProfileView() {
   showView('clients', document.getElementById('nav-clients'));
@@ -6066,7 +6086,163 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('docModal').addEventListener('click', function(e) { if(e.target===this) closeDocModal(); });
 
   // ─── EMAIL COMPOSE ──────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
+  // GMAIL OAUTH + SEND
+  // ═══════════════════════════════════════════════════════
+  const GMAIL_CLIENT_ID = '10490377311-8ovhjm847hue38t10cs6dboruvdeomu9.apps.googleusercontent.com';
+  const GMAIL_SCOPES = 'https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.readonly';
+  let gmailAccessToken = null;
+  let gmailUserEmail = null;
+
+  function gmailSignIn() {
+    if (gmailAccessToken) { gmailSignOut(); return; }
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: GMAIL_CLIENT_ID,
+      scope: GMAIL_SCOPES,
+      callback: (resp) => {
+        if (resp.error) { showToast('Gmail auth failed: ' + resp.error, 'red'); return; }
+        gmailAccessToken = resp.access_token;
+        // Get user profile
+        fetch('https://www.googleapis.com/gmail/v1/users/me/profile', {
+          headers: { Authorization: 'Bearer ' + gmailAccessToken }
+        }).then(r=>r.json()).then(p => {
+          gmailUserEmail = p.emailAddress;
+          document.getElementById('gmailAuthLabel').textContent = p.emailAddress.split('@')[0];
+          document.getElementById('gmailAuthBtn').style.background = '#E8F5E9';
+          document.getElementById('gmailAuthBtn').style.color = 'var(--green)';
+          document.getElementById('gmailAuthBtn').style.borderColor = '#A7F3D0';
+          showToast('✓ Gmail conectado — ' + p.emailAddress, 'green');
+          loadClientEmails();
+        });
+      }
+    });
+    client.requestAccessToken();
+  }
+
+  function gmailSignOut() {
+    if (gmailAccessToken) google.accounts.oauth2.revoke(gmailAccessToken, ()=>{});
+    gmailAccessToken = null;
+    gmailUserEmail = null;
+    document.getElementById('gmailAuthLabel').textContent = 'Connect Gmail';
+    document.getElementById('gmailAuthBtn').style.background = 'white';
+    document.getElementById('gmailAuthBtn').style.color = 'var(--text3)';
+    document.getElementById('gmailAuthBtn').style.borderColor = 'var(--border2)';
+    showToast('Gmail disconnected', 'orange');
+  }
+
+  async function loadClientEmails() {
+    if (!gmailAccessToken || !currentProfileClientId) return;
+    const c = clients.find(x => x.id === currentProfileClientId);
+    if (!c) return;
+    const emails = c.emails && c.emails.length ? c.emails.map(e=>e.address) : [];
+    if (!emails.length) return;
+    const query = emails.map(e=>`from:${e} OR to:${e}`).join(' OR ');
+    try {
+      const r = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(query)}&maxResults=20`, {
+        headers: { Authorization: 'Bearer ' + gmailAccessToken }
+      });
+      const data = await r.json();
+      if (!data.messages || !data.messages.length) return;
+      // Fetch details for each message
+      const details = await Promise.all(data.messages.slice(0,10).map(m =>
+        fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${m.id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Date`, {
+          headers: { Authorization: 'Bearer ' + gmailAccessToken }
+        }).then(r=>r.json())
+      ));
+      renderEmailList(details);
+      tc('tc_emails', details.length);
+    } catch(e) { console.error('Gmail load error:', e); }
+  }
+
+  function renderEmailList(messages) {
+    const list = document.getElementById('emailList');
+    if (!list) return;
+    if (!messages.length) return;
+    list.innerHTML = messages.map(msg => {
+      const headers = msg.payload.headers || [];
+      const get = name => (headers.find(h=>h.name===name)||{}).value || '';
+      const subject = get('Subject') || '(no subject)';
+      const from = get('From');
+      const date = get('Date');
+      const snippet = msg.snippet || '';
+      const isInbound = from && !from.includes(gmailUserEmail||'safehouseins');
+      const d = date ? new Date(date).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+      return `<div style="padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openGmailMessage('${msg.id}')" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="width:6px;height:6px;border-radius:50%;background:${isInbound?'var(--accent)':'var(--green)'};flex-shrink:0"></span>
+          <span style="font-size:12px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${subject}</span>
+          <span style="font-size:10px;color:var(--text4);flex-shrink:0">${d}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text4);padding-left:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${from.split('<')[0].trim()} — ${snippet.slice(0,80)}…</div>
+      </div>`;
+    }).join('');
+  }
+
+  async function openGmailMessage(msgId) {
+    if (!gmailAccessToken) return;
+    try {
+      const r = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${msgId}?format=full`, {
+        headers: { Authorization: 'Bearer ' + gmailAccessToken }
+      });
+      const msg = await r.json();
+      const headers = msg.payload.headers || [];
+      const get = name => (headers.find(h=>h.name===name)||{}).value || '';
+      // Get body
+      let body = '';
+      const findBody = (parts) => {
+        if (!parts) return;
+        for (const p of parts) {
+          if (p.mimeType === 'text/plain' && p.body.data) {
+            body = atob(p.body.data.replace(/-/g,'+').replace(/_/g,'/'));
+            return;
+          }
+          if (p.parts) findBody(p.parts);
+        }
+      };
+      if (msg.payload.body && msg.payload.body.data)
+        body = atob(msg.payload.body.data.replace(/-/g,'+').replace(/_/g,'/'));
+      else findBody(msg.payload.parts);
+
+      // Show in a simple modal
+      const modal = document.createElement('div');
+      modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+      modal.innerHTML = `<div style="background:white;border-radius:12px;max-width:640px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px">
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:700;margin-bottom:4px">${get('Subject')||'(no subject)'}</div>
+            <div style="font-size:11px;color:var(--text4)">From: ${get('From')}</div>
+            <div style="font-size:11px;color:var(--text4)">To: ${get('To')}</div>
+            <div style="font-size:11px;color:var(--text4)">${get('Date')}</div>
+          </div>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="width:28px;height:28px;border:1px solid var(--border2);border-radius:6px;background:white;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text3)">✕</button>
+        </div>
+        <div style="padding:20px;overflow-y:auto;flex:1;font-size:13px;line-height:1.6;white-space:pre-wrap;color:var(--text2)">${body.slice(0,3000)}</div>
+        <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px">
+          <button onclick="replyToEmail('${msgId}','${get('From').replace(/'/g,'').replace(/"/g,'')}','${(get('Subject')||'').replace(/'/g,'').replace(/"/g,'')}');this.closest('[style*=fixed]').remove()" style="padding:8px 16px;border-radius:var(--radius-sm);border:none;background:var(--accent);color:white;font-size:12px;font-weight:600;cursor:pointer">↩ Reply</button>
+          <button onclick="this.closest('[style*=fixed]').remove()" style="padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:white;font-size:12px;cursor:pointer">Close</button>
+        </div>
+      </div>`;
+      document.body.appendChild(modal);
+    } catch(e) { showToast('Could not load email', 'red'); }
+  }
+
+  function replyToEmail(msgId, fromAddr, subject) {
+    const toEmail = fromAddr.match(/<(.+)>/)?.[1] || fromAddr;
+    const replySubj = subject.startsWith('Re:') ? subject : 'Re: ' + subject;
+    document.getElementById('emailTo').value = toEmail;
+    document.getElementById('emailSubject').value = replySubj;
+    document.getElementById('emailBody').value = '\n\n--- Original message ---\n';
+    openEmailCompose();
+  }
+
   function openEmailCompose() {
+    // Pre-fill To with client primary email
+    const c = currentProfileClientId ? clients.find(x=>x.id===currentProfileClientId) : null;
+    if (c && c.emails && c.emails.length) {
+      const primary = c.emails.find(e=>e.primary) || c.emails[0];
+      const toField = document.getElementById('emailTo');
+      if (toField && !toField.value) toField.value = primary.address;
+    }
     document.getElementById('emailModal').classList.add('open');
     currentAttachments.email = [];
     updateEmailAttachUI();
@@ -6077,11 +6253,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   function applyEmailTemplate(tpl) {
+    const c = currentProfileClientId ? clients.find(x=>x.id===currentProfileClientId) : null;
+    const firstName = c ? c.first : 'Client';
     const tpls = {
-      renewal: { sub: 'Renewal Reminder — Your policy is expiring soon', body: 'Dear María,\n\nWe wanted to remind you that your home policy expires on March 10. To avoid any gaps in coverage, we recommend renewing as soon as possible.\n\nWe\'d be happy to send you an updated quote.\n\nBest regards,\nSafe House Insurance' },
-      payment: { sub: 'Failed Payment Notice — Action Required', body: 'Dear María,\n\nWe\'re letting you know that your Auto Progressive monthly payment was declined. To keep your coverage active, please update your payment method at your earliest convenience.\n\nIf you have any questions, please don\'t hesitate to contact us.\n\nSafe House Insurance' },
-      quote:   { sub: 'Your Insurance Quote is Ready', body: 'Dear María,\n\nPlease find attached a summary of your insurance quote. Feel free to review it and let us know if you have any questions.\n\nSafe House Insurance' },
-      welcome: { sub: 'Welcome to Safe House Insurance!', body: 'Dear María,\n\nIt\'s a pleasure to welcome you. Your policy has been successfully issued.\n\nIf you ever need assistance, don\'t hesitate to reach out.\n\nSafe House Insurance' }
+      renewal: { sub: 'Renewal Reminder — Your policy is expiring soon', body: `Dear ${firstName},\n\nWe wanted to remind you that your policy is expiring soon. To avoid any gaps in coverage, we recommend renewing as soon as possible.\n\nWe'd be happy to send you an updated quote.\n\nBest regards,\nSafe House Insurance` },
+      payment: { sub: 'Payment Notice — Action Required', body: `Dear ${firstName},\n\nWe're letting you know that a recent payment was declined. To keep your coverage active, please update your payment method at your earliest convenience.\n\nSafe House Insurance` },
+      quote:   { sub: 'Your Insurance Quote is Ready', body: `Dear ${firstName},\n\nPlease find below a summary of your insurance quote. Feel free to review it and let us know if you have any questions.\n\nSafe House Insurance` },
+      welcome: { sub: 'Welcome to Safe House Insurance!', body: `Dear ${firstName},\n\nIt's a pleasure to welcome you to Safe House Insurance. Your policy has been successfully issued.\n\nIf you ever need assistance, don't hesitate to reach out.\n\nSafe House Insurance` }
     };
     if (tpls[tpl]) {
       document.getElementById('emailSubject').value = tpls[tpl].sub;
@@ -6090,18 +6268,48 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   function getAiEmailSuggestion() {
-    document.getElementById('emailSubject').value = 'Important Follow-up — Payment & Upcoming Renewal';
-    document.getElementById('emailBody').value = 'Dear María,\n\nWe hope you\'re doing well. We\'re reaching out regarding two important matters:\n\n1. Your monthly payment of $187.00 with Progressive was declined. Please update your payment information as soon as possible.\n\n2. Your home policy with GEICO expires on March 10. We can send you a renewal quote right away.\n\nWe\'re here to help with both.\n\nBest regards,\nSafe House Insurance';
+    const c = currentProfileClientId ? clients.find(x=>x.id===currentProfileClientId) : null;
+    const firstName = c ? c.first : 'Client';
+    document.getElementById('emailSubject').value = 'Following up — Safe House Insurance';
+    document.getElementById('emailBody').value = `Dear ${firstName},\n\nI hope you're doing well. I wanted to follow up and make sure everything is in order with your coverage.\n\nPlease don't hesitate to reach out if you have any questions or need assistance.\n\nBest regards,\nSafe House Insurance`;
   }
 
-  function sendEmail() {
+  async function sendEmail() {
+    const to   = document.getElementById('emailTo').value.trim();
     const subj = document.getElementById('emailSubject').value.trim();
-    if (!subj) { document.getElementById('emailSubject').focus(); return; }
-    const list = document.querySelector('#tab-email');
-    const emailItems = list.querySelector('.email-item');
-    // Just close modal - in real app would submit
-    closeEmailModal();
-    alert('Email enviado a maria.lopez@gmail.com');
+    const body = document.getElementById('emailBody').value.trim();
+    if (!subj) { document.getElementById('emailSubject').focus(); showToast('Subject is required','red'); return; }
+    if (!to)   { showToast('No recipient email','red'); return; }
+
+    if (!gmailAccessToken) {
+      showToast('Connect Gmail first — click the Gmail button in the top bar','orange');
+      return;
+    }
+
+    const sendBtn = document.querySelector('#emailModal .btn-primary');
+    if (sendBtn) { sendBtn.textContent = 'Sending…'; sendBtn.disabled = true; }
+
+    try {
+      const from = gmailUserEmail || 'me';
+      const emailContent = [`From: Safe House Insurance <${from}>`, `To: ${to}`, `Subject: ${subj}`, 'Content-Type: text/plain; charset=utf-8', 'MIME-Version: 1.0', '', body].join('\r\n');
+      const encoded = btoa(unescape(encodeURIComponent(emailContent))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+      const r = await fetch('https://www.googleapis.com/gmail/v1/users/me/messages/send', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + gmailAccessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw: encoded })
+      });
+      if (!r.ok) throw new Error((await r.json()).error?.message || 'Send failed');
+      closeEmailModal();
+      showToast('✓ Email sent to ' + to, 'green');
+      document.getElementById('emailSubject').value = '';
+      document.getElementById('emailBody').value = '';
+      document.getElementById('emailTo').value = '';
+      setTimeout(loadClientEmails, 2000); // refresh email list
+    } catch(e) {
+      showToast('Error sending: ' + e.message, 'red');
+    } finally {
+      if (sendBtn) { sendBtn.textContent = 'Send'; sendBtn.disabled = false; }
+    }
   }
 
   document.getElementById('emailModal').addEventListener('click', function(e) { if(e.target===this) closeEmailModal(); });
