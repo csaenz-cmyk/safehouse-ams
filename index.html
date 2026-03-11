@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Safe House AMS</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAcbNDh4V47a6jxGrwIqzyA2EhncqouKlQ&libraries=places&callback=initGooglePlaces" async defer></script>
 <style>
 :root{
   --bg:#F0F2F5;--surface:#fff;--surface2:#F7F8FA;
@@ -303,6 +304,61 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 /* SPOUSE SECTION */
 .spouse-section{background:var(--accent-light);border:1px solid #c7d7f9;border-radius:var(--radius);padding:14px;margin-top:4px;}
 .spouse-section-title{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+/* MOBILE RESPONSIVE */
+.mobile-menu-btn{display:none;background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;}
+.mobile-menu-btn svg{width:22px;height:22px;}
+.mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;}
+.mobile-overlay.open{display:block;}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-220px;z-index:200;width:220px;transition:left .25s cubic-bezier(.4,0,.2,1);}
+  .sidebar.mobile-open{left:0;width:220px;}
+  .sidebar.mobile-open .logo-text,.sidebar.mobile-open .nav-item-label,.sidebar.mobile-open .user-info-sm,.sidebar.mobile-open .nav-label,.sidebar.mobile-open .nav-badge{opacity:1;max-width:160px;margin-left:10px;transform:translateX(0);}
+  .sidebar.mobile-open .nav-label{color:rgba(255,255,255,.3);}
+  .sidebar.mobile-open .nav-badge{transform:scale(1);}
+  .mobile-menu-btn{display:flex;}
+  .main{width:100vw;}
+  .content{padding:12px 12px 24px;}
+  .cl-kpi-row{grid-template-columns:1fr 1fr;}
+  .dash-kpi-row{grid-template-columns:1fr 1fr;}
+  .pipeline-summary{grid-template-columns:1fr 1fr;}
+  .dash-2col,.dash-3col{grid-template-columns:1fr;}
+  .form-row,.form-row-3{grid-template-columns:1fr;}
+  .cl-table-wrap{overflow-x:auto;}
+  .cl-table{min-width:600px;}
+  .pipeline-board{grid-template-columns:repeat(8,minmax(160px,1fr));}
+  .slide-panel{width:100vw;max-width:100vw;}
+  .modal{margin:8px;}
+  .modal-xl,.modal-lg{max-width:calc(100vw - 16px);}
+  .topbar{padding:0 12px;}
+  .dir-grid{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .cl-kpi-row{grid-template-columns:1fr;}
+  .dash-kpi-row{grid-template-columns:1fr;}
+  .pipeline-summary{grid-template-columns:1fr;}
+}
+
+/* MULTI-PHONE/EMAIL */
+.multi-field-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.multi-field-row .form-input{flex:1;}
+.multi-add-btn{width:28px;height:28px;border-radius:50%;border:1px dashed var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0;font-size:18px;line-height:1;}
+.multi-add-btn:hover{background:var(--accent-light);}
+.multi-remove-btn{width:24px;height:24px;border-radius:50%;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text4);flex-shrink:0;}
+.multi-remove-btn:hover{color:var(--red);}
+
+/* TASKS QUICK VIEW */
+.task-item-quick{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.task-item-quick:last-child{border-bottom:none;}
+.task-check{width:16px;height:16px;border-radius:4px;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;}
+.task-check.done{background:var(--green);border-color:var(--green);}
+.task-check.done::after{content:'✓';color:white;font-size:9px;font-weight:700;}
+
+/* GOOGLE PLACES AUTOCOMPLETE OVERRIDE */
+.pac-container{border-radius:var(--radius-sm);border:1px solid var(--border2);box-shadow:var(--shadow-md);font-family:'DM Sans',sans-serif;font-size:13px;margin-top:2px;}
+.pac-item{padding:8px 12px;cursor:pointer;}
+.pac-item:hover{background:var(--accent-light);}
+.pac-item-query{font-size:13px;color:var(--text);}
 </style>
 </head>
 <body>
@@ -371,6 +427,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
+    <button class="mobile-menu-btn" onclick="toggleMobileSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <div class="breadcrumb" id="topbarBreadcrumb"><strong>Clients</strong></div>
     <div class="topbar-spacer"></div>
     <div id="topbarActions">
@@ -522,6 +579,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div><!-- main -->
 </div><!-- app -->
 
+<!-- MOBILE OVERLAY -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileSidebar()"></div>
+
 <!-- PANELS -->
 <div class="slide-panel-overlay" id="panelOverlay" onclick="closeAllPanels()"></div>
 
@@ -617,28 +677,44 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <!-- Contact Info -->
       <div class="form-section">
         <div class="form-section-title">Contact Information</div>
-        <div class="form-row" style="margin-bottom:10px">
-          <div class="form-field"><label class="form-label">Phone *</label><input class="form-input" id="nc_phone" placeholder="(915) 000-0000"></div>
-          <div class="form-field"><label class="form-label">Alternate Phone</label><input class="form-input" id="nc_phone2" placeholder="(915) 000-0000"></div>
+        <div style="margin-bottom:10px">
+          <label class="form-label" style="margin-bottom:6px;display:block">Phone(s) *</label>
+          <div id="phoneFields">
+            <div class="multi-field-row">
+              <input class="form-input" placeholder="(915) 000-0000" name="nc_phone[]">
+              <select class="form-select" style="width:100px;flex-shrink:0"><option>Mobile</option><option>Home</option><option>Work</option></select>
+              <button class="multi-add-btn" onclick="addPhoneField()" title="Add phone">+</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="form-label" style="margin-bottom:6px;display:block">Email(s)</label>
+          <div id="emailFields">
+            <div class="multi-field-row">
+              <input class="form-input" type="email" placeholder="email@example.com" name="nc_email[]">
+              <select class="form-select" style="width:100px;flex-shrink:0"><option>Personal</option><option>Work</option></select>
+              <button class="multi-add-btn" onclick="addEmailField()" title="Add email">+</button>
+            </div>
+          </div>
         </div>
         <div class="form-row">
-          <div class="form-field"><label class="form-label">Email</label><input class="form-input" id="nc_email" type="email" placeholder="email@example.com"></div>
           <div class="form-field"><label class="form-label">Preferred Language</label><select class="form-select" id="nc_lang"><option>Spanish</option><option>English</option><option>Both</option></select></div>
+          <div class="form-field"><label class="form-label">Best Time to Contact</label><select class="form-select" id="nc_contact_time"><option value="">— Any time —</option><option>Morning (8am–12pm)</option><option>Afternoon (12pm–5pm)</option><option>Evening (5pm–8pm)</option></select></div>
         </div>
       </div>
 
       <!-- Address -->
       <div class="form-section">
         <div class="form-section-title">Address</div>
-        <div class="form-field addr-wrap" style="margin-bottom:10px">
+        <div class="form-field" style="margin-bottom:10px">
           <label class="form-label">Street Address</label>
-          <input class="form-input" id="nc_street" placeholder="Start typing address…" oninput="addrAutocomplete(this,'nc_addr_suggestions')" autocomplete="off">
-          <div class="addr-suggestions" id="nc_addr_suggestions" style="display:none"></div>
+          <input class="form-input" id="nc_street" placeholder="Start typing address…" autocomplete="off">
+          <div style="font-size:10px;color:var(--text4);margin-top:3px">💡 Suggestions appear as you type</div>
         </div>
         <div class="form-row-3" style="margin-bottom:10px">
           <div class="form-field"><label class="form-label">City</label><input class="form-input" id="nc_city" placeholder="El Paso"></div>
           <div class="form-field"><label class="form-label">State</label><select class="form-select" id="nc_state"><option>TX</option><option>NM</option><option>CA</option><option>FL</option><option>AZ</option><option>CO</option><option>NY</option><option>Other</option></select></div>
-          <div class="form-field"><label class="form-label">ZIP</label><input class="form-input" id="nc_zip" placeholder="79912" maxlength="5" oninput="zipLookup(this)"></div>
+          <div class="form-field"><label class="form-label">ZIP</label><input class="form-input" id="nc_zip" placeholder="79912" maxlength="5"></div>
         </div>
         <div class="form-row">
           <div class="form-field"><label class="form-label">Apt / Unit</label><input class="form-input" id="nc_apt" placeholder="Apt #, Suite, etc."></div>
@@ -709,6 +785,98 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     </div>
     <div class="modal-footer"><button class="topbar-btn btn-outline" onclick="closeAddContactModal()">Cancel</button><button class="topbar-btn btn-primary" onclick="confirmAddContact()">Add Contact</button></div>
   </div>
+</div>
+
+<!-- ADD CARRIER MODAL -->
+<div class="modal-overlay" id="addCarrierModal">
+  <div class="modal">
+    <div class="modal-header"><div class="card-icon" style="background:var(--accent-light);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px">🏢</div><div class="modal-title">Add Carrier</div><button class="modal-close" onclick="closeModal('addCarrierModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="form-field"><label class="form-label">Carrier Name *</label><input class="form-input" id="car_name" placeholder="e.g. Progressive"></div><div class="form-field"><label class="form-label">Carrier Code</label><input class="form-input" id="car_code" placeholder="e.g. PRG"></div></div>
+      <div class="form-field"><label class="form-label">Lines of Business *</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="car_lobs">
+          ${['Auto','Homeowners','Renters','Motorcycle','Business','Commercial Auto','Other'].map(l=>`<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" value="${l}"> ${l}</label>`).join('')}
+        </div>
+      </div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Appointment Status</label><select class="form-select" id="car_status"><option>Active</option><option>Pending Appointment</option><option>Inactive</option></select></div><div class="form-field"><label class="form-label">AM Best Rating</label><input class="form-input" id="car_rating" placeholder="e.g. A+"></div></div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Carrier Phone</label><input class="form-input" id="car_phone" placeholder="1-800-000-0000"></div><div class="form-field"><label class="form-label">Agent Portal URL</label><input class="form-input" id="car_url" placeholder="https://agentportal.carrier.com"></div></div>
+      <div class="form-field"><label class="form-label">Notes</label><textarea class="form-textarea" id="car_notes" placeholder="Appointment contacts, binding rules, special notes…" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="topbar-btn btn-outline" onclick="closeModal('addCarrierModal')">Cancel</button><button class="topbar-btn btn-primary" onclick="confirmAddCarrier()">Add Carrier</button></div>
+  </div>
+</div>
+
+<!-- ADD REFERRAL SOURCE MODAL -->
+<div class="modal-overlay" id="addReferralModal">
+  <div class="modal">
+    <div class="modal-header"><div class="card-icon" style="background:var(--green-light);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px">🤝</div><div class="modal-title">Add Referral / Lead Source</div><button class="modal-close" onclick="closeModal('addReferralModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="form-field"><label class="form-label">Source Name *</label><input class="form-input" id="ref_name" placeholder="e.g. Roberto Sánchez - Sanchez Auto"></div><div class="form-field"><label class="form-label">Type *</label><select class="form-select" id="ref_type"><option value="">— Select —</option><option>Referral Partner</option><option>Digital</option><option>Social Media</option><option>Organic</option><option>Event</option><option>Other</option></select></div></div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Contact Name</label><input class="form-input" id="ref_contact" placeholder="Person to contact"></div><div class="form-field"><label class="form-label">Phone</label><input class="form-input" id="ref_phone" placeholder="(915) 000-0000"></div></div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Email</label><input class="form-input" id="ref_email" type="email" placeholder="email@example.com"></div><div class="form-field"><label class="form-label">Status</label><select class="form-select" id="ref_status"><option>Active</option><option>Paused</option></select></div></div>
+      <div class="form-field"><label class="form-label">Notes / Agreement</label><textarea class="form-textarea" id="ref_notes" placeholder="Referral agreement, special instructions, reciprocal?" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="topbar-btn btn-outline" onclick="closeModal('addReferralModal')">Cancel</button><button class="topbar-btn btn-primary" onclick="confirmAddReferral()">Add Source</button></div>
+  </div>
+</div>
+
+<!-- TEMPLATE EDITOR MODAL -->
+<div class="modal-overlay" id="templateEditorModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><div class="card-icon" style="background:var(--purple-light);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px" id="tplTypeIcon">✉️</div><div class="modal-title" id="tplModalTitle">Template Editor</div><button class="modal-close" onclick="closeModal('templateEditorModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-row" style="margin-bottom:4px">
+        <div class="form-field"><label class="form-label">Template Name *</label><input class="form-input" id="tpl_name" placeholder="e.g. Welcome New Client"></div>
+        <div class="form-field"><label class="form-label">Category</label><select class="form-select" id="tpl_cat"><option>Onboarding</option><option>Renewals</option><option>Billing</option><option>Sales</option><option>Cancellations</option><option>Retention</option><option>Claims</option><option>Other</option></select></div>
+      </div>
+      <div class="form-field" id="tpl_subject_wrap" style="margin-bottom:4px"><label class="form-label">Subject Line (Email only)</label><input class="form-input" id="tpl_subject" placeholder="e.g. Your policy renews soon — action required"></div>
+      <div class="form-field">
+        <label class="form-label">Message Body *</label>
+        <textarea class="form-textarea" id="tpl_body" rows="8" placeholder="Hi {FirstName},&#10;&#10;Your message here…&#10;&#10;— Safe House Insurance"></textarea>
+        <div style="font-size:11px;color:var(--text4);margin-top:4px">Variables: <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">{FirstName}</code> <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">{LastName}</code> <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">{PolicyNum}</code> <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">{Amount}</code> <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">{DueDate}</code> <code style="background:var(--surface2);padding:1px 5px;border-radius:3px">{AgentName}</code></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="topbar-btn btn-outline" onclick="closeModal('templateEditorModal')">Cancel</button><button class="topbar-btn btn-primary" onclick="confirmSaveTemplate()">💾 Save Template</button></div>
+  </div>
+</div>
+
+<!-- DEACTIVATE AGENT MODAL -->
+<div class="modal-overlay" id="deactivateAgentModal">
+  <div class="modal">
+    <div class="modal-header"><div class="card-icon" style="background:var(--red-light);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="modal-title">Deactivate Agent</div><button class="modal-close" onclick="closeModal('deactivateAgentModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div style="background:var(--red-light);border:1px solid #FECACA;border-radius:var(--radius);padding:14px;margin-bottom:14px"><div style="font-size:13px;color:var(--red);font-weight:600">⚠️ Are you sure you want to deactivate <span id="deactivateAgentName">this agent</span>?</div><div style="font-size:12px;color:var(--red);margin-top:4px;opacity:.8">This will prevent them from logging in. Their clients and data will remain.</div></div>
+      <div class="form-field"><label class="form-label">Reassign Their Clients To</label><select class="form-select" id="deactivate_reassign"><option value="">— Keep assigned as-is —</option><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select></div>
+      <div class="form-field"><label class="form-label">Reason (optional)</label><textarea class="form-textarea" id="deactivate_reason" placeholder="Reason for deactivation…" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="topbar-btn btn-outline" onclick="closeModal('deactivateAgentModal')">Cancel</button><button class="topbar-btn" style="background:var(--red);color:white;border-radius:var(--radius-sm);padding:7px 14px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:500" onclick="confirmDeactivateAgent()">Deactivate Agent</button></div>
+  </div>
+</div>
+
+<!-- TASKS PANEL (Quick View) -->
+<div class="slide-panel" id="tasksPanel">
+  <div class="slide-panel-header">
+    <div class="card-icon" style="background:var(--orange-light);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" width="15" height="15"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+    <div class="slide-panel-title" id="tasksPanelTitle">Tasks</div>
+    <button class="topbar-btn btn-primary" style="font-size:12px;padding:5px 12px" onclick="openAddTaskInline()">+ Add Task</button>
+    <button class="modal-close" onclick="closeAllPanels()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="slide-panel-toolbar">
+    <select class="cl-filter" id="taskFilterStatus" onchange="renderTasksPanel()"><option value="">All</option><option value="overdue">Overdue</option><option value="today">Due Today</option><option value="upcoming">Upcoming</option><option value="done">Done</option></select>
+    <select class="cl-filter" id="taskFilterAgent" onchange="renderTasksPanel()"><option value="">All Agents</option><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select>
+  </div>
+  <div id="addTaskInline" style="display:none;padding:12px 16px;background:var(--accent-light);border-bottom:1px solid var(--border)">
+    <div class="form-row" style="margin-bottom:8px">
+      <div class="form-field"><label class="form-label">Task</label><input class="form-input" id="newTaskTitle" placeholder="Task description…"></div>
+      <div class="form-field"><label class="form-label">Due Date</label><input class="form-input" id="newTaskDue" type="date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Assign To</label><select class="form-select" id="newTaskAgent"><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select></div>
+      <div class="form-field"><label class="form-label">Priority</label><select class="form-select" id="newTaskPriority"><option>Normal</option><option>High</option><option>Urgent</option></select></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px"><button class="topbar-btn btn-primary" style="font-size:12px" onclick="confirmAddTask()">Save Task</button><button class="topbar-btn btn-outline" style="font-size:12px" onclick="document.getElementById('addTaskInline').style.display='none'">Cancel</button></div>
+  </div>
+  <div class="slide-panel-body" id="tasksPanelBody"></div>
 </div>
 
 <script>
@@ -823,76 +991,196 @@ let contacts=[
   {id:'DIR007',first:'Kevin',last:'Smith',company:'TechFix Solutions',title:'IT Support',cat:'Vendor',carrier:'',phone:'(915) 455-8877',email:'kevin@techfixep.com',color:'#9E165F',notes:'Handles office computers and network. $75/hr, quick response.',visibility:'Private'},
 ];
 
-// ADDRESS AUTOCOMPLETE (mock - in production connect to Google Places API)
-const mockAddresses=[
-  {street:'1423 Shadow Mountain Dr',city:'El Paso',state:'TX',zip:'79912',county:'El Paso County'},
-  {street:'220 N Kansas St',city:'El Paso',state:'TX',zip:'79901',county:'El Paso County'},
-  {street:'5500 Montana Ave',city:'El Paso',state:'TX',zip:'79925',county:'El Paso County'},
-  {street:'1000 Lee Trevino Dr',city:'El Paso',state:'TX',zip:'79936',county:'El Paso County'},
-  {street:'4400 N Mesa St',city:'El Paso',state:'TX',zip:'79902',county:'El Paso County'},
-  {street:'9801 Viscount Blvd',city:'El Paso',state:'TX',zip:'79925',county:'El Paso County'},
-  {street:'1800 Trawood Dr',city:'El Paso',state:'TX',zip:'79935',county:'El Paso County'},
-  {street:'2200 Sunland Park Dr',city:'El Paso',state:'TX',zip:'79922',county:'El Paso County'},
-  {street:'6600 Montana Ave',city:'El Paso',state:'TX',zip:'79925',county:'El Paso County'},
-  {street:'300 W Paisano Dr',city:'El Paso',state:'TX',zip:'79901',county:'El Paso County'},
+// TASKS DATA
+let taskSeq=20;
+let tasksData=[
+  {id:1,title:'Confirm payment method',client:'María López Hernández',clientId:'CLT-00412',agent:'Ana Gutierrez',due:'2026-03-08',priority:'Urgent',done:false,notes:'NSF check, needs new payment method'},
+  {id:2,title:'Follow-up quote renters insurance',client:'Elena Guzmán',clientId:'CLT-00440',agent:'Jennifer Fierro',due:'2026-03-10',priority:'High',done:false,notes:'Sent quote last week, no response'},
+  {id:3,title:'Request copy of driver license',client:'Roberto Fuentes',clientId:'CLT-00425',agent:'Marina Contreras',due:'2026-03-09',priority:'Normal',done:false,notes:'Needed for new auto policy'},
+  {id:4,title:'Send renewal documents',client:'Carlos Reyes',clientId:'CLT-00390',agent:'Jennifer Fierro',due:'2026-03-15',priority:'Normal',done:false,notes:'Renters policy up for renewal'},
+  {id:5,title:'Policy endorsement — add vehicle',client:'Pablo Ortega',clientId:'CLT-00435',agent:'Marina Contreras',due:'2026-03-12',priority:'High',done:false,notes:'New 2024 Ram 1500 purchased'},
+  {id:6,title:'Call about pending cancellation',client:'Sandra Morales',clientId:'CLT-00401',agent:'Marina Contreras',due:'2026-03-11',priority:'Urgent',done:false,notes:'Life policy pending cancel'},
+  {id:7,title:'Send welcome email',client:'Diana Castillo',clientId:'CLT-00430',agent:'Jennifer Fierro',due:'2026-03-05',priority:'Normal',done:true,notes:''},
+  {id:8,title:'Verify address change',client:'Miguel Torres Vega',clientId:'CLT-00388',agent:'Ana Gutierrez',due:'2026-03-03',priority:'Normal',done:true,notes:''},
 ];
-
-const zipData={
-  '79912':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79901':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79902':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79903':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79904':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79905':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79907':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79915':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79922':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79925':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79930':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79935':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '79936':{city:'El Paso',state:'TX',county:'El Paso County'},
-  '88001':{city:'Las Cruces',state:'NM',county:'Doña Ana County'},
-  '88011':{city:'Las Cruces',state:'NM',county:'Doña Ana County'},
-};
-
 // ═══════════════════════════════════════
-// ADDRESS HELPERS
+// GOOGLE PLACES AUTOCOMPLETE
 // ═══════════════════════════════════════
-function addrAutocomplete(inp, listId){
-  const q=inp.value.toLowerCase().trim();
-  const list=document.getElementById(listId);
-  if(!q||q.length<3){list.style.display='none';return;}
-  const matches=mockAddresses.filter(a=>a.street.toLowerCase().includes(q));
-  if(!matches.length){list.style.display='none';return;}
-  list.innerHTML=matches.map(a=>`<div class="addr-suggestion" onclick="selectAddress('${a.street}','${a.city}','${a.state}','${a.zip}','${a.county}','${listId}')">${a.street}, ${a.city}, ${a.state} ${a.zip}</div>`).join('');
-  list.style.display='block';
+function initGooglePlaces(){
+  const input=document.getElementById('nc_street');
+  if(!input||typeof google==='undefined')return;
+  const ac=new google.maps.places.Autocomplete(input,{
+    types:['address'],
+    componentRestrictions:{country:'us'},
+    fields:['address_components'],
+  });
+  ac.addListener('place_changed',()=>{
+    const place=ac.getPlace();
+    if(!place.address_components)return;
+    let streetNum='',route='',city='',state='',zip='',county='';
+    place.address_components.forEach(c=>{
+      if(c.types.includes('street_number'))streetNum=c.long_name;
+      if(c.types.includes('route'))route=c.long_name;
+      if(c.types.includes('locality'))city=c.long_name;
+      if(c.types.includes('administrative_area_level_1'))state=c.short_name;
+      if(c.types.includes('postal_code'))zip=c.long_name;
+      if(c.types.includes('administrative_area_level_2'))county=c.long_name;
+    });
+    const street=(streetNum+' '+route).trim();
+    if(street)input.value=street;
+    if(city)document.getElementById('nc_city').value=city;
+    if(state){const sel=document.getElementById('nc_state');for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===state){sel.selectedIndex=i;break;}}}
+    if(zip)document.getElementById('nc_zip').value=zip;
+    if(county)document.getElementById('nc_county').value=county;
+    showToast('✓ Address verified','green');
+  });
 }
-function selectAddress(street,city,state,zip,county,listId){
-  document.getElementById('nc_street').value=street;
-  document.getElementById('nc_city').value=city;
-  document.getElementById('nc_state').value=state;
-  document.getElementById('nc_zip').value=zip;
-  document.getElementById('nc_county').value=county;
-  document.getElementById(listId).style.display='none';
-}
-function zipLookup(inp){
-  const z=inp.value.trim();
-  if(z.length===5&&zipData[z]){
-    const d=zipData[z];
-    document.getElementById('nc_city').value=d.city;
-    document.getElementById('nc_state').value=d.state;
-    document.getElementById('nc_county').value=d.county;
-    showToast('✓ ZIP verified: '+d.city+', '+d.state,'green');
-  }
-}
+
 function toggleSpouseSection(){
   const v=document.getElementById('nc_marital').value;
   const show=v==='Married'||v==='Domestic Partner';
   document.getElementById('spouseSection').style.display=show?'block':'none';
 }
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.addr-wrap'))document.querySelectorAll('.addr-suggestions').forEach(el=>el.style.display='none');
-});
+
+// ═══════════════════════════════════════
+// MULTI PHONE / EMAIL
+// ═══════════════════════════════════════
+function addPhoneField(){
+  const wrap=document.getElementById('phoneFields');
+  const div=document.createElement('div');div.className='multi-field-row';
+  div.innerHTML=`<input class="form-input" placeholder="(915) 000-0000" name="nc_phone[]"><select class="form-select" style="width:100px;flex-shrink:0"><option>Mobile</option><option>Home</option><option>Work</option></select><button class="multi-remove-btn" onclick="this.parentElement.remove()" title="Remove">✕</button>`;
+  wrap.appendChild(div);
+}
+function addEmailField(){
+  const wrap=document.getElementById('emailFields');
+  const div=document.createElement('div');div.className='multi-field-row';
+  div.innerHTML=`<input class="form-input" type="email" placeholder="email@example.com" name="nc_email[]"><select class="form-select" style="width:100px;flex-shrink:0"><option>Personal</option><option>Work</option></select><button class="multi-remove-btn" onclick="this.parentElement.remove()" title="Remove">✕</button>`;
+  wrap.appendChild(div);
+}
+
+// ═══════════════════════════════════════
+// MOBILE SIDEBAR
+// ═══════════════════════════════════════
+function toggleMobileSidebar(){
+  document.querySelector('.sidebar').classList.toggle('mobile-open');
+  document.getElementById('mobileOverlay').classList.toggle('open');
+}
+
+// ═══════════════════════════════════════
+// GENERIC MODAL HELPERS
+// ═══════════════════════════════════════
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ═══════════════════════════════════════
+// ADD CARRIER
+// ═══════════════════════════════════════
+function confirmAddCarrier(){
+  const name=document.getElementById('car_name').value.trim();
+  if(!name){showToast('Carrier name is required','red');return;}
+  showToast('✓ Carrier added — '+name,'green');
+  closeModal('addCarrierModal');
+  document.getElementById('addCarrierModal').querySelectorAll('input,textarea').forEach(el=>el.value='');
+  showSettingsTab('carriers',null);
+}
+
+// ═══════════════════════════════════════
+// ADD REFERRAL SOURCE
+// ═══════════════════════════════════════
+function confirmAddReferral(){
+  const name=document.getElementById('ref_name').value.trim();
+  const type=document.getElementById('ref_type').value;
+  if(!name||!type){showToast('Name and type are required','red');return;}
+  showToast('✓ Referral source added — '+name,'green');
+  closeModal('addReferralModal');
+  document.getElementById('addReferralModal').querySelectorAll('input,textarea').forEach(el=>el.value='');
+  showSettingsTab('referrals',null);
+}
+
+// ═══════════════════════════════════════
+// TEMPLATE EDITOR
+// ═══════════════════════════════════════
+let currentTplType='email';
+function openTemplateEditor(type,name,body,subject){
+  currentTplType=type||'email';
+  document.getElementById('tplTypeIcon').textContent=type==='sms'?'💬':'✉️';
+  document.getElementById('tplModalTitle').textContent=(type==='sms'?'SMS':'Email')+' Template'+(name?' — '+name:'');
+  document.getElementById('tpl_name').value=name||'';
+  document.getElementById('tpl_body').value=body||'';
+  document.getElementById('tpl_subject').value=subject||'';
+  document.getElementById('tpl_subject_wrap').style.display=type==='sms'?'none':'block';
+  document.getElementById('templateEditorModal').classList.add('open');
+}
+function confirmSaveTemplate(){
+  const name=document.getElementById('tpl_name').value.trim();
+  const body=document.getElementById('tpl_body').value.trim();
+  if(!name||!body){showToast('Name and message are required','red');return;}
+  showToast('✓ Template saved — '+name,'green');
+  closeModal('templateEditorModal');
+}
+
+// ═══════════════════════════════════════
+// DEACTIVATE AGENT
+// ═══════════════════════════════════════
+let deactivateAgentTarget='';
+function openDeactivateModal(name){
+  deactivateAgentTarget=name;
+  document.getElementById('deactivateAgentName').textContent=name;
+  document.getElementById('deactivateAgentModal').classList.add('open');
+}
+function confirmDeactivateAgent(){
+  showToast('✓ '+deactivateAgentTarget+' deactivated','red');
+  closeModal('deactivateAgentModal');
+  setTimeout(()=>showSettingsTab('agents',null),300);
+}
+
+// ═══════════════════════════════════════
+// TASKS PANEL
+// ═══════════════════════════════════════
+let tasksPanelClientId=null;
+function openTasksPanel(clientId,clientName){
+  tasksPanelClientId=clientId||null;
+  document.getElementById('tasksPanelTitle').textContent=clientName?'Tasks — '+clientName:'All Tasks';
+  renderTasksPanel();
+  openPanel('tasksPanel');
+}
+function openAddTaskInline(){
+  const el=document.getElementById('addTaskInline');
+  el.style.display=el.style.display==='none'?'block':'none';
+  if(el.style.display==='block'){document.getElementById('newTaskDue').value=new Date().toISOString().split('T')[0];document.getElementById('newTaskTitle').focus();}
+}
+function confirmAddTask(){
+  const title=document.getElementById('newTaskTitle').value.trim();
+  const due=document.getElementById('newTaskDue').value;
+  if(!title){showToast('Task description required','red');return;}
+  const client=tasksPanelClientId?clients.find(c=>c.id===tasksPanelClientId):null;
+  tasksData.unshift({id:++taskSeq,title,client:client?client.first+' '+client.last:'General',clientId:tasksPanelClientId,agent:document.getElementById('newTaskAgent').value,due,priority:document.getElementById('newTaskPriority').value,done:false,notes:''});
+  document.getElementById('addTaskInline').style.display='none';
+  document.getElementById('newTaskTitle').value='';
+  renderTasksPanel();showToast('✓ Task added','green');
+}
+function toggleTaskDone(id){
+  const t=tasksData.find(x=>x.id===id);
+  if(t){t.done=!t.done;renderTasksPanel();}
+}
+function renderTasksPanel(){
+  const sf=(document.getElementById('taskFilterStatus')||{}).value||'';
+  const af=(document.getElementById('taskFilterAgent')||{}).value||'';
+  const today=new Date().toISOString().split('T')[0];
+  let data=tasksData.filter(t=>{
+    if(tasksPanelClientId&&t.clientId!==tasksPanelClientId)return false;
+    if(af&&t.agent!==af)return false;
+    if(sf==='done')return t.done;
+    if(sf==='overdue')return!t.done&&t.due<today;
+    if(sf==='today')return!t.done&&t.due===today;
+    if(sf==='upcoming')return!t.done&&t.due>today;
+    return true;
+  });
+  const prioColor={Urgent:'var(--red)',High:'var(--orange)',Normal:'var(--accent)'};
+  document.getElementById('tasksPanelBody').innerHTML=data.length?data.map(t=>{
+    const overdue=!t.done&&t.due<today;
+    return`<div style="padding:12px 16px;border-bottom:1px solid var(--border);${t.done?'opacity:.55':''}"><div style="display:flex;align-items:flex-start;gap:10px"><div class="task-check ${t.done?'done':''}" onclick="toggleTaskDone(${t.id})" style="border-color:${t.done?'var(--green)':prioColor[t.priority]||'var(--border2)'}"></div><div style="flex:1"><div style="font-size:13px;font-weight:600;${t.done?'text-decoration:line-through;color:var(--text4)':'color:var(--text)'}">${t.title}</div><div style="font-size:11px;color:var(--text4);margin-top:2px">${t.client} · ${t.agent.split(' ')[0]}</div>${t.notes?`<div style="font-size:11px;color:var(--text3);margin-top:3px">${t.notes}</div>`:''}</div><div style="text-align:right;flex-shrink:0"><div style="font-size:10px;font-weight:700;color:${overdue?'var(--red)':t.done?'var(--green)':'var(--text4)'}">${overdue?'⚠️ Overdue':t.done?'✓ Done':formatDate(t.due)}</div><span style="background:${prioColor[t.priority]||'var(--accent)'}18;color:${prioColor[t.priority]||'var(--accent)'};font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px">${t.priority}</span></div></div></div>`;
+  }).join(''):`<div style="padding:40px;text-align:center;color:var(--text4)">No tasks found</div>`;
+}
 
 // ═══════════════════════════════════════
 // NAVIGATION
@@ -1073,8 +1361,25 @@ function openClientProfile(id){
     <div style="display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
       <button class="topbar-btn btn-primary" onclick="showToast('Opening full client profile…','accent')">Open Full Profile</button>
       <button class="topbar-btn btn-outline" onclick="showToast('Opening new quote for ${c.first}…','accent')">+ New Quote</button>
-      <button class="topbar-btn btn-outline" onclick="showToast('Opening tasks for ${c.first}…','accent')">📋 Tasks</button>
+      <button class="topbar-btn btn-outline" onclick="openTasksPanel('${c.id}','${c.first} ${c.last}')">📋 Tasks</button>
       <button class="topbar-btn btn-outline" onclick="showToast('Opening payment for ${c.first}…','accent')">💳 Payment</button>
+    </div>
+    <!-- Tasks Quick View -->
+    <div style="margin-top:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Tasks (${tasksData.filter(t=>t.clientId===c.id).length})</div>
+        <button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 10px" onclick="openTasksPanel('${c.id}','${c.first} ${c.last}')">View All + Add</button>
+      </div>
+      ${tasksData.filter(t=>t.clientId===c.id).slice(0,3).map(t=>{
+        const today=new Date().toISOString().split('T')[0];
+        const overdue=!t.done&&t.due<today;
+        const prioColor={Urgent:'var(--red)',High:'var(--orange)',Normal:'var(--accent)'};
+        return`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+          <div class="task-check ${t.done?'done':''}" style="border-color:${t.done?'var(--green)':prioColor[t.priority]||'var(--accent)'}"></div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:600;${t.done?'text-decoration:line-through;color:var(--text4)':''}">${t.title}</div><div style="font-size:10px;color:var(--text4)">${t.agent.split(' ')[0]}</div></div>
+          <div style="font-size:10px;font-weight:700;color:${overdue?'var(--red)':t.done?'var(--green)':'var(--text4)'}">${overdue?'⚠️ Overdue':t.done?'✓ Done':formatDate(t.due)}</div>
+        </div>`;
+      }).join('')||`<div style="font-size:12px;color:var(--text4);text-align:center;padding:12px">No tasks for this client</div>`}
     </div>`;
   openPanel('policyDetailPanel');
 }
@@ -1324,7 +1629,7 @@ const settingsContent={
            {name:'Ana Gutierrez',role:'Senior Agent',color:'#7F56D9',email:'ana@safehouseins.com',phone:'(915) 555-0002',active:true,perms:['Clients','Policies','Pipeline','Calls','SMS']},
            {name:'Jennifer Fierro',role:'Agent',color:'#12B76A',email:'jennifer@safehouseins.com',phone:'(915) 555-0003',active:true,perms:['Clients','Policies','Pipeline']},
            {name:'Marina Contreras',role:'Agent',color:'#F79009',email:'marina@safehouseins.com',phone:'(915) 555-0004',active:true,perms:['Clients','Policies','Pipeline']},
-        ].map(a=>`<div class="agent-card"><div class="agent-avatar2" style="background:${a.color}">${a.name.split(' ').map(w=>w[0]).join('')}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${a.name}</div><div style="font-size:11px;color:var(--text4)">${a.role} · ${a.email}</div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">${a.perms.map(p=>`<span class="perm-chip">${p}</span>`).join('')}</div></div><div style="display:flex;gap:6px"><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="showToast('Editing ${a.name}…','accent')">Edit</button>${a.name!=='Christian Saenz'?`<button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px;color:var(--red)" onclick="showToast('Deactivating ${a.name}…','red')">Deactivate</button>`:''}</div></div>`).join('')}
+        ].map(a=>`<div class="agent-card"><div class="agent-avatar2" style="background:${a.color}">${a.name.split(' ').map(w=>w[0]).join('')}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${a.name}</div><div style="font-size:11px;color:var(--text4)">${a.role} · ${a.email}</div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">${a.perms.map(p=>`<span class="perm-chip">${p}</span>`).join('')}</div></div><div style="display:flex;gap:6px"><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="showToast('Editing ${a.name}…','accent')">Edit</button>${a.name!=='Christian Saenz'?`<button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px;color:var(--red);border-color:var(--red)" onclick="openDeactivateModal('${a.name}')">Deactivate</button>`:''}</div></div>`).join('')}
       </div>
       <div style="margin-top:14px"><button class="topbar-btn btn-primary" onclick="showToast('Opening invite new agent form…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Invite New Agent</button></div>
     </div>`,
@@ -1341,7 +1646,7 @@ const settingsContent={
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:14px">
         ${[{name:'Progressive',lobs:['Auto','Commercial Auto'],logo:'🚗',active:true},{name:'Allstate',lobs:['Auto','Homeowners'],logo:'🏠',active:true},{name:'Gainsco',lobs:['Auto','Non-Standard'],logo:'🚗',active:true},{name:'Bristol West',lobs:['Auto','Non-Standard'],logo:'🚗',active:true},{name:'Dairyland',lobs:['Auto','Motorcycle'],logo:'🏍️',active:true},{name:'Encompass',lobs:['Auto','Homeowners'],logo:'🏠',active:true},{name:'MetLife',lobs:['Renters','Life'],logo:'❤️',active:true},{name:'State Farm',lobs:['Auto','Homeowners','Life'],logo:'⭐',active:false}].map(c=>`<div class="carrier-card"><div class="carrier-logo">${c.logo}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${c.name}</div><div style="font-size:11px;color:var(--text4);margin-top:2px">${c.lobs.join(' · ')}</div></div><span style="background:${c.active?'var(--green-light)':'var(--surface2)'};color:${c.active?'var(--green)':'var(--text4)'};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${c.active?'Active':'Inactive'}</span></div>`).join('')}
       </div>
-      <button class="topbar-btn btn-primary" onclick="showToast('Opening add carrier form…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Carrier</button>
+      <button class="topbar-btn btn-primary" onclick="document.getElementById('addCarrierModal').classList.add('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Carrier</button>
     </div>`,
   referrals:`
     <div class="settings-section">
@@ -1351,16 +1656,16 @@ const settingsContent={
         <thead><tr><th>Source</th><th>Type</th><th>Leads (YTD)</th><th>Converted</th><th>Active</th><th></th></tr></thead>
         <tbody>${[{s:'Roberto Sánchez — Sanchez Auto',t:'Referral Partner',leads:18,conv:11,active:true},{s:'Lisa Torres — Starwood Realty',t:'Referral Partner',leads:12,conv:8,active:true},{s:'Google Ads',t:'Digital',leads:34,conv:9,active:true},{s:'Facebook / Instagram',t:'Social Media',leads:22,conv:6,active:true},{s:'Walk-in',t:'Organic',leads:8,conv:8,active:true},{s:'Phone Call',t:'Organic',leads:15,conv:14,active:true},{s:'TikTok',t:'Social Media',leads:11,conv:3,active:false}].map(r=>`<tr><td style="font-weight:600;font-size:13px">${r.s}</td><td><span class="badge badge-gray">${r.t}</span></td><td style="font-weight:700">${r.leads}</td><td style="font-weight:700;color:var(--green)">${r.conv}</td><td><span style="background:${r.active?'var(--green-light)':'var(--surface2)'};color:${r.active?'var(--green)':'var(--text4)'};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${r.active?'Active':'Paused'}</span></td><td><button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 8px" onclick="showToast('Editing source…','accent')">Edit</button></td></tr>`).join('')}</tbody>
       </table>
-      <button class="topbar-btn btn-primary" onclick="showToast('Adding lead source…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Source</button>
+      <button class="topbar-btn btn-primary" onclick="document.getElementById('addReferralModal').classList.add('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Source</button>
     </div>`,
   email_tpl:`
     <div class="settings-section">
       <div class="settings-section-title">Email Templates</div>
       <div class="settings-section-sub">Reusable email templates for common scenarios</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
-        ${[{name:'Welcome New Client',cat:'Onboarding',last:'Mar 1, 2026'},{name:'Policy Renewal Reminder',cat:'Renewals',last:'Feb 20, 2026'},{name:'Payment Reminder',cat:'Billing',last:'Feb 15, 2026'},{name:'Policy Cancellation Notice',cat:'Cancellations',last:'Jan 30, 2026'},{name:'Quote Follow-up',cat:'Sales',last:'Mar 5, 2026'},{name:'Happy Birthday',cat:'Retention',last:'Jan 10, 2026'},{name:'Claim Acknowledgement',cat:'Claims',last:'Feb 1, 2026'},{name:'Annual Review Invite',cat:'Retention',last:'Feb 28, 2026'}].map(t=>`<div class="template-card" style="cursor:pointer" onclick="showToast('Opening template: ${t.name}','accent')"><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${t.name}</div><div style="display:flex;align-items:center;gap:6px"><span class="badge badge-blue" style="font-size:10px">${t.cat}</span><span style="font-size:10px;color:var(--text4);margin-left:auto">Last edited: ${t.last}</span></div></div>`).join('')}
+        ${[{name:'Welcome New Client',cat:'Onboarding',body:'Hi {FirstName},\n\nWelcome to Safe House Insurance! We\'re glad to have you as a client.\n\nYour agent {AgentName} is here to help you with any questions.\n\n— Safe House Insurance'},{name:'Policy Renewal Reminder',cat:'Renewals',body:'Hi {FirstName},\n\nYour {LOB} policy #{PolicyNum} is coming up for renewal on {RenewalDate}.\n\nPlease call us at (915) 555-0100 to review your coverage.\n\n— Safe House Insurance'},{name:'Payment Reminder',cat:'Billing',body:'Hi {FirstName},\n\nThis is a friendly reminder that your payment of ${Amount} is due on {DueDate}.\n\nPlease contact us to arrange payment.\n\n— Safe House Insurance'},{name:'Policy Cancellation Notice',cat:'Cancellations',body:'Hi {FirstName},\n\nWe want to notify you that your {LOB} policy #{PolicyNum} is scheduled for cancellation on {CancelDate} due to {Reason}.\n\nPlease contact us immediately to resolve this.\n\n— Safe House Insurance'},{name:'Quote Follow-up',cat:'Sales',body:'Hi {FirstName},\n\nI wanted to follow up on the {LOB} quote I sent you.\n\nDo you have any questions? I\'m happy to walk you through the coverage options.\n\nBest,\n{AgentName}\nSafe House Insurance'},{name:'Happy Birthday',cat:'Retention',body:'Hi {FirstName},\n\nHappy Birthday from all of us at Safe House Insurance! 🎂\n\nAs your trusted insurance partner, we wish you a wonderful day!\n\n— Safe House Insurance'},{name:'Claim Acknowledgement',cat:'Claims',body:'Hi {FirstName},\n\nWe have received your claim #{ClaimNum} and it is being processed.\n\nYour adjuster will contact you within 24-48 hours.\n\n— Safe House Insurance'},{name:'Annual Review Invite',cat:'Retention',body:'Hi {FirstName},\n\nIt\'s time for your annual insurance review!\n\nLet\'s make sure your coverage still fits your needs. Call us at (915) 555-0100 to schedule.\n\n— {AgentName}, Safe House Insurance'}].map(t=>`<div class="template-card" style="cursor:pointer" onclick="openTemplateEditor('email','${t.name.replace(/'/g,"\\'")}',\`${t.body.replace(/`/g,'\\`')}\`)"><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${t.name}</div><div style="display:flex;align-items:center;gap:6px"><span class="badge badge-blue" style="font-size:10px">${t.cat}</span><span style="font-size:10px;color:var(--text4);margin-left:auto">✏️ Click to edit</span></div></div>`).join('')}
       </div>
-      <div style="margin-top:14px"><button class="topbar-btn btn-primary" onclick="showToast('Creating new email template…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Template</button></div>
+      <div style="margin-top:14px"><button class="topbar-btn btn-primary" onclick="openTemplateEditor('email','','','')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Email Template</button></div>
     </div>`,
   sms_tpl:`
     <div class="settings-section">
@@ -1373,9 +1678,9 @@ const settingsContent={
            {name:'Welcome',msg:'Welcome to Safe House Insurance, {FirstName}! Your agent {AgentName} is here for you. Call: (915) 555-0100'},
            {name:'Appointment Reminder',msg:'Reminder: Your appointment at Safe House Insurance is {Date} at {Time}. See you soon! — {AgentName}'},
            {name:'Claim Update',msg:'Hi {FirstName}, update on your claim #{ClaimNum}: {Status}. Questions? Call us at (915) 555-0100.'},
-        ].map(t=>`<div class="template-card" onclick="showToast('Opening SMS template: ${t.name}','accent')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:13px;font-weight:600">${t.name}</div><button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 8px" onclick="event.stopPropagation();showToast('Editing: ${t.name}','accent')">Edit</button></div><div style="font-size:12px;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px">${t.msg}</div></div>`).join('')}
+        ].map(t=>`<div class="template-card" onclick="openTemplateEditor('sms','${t.name}','${t.msg.replace(/'/g,"\\'")}')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:13px;font-weight:600">${t.name}</div><button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 8px" onclick="event.stopPropagation();openTemplateEditor('sms','${t.name}','${t.msg.replace(/'/g,"\\'")}')" >Edit</button></div><div style="font-size:12px;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px">${t.msg}</div></div>`).join('')}
       </div>
-      <div style="margin-top:14px"><button class="topbar-btn btn-primary" onclick="showToast('Creating new SMS template…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Template</button></div>
+      <div style="margin-top:14px"><button class="topbar-btn btn-primary" onclick="openTemplateEditor('sms','','')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New SMS Template</button></div>
     </div>`,
   general:`
     <div class="settings-section">
@@ -1423,7 +1728,10 @@ function openCallsPanel(){renderCallsPanel();openPanel('allCallsPanel');}
 // ═══════════════════════════════════════
 // CLIENT MODAL
 // ═══════════════════════════════════════
-function openNewClientModal(){document.getElementById('newClientModal').classList.add('open');}
+function openNewClientModal(){
+  document.getElementById('newClientModal').classList.add('open');
+  setTimeout(()=>{if(typeof google!=='undefined'&&google.maps)initGooglePlaces();},100);
+}
 function closeNewClientModal(){document.getElementById('newClientModal').classList.remove('open');}
 function confirmNewClient(){
   const first=document.getElementById('nc_first').value.trim();
@@ -1482,6 +1790,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderPipeline();
   initDashboard();
   showView('clients',document.getElementById('nav-clients'));
+  // Init Google Places if API already loaded
+  if(typeof google!=='undefined'&&google.maps)initGooglePlaces();
 });
 </script>
 </body>
