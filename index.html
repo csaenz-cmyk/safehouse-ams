@@ -918,6 +918,11 @@ async function syncFromSupabase(){
       pipelineItems=dbPipeline.map(r=>({...r.data,id:r.id}));
       renderPipeline();
     }
+    // Load tasks
+    const {data:dbTasks,error:te}=await sb.from('tasks').select('*').order('created_at',{ascending:false});
+    if(!te&&dbTasks&&dbTasks.length>0){
+      tasksData=dbTasks.map(r=>({...r.data,id:r.id}));
+    }
     showSyncIndicator('ok');
   }catch(e){
     console.warn('Sync error:',e);
@@ -1234,6 +1239,8 @@ function confirmAddTask(){
   if(!title){showToast('Task description required','red');return;}
   const client=tasksPanelClientId?clients.find(c=>c.id===tasksPanelClientId):null;
   tasksData.unshift({id:++taskSeq,title,client:client?client.first+' '+client.last:'General',clientId:tasksPanelClientId,agent:document.getElementById('newTaskAgent').value,due,priority:document.getElementById('newTaskPriority').value,done:false,notes:''});
+  // Save to Supabase
+  if(supaReady)sb.from('tasks').upsert({id:String(taskSeq),data:tasksData[0]}).then(({error})=>{if(error)console.warn('Task save error:',error);});
   document.getElementById('addTaskInline').style.display='none';
   document.getElementById('newTaskTitle').value='';
   renderTasksPanel();showToast('✓ Task added','green');
@@ -1579,7 +1586,7 @@ function setPipelineView(v,btn){pipelineView=v;document.querySelectorAll('.pipel
 function pcDragStart(e,id){dragItemId=id;}
 function pcDragOver(e){e.preventDefault();e.currentTarget.closest('.pipeline-col')?.classList.add('drag-over');}
 function pcDragLeave(e){e.currentTarget.closest('.pipeline-col')?.classList.remove('drag-over');}
-function pcDrop(e,stage){e.preventDefault();e.currentTarget.closest('.pipeline-col')?.classList.remove('drag-over');const item=pipelineItems.find(p=>p.id===dragItemId);if(item&&item.stage!==stage){item.stage=stage;showToast(`${item.name} → ${STAGE_META.find(s=>s.id===stage)?.label||stage}`,'green');renderPipeline();}dragItemId=null;}
+function pcDrop(e,stage){e.preventDefault();e.currentTarget.closest('.pipeline-col')?.classList.remove('drag-over');const item=pipelineItems.find(p=>p.id===dragItemId);if(item&&item.stage!==stage){item.stage=stage;savePipelineToSupabase(item);showToast(`${item.name} → ${STAGE_META.find(s=>s.id===stage)?.label||stage}`,'green');renderPipeline();}dragItemId=null;}
 
 // ═══════════════════════════════════════
 // DASHBOARD
@@ -1855,7 +1862,13 @@ function closeAddLeadModal(){document.getElementById('addLeadModal').classList.r
 function confirmAddLead(){
   const first=document.getElementById('lead_first').value.trim();const last=document.getElementById('lead_last').value.trim();const lob=document.getElementById('lead_lob').value;
   if(!first||!last||!lob){showToast('Please fill required fields','red');return;}
-  pipelineItems.push({id:++pipelineSeq,clientId:null,name:first+' '+last,lob,stage:'new_lead',agent:document.getElementById('lead_agent').value,premium:parseFloat(document.getElementById('lead_premium').value)||0,created:new Date().toISOString().split('T')[0]});
+  const newLead={id:++pipelineSeq,clientId:null,name:first+' '+last,phone:document.getElementById('lead_phone').value,lob,stage:'new_lead',agent:document.getElementById('lead_agent').value,premium:parseFloat(document.getElementById('lead_premium').value)||0,source:document.getElementById('lead_source').value,created:new Date().toISOString().split('T')[0]};
+  pipelineItems.push(newLead);
+  savePipelineToSupabase(newLead);
+  closeAddLeadModal();renderPipeline();
+  showToast('✓ Lead added — '+first+' '+last,'green');
+  document.getElementById('addLeadModal').querySelectorAll('input,select').forEach(el=>{if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
+}
   closeAddLeadModal();renderPipeline();showToast('✓ Lead added — '+first+' '+last,'green');
   ['lead_first','lead_last','lead_phone','lead_premium','lead_notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('lead_lob').value='';
 }
