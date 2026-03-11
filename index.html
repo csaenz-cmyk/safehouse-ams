@@ -907,22 +907,29 @@ async function syncFromSupabase(){
   try{
     showSyncIndicator('syncing');
     // Load clients
-    const {data:dbClients,error:ce}=await sb.from('clients').select('*').order('created_at',{ascending:false});
-    if(!ce&&dbClients&&dbClients.length>0){
-      clients=dbClients.map(r=>({...r.data,id:r.id,_updated:r.updated_at}));
-      clInit();
-    }
+    try{
+      const {data:dbClients,error:ce}=await sb.from('clients').select('*').order('created_at',{ascending:false});
+      if(!ce&&dbClients&&dbClients.length>0){
+        clients=dbClients.map(r=>({...r.data,id:r.id,_updated:r.updated_at}));
+        clInit();
+      }
+      // If empty, keep sample data but show empty state message
+    }catch(e){console.warn('clients load error:',e);}
     // Load pipeline
-    const {data:dbPipeline,error:pe}=await sb.from('pipeline').select('*').order('created_at',{ascending:false});
-    if(!pe&&dbPipeline&&dbPipeline.length>0){
-      pipelineItems=dbPipeline.map(r=>({...r.data,id:r.id}));
-      renderPipeline();
-    }
+    try{
+      const {data:dbPipeline,error:pe}=await sb.from('pipeline').select('*').order('created_at',{ascending:false});
+      if(!pe&&dbPipeline&&dbPipeline.length>0){
+        pipelineItems=dbPipeline.map(r=>({...r.data,id:r.id}));
+        renderPipeline();
+      }
+    }catch(e){console.warn('pipeline load error:',e);}
     // Load tasks
-    const {data:dbTasks,error:te}=await sb.from('tasks').select('*').order('created_at',{ascending:false});
-    if(!te&&dbTasks&&dbTasks.length>0){
-      tasksData=dbTasks.map(r=>({...r.data,id:r.id}));
-    }
+    try{
+      const {data:dbTasks,error:te}=await sb.from('tasks').select('*').order('created_at',{ascending:false});
+      if(!te&&dbTasks&&dbTasks.length>0){
+        tasksData=dbTasks.map(r=>({...r.data,id:r.id}));
+      }
+    }catch(e){console.warn('tasks load error:',e);}
     showSyncIndicator('ok');
   }catch(e){
     console.warn('Sync error:',e);
