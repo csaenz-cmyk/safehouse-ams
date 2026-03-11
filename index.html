@@ -2342,10 +2342,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
                     <span class="info-value" id="pv_street" style="font-size:12px;font-weight:600">—</span>
                     <span id="pv_cityStateZip" style="font-size:12px;color:var(--text3)">—</span>
                     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:2px">
-                      <a href="https://maps.google.com/?q=1423+Mesa+Hills+Dr+El+Paso+TX+79912" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--accent);text-decoration:none;padding:3px 8px;background:var(--accent-light);border-radius:5px;border:1px solid #C7D7FF">
+                      <a id="iem_mapsLink" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--accent);text-decoration:none;padding:3px 8px;background:var(--accent-light);border-radius:5px;border:1px solid #C7D7FF">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Map
                       </a>
-                      <a href="https://www.zillow.com/homes/1423-Mesa-Hills-Dr-El-Paso-TX-79912_rb/" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--orange);text-decoration:none;padding:3px 8px;background:var(--orange-light);border-radius:5px;border:1px solid #FED7AA">
+                      <a id="iem_zillowLink" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--orange);text-decoration:none;padding:3px 8px;background:var(--orange-light);border-radius:5px;border:1px solid #FED7AA">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Zillow
                       </a>
                       <a href="https://www.taxnetusa.com/login.php" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--purple);text-decoration:none;padding:3px 8px;background:var(--purple-light);border-radius:5px;border:1px solid #E8DEFF">
@@ -2498,7 +2498,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
               Quotes <span class="tab-count" id="tc_quotes">0</span>
             </button>
-            <button class="tab-btn" onclick="profileShowTab('tasks')">
+            <button class="tab-btn" onclick="profileShowTab('tasks');if(typeof renderTasksInProfileTab==='function')renderTasksInProfileTab()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
               Tasks <span class="tab-count" id="tc_tasks">0</span>
             </button>
@@ -2510,7 +2510,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               SMS <span class="tab-count" id="tc_sms">0</span>
             </button>
-            <button class="tab-btn" onclick="profileShowTab('email')">
+            <button class="tab-btn" onclick="profileShowTab('email');if(gmailAccessToken)loadClientEmails()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               Emails <span class="tab-count" id="tc_emails">0</span>
             </button>
@@ -2522,7 +2522,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
               Documents <span class="tab-count" id="tc_docs">0</span>
             </button>
-            <button class="tab-btn" onclick="profileShowTab('notas')">
+            <button class="tab-btn" onclick="profileShowTab('notas');if(typeof renderClientNotes==='function')renderClientNotes()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
               Notes <span class="tab-count" id="tc_notes">0</span>
             </button>
@@ -3909,7 +3909,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       </div>
       <div style="flex:1">
         <div style="font-size:15px;font-weight:700;color:var(--text)">Edit Client Information</div>
-        <div style="font-size:11px;color:var(--text4)" id="iemHeaderSub">María López Hernández · #CLT-00412</div>
+        <div style="font-size:11px;color:var(--text4)" id="iemHeaderSub">New client</div>
       </div>
       <button class="icon-btn" onclick="closeInfoEditModal()" style="border:1px solid var(--border2)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -3935,22 +3935,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           </div>
           <div class="form-field">
             <label class="form-label">First Name <span class="req">*</span></label>
-            <input class="form-input" id="iem_firstName" value="María">
+            <input class="form-input" id="iem_firstName">
           </div>
           <div class="form-field">
             <label class="form-label">Middle Initial</label>
-            <input class="form-input" id="iem_mi" value="M." style="text-align:center">
+            <input class="form-input" id="iem_mi" style="text-align:center">
           </div>
           <div class="form-field">
             <label class="form-label">Last Name <span class="req">*</span></label>
-            <input class="form-input" id="iem_lastName" value="López">
+            <input class="form-input" id="iem_lastName">
           </div>
         </div>
         <!-- Row 2: Name cont + identity -->
         <div class="iem-row-4">
           <div class="form-field">
             <label class="form-label">2nd Last Name</label>
-            <input class="form-input" id="iem_lastName2" value="Hernández">
+            <input class="form-input" id="iem_lastName2">
           </div>
           <div class="form-field">
             <label class="form-label">Suffix</label>
@@ -3977,7 +3977,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           </div>
           <div class="form-field">
             <label class="form-label">Date of Birth <span class="req">*</span></label>
-            <input type="date" class="form-input" id="iem_dob" value="1985-03-14">
+            <input type="date" class="form-input" id="iem_dob">
           </div>
           <div class="form-field">
             <label class="form-label">Marital Status</label>
@@ -4010,7 +4010,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           </div>
           <!-- Dynamic ID fields — shown based on type -->
           <div id="iem_idFields-dl-us" class="id-fields-group" style="display:contents">
-            <div class="form-field"><label class="form-label">DL Number <span class="req">*</span></label><input class="form-input" id="iem_dlNum" value="TX-DL-8842917" style="font-family:'DM Mono',monospace"></div>
+            <div class="form-field"><label class="form-label">DL Number <span class="req">*</span></label><input class="form-input" id="iem_dlNum" id="iem_dlNum" style="font-family:'DM Mono',monospace"></div>
             <div class="form-field"><label class="form-label">DL Status</label><select class="form-select" id="iem_dlStatus"><option>Valid</option><option>Expired</option><option>Suspended</option><option>Revoked</option></select></div>
             <div class="form-field"><label class="form-label">State Issued</label><select class="form-select" id="iem_dlState"><option>Texas</option><option>California</option><option>Florida</option><option>New York</option><option>Arizona</option><option>New Mexico</option><option>Nevada</option><option>Other</option></select></div>
           </div>
@@ -4062,11 +4062,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           </div>
           <div class="form-field">
             <label class="form-label">Occupation</label>
-            <input class="form-input" id="iem_occupation" value="Registered Nurse">
+            <input class="form-input" id="iem_occupation">
           </div>
           <div class="form-field">
             <label class="form-label">Years at Job</label>
-            <input class="form-input" id="iem_yearsJob" type="number" value="3" min="0">
+            <input class="form-input" id="iem_yearsJob" type="number" min="0">
           </div>
           <div class="form-field">
             <label class="form-label">Education</label>
@@ -4097,7 +4097,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           </div>
           <div class="form-field">
             <label class="form-label">Customer Since</label>
-            <input type="date" class="form-input" id="iem_customerSince" value="2025-01-15">
+            <input type="date" class="form-input" id="iem_customerSince">
           </div>
         </div>
       </div>
@@ -4116,24 +4116,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           </div>
           <div class="form-field" style="grid-column:span 2;position:relative">
             <label class="form-label">Street Address <span class="req">*</span></label>
-            <input class="form-input" id="iem_street" value="1423 Mesa Hills Dr" oninput="iemAddrAutocomplete(this.value)">
+            <input class="form-input" id="iem_street" oninput="iemAddrAutocomplete(this.value)">
             <div id="iem_addrSugg" style="display:none;position:absolute;z-index:300;background:white;border:1px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow-md);width:100%;top:calc(100% + 2px);overflow:hidden"></div>
           </div>
           <div class="form-field"><label class="form-label">Unit / Apt</label><input class="form-input" id="iem_unit" placeholder="Unit"></div>
         </div>
         <div class="iem-row-4">
           <div class="form-field"><label class="form-label">Address Line 2</label><input class="form-input" placeholder="Address Line 2"></div>
-          <div class="form-field"><label class="form-label">City <span class="req">*</span></label><input class="form-input" id="iem_city" value="El Paso"></div>
+          <div class="form-field"><label class="form-label">City <span class="req">*</span></label><input class="form-input" id="iem_city"></div>
           <div class="form-field"><label class="form-label">State <span class="req">*</span></label><select class="form-select" id="iem_state"><option>TX</option><option>CA</option><option>FL</option><option>NM</option><option>AZ</option><option>NV</option><option>CO</option><option>NY</option><option>Other</option></select></div>
-          <div class="form-field"><label class="form-label">Postal Code <span class="req">*</span></label><input class="form-input" id="iem_zip" value="79912" style="font-family:'DM Mono',monospace" maxlength="10"></div>
+          <div class="form-field"><label class="form-label">Postal Code <span class="req">*</span></label><input class="form-input" id="iem_zip" style="font-family:'DM Mono',monospace" maxlength="10"></div>
         </div>
         <div class="iem-row-4">
-          <div class="form-field"><label class="form-label">County</label><input class="form-input" value="El Paso"></div>
-          <div class="form-field"><label class="form-label">Years at Address</label><input class="form-input" type="number" value="4" min="0"></div>
-          <div class="form-field"><label class="form-label">Months at Address</label><input class="form-input" type="number" value="0" min="0" max="11"></div>
+          <div class="form-field"><label class="form-label">County</label><input class="form-input" id="iem_county" placeholder="County"></div>
+          <div class="form-field"><label class="form-label">Years at Address</label><input class="form-input" id="iem_yearsAddr" type="number" min="0" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Months at Address</label><input class="form-input" id="iem_monthsAddr" type="number" min="0" max="11" placeholder="0"></div>
           <div class="form-field" style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap">
-            <a href="https://maps.google.com/?q=1423+Mesa+Hills+Dr+El+Paso+TX+79912" target="_blank" class="iem-link-btn accent">📍 Maps</a>
-            <a href="https://www.zillow.com/homes/1423-Mesa-Hills-Dr-El-Paso-TX-79912_rb/" target="_blank" class="iem-link-btn orange">🏠 Zillow</a>
+            <a id="iem_mapsLink" href="#" target="_blank" class="iem-link-btn accent">📍 Maps</a>
+            <a id="iem_zillowLink" href="#" target="_blank" class="iem-link-btn orange">🏠 Zillow</a>
             <a href="https://www.taxnetusa.com/login.php" target="_blank" class="iem-link-btn purple">🔍 TaxNet</a>
           </div>
         </div>
@@ -4170,14 +4170,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           Spouse / Household Member
         </div>
         <div class="iem-row-4">
-          <div class="form-field"><label class="form-label">First Name</label><input class="form-input" id="iem_spFirstName" value="Jorge"></div>
-          <div class="form-field"><label class="form-label">M.I.</label><input class="form-input" id="iem_spMi" value="A." style="text-align:center"></div>
-          <div class="form-field"><label class="form-label">Last Name</label><input class="form-input" id="iem_spLastName" value="López"></div>
+          <div class="form-field"><label class="form-label">First Name</label><input class="form-input" id="iem_spFirstName" placeholder="First name"></div>
+          <div class="form-field"><label class="form-label">M.I.</label><input class="form-input" id="iem_spMi" style="text-align:center" placeholder="M.I."></div>
+          <div class="form-field"><label class="form-label">Last Name</label><input class="form-input" id="iem_spLastName" placeholder="Last name"></div>
           <div class="form-field"><label class="form-label">Gender</label><select class="form-select" id="iem_spGender"><option>Male</option><option>Female</option><option>Other</option></select></div>
         </div>
         <div class="iem-row-4">
-          <div class="form-field"><label class="form-label">Date of Birth</label><input type="date" class="form-input" id="iem_spDob" value="1983-08-22"></div>
-          <div class="form-field"><label class="form-label">Occupation</label><input class="form-input" id="iem_spOccupation" value="Construction Manager"></div>
+          <div class="form-field"><label class="form-label">Date of Birth</label><input type="date" class="form-input" id="iem_spDob"></div>
+          <div class="form-field"><label class="form-label">Occupation</label><input class="form-input" id="iem_spOccupation" placeholder="Occupation"></div>
           <div class="form-field">
             <label class="form-label">ID Type</label>
             <select class="form-select" id="iem_spIdType" onchange="iemUpdateSpouseId(this.value)">
@@ -4187,7 +4187,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
             </select>
           </div>
           <div id="iem_spIdWrap" style="display:contents">
-            <div class="form-field"><label class="form-label">Passport Number</label><input class="form-input" value="MX-84729310" style="font-family:'DM Mono',monospace"></div>
+            <div class="form-field"><label class="form-label">Passport Number</label><input class="form-input" id="iem_spPassportNum" placeholder="Passport #" style="font-family:'DM Mono',monospace"></div>
           </div>
         </div>
       </div>
@@ -4280,140 +4280,211 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 <!-- NEW CLIENT MODAL -->
-<div class="modal-overlay" id="newClientModal">
-  <div class="modal modal-xl">
-    <div class="modal-header">
-      <div class="card-icon" style="background:var(--accent-light);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" width="15" height="15"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg></div>
-      <div class="modal-title">New Client</div>
-      <button class="modal-close" onclick="closeNewClientModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+<div class="modal-overlay" id="newClientModal" style="align-items:stretch;padding:0">
+  <div style="width:100%;max-width:900px;margin:0 auto;background:white;height:100%;display:flex;flex-direction:column;border-left:1px solid var(--border);border-right:1px solid var(--border)">
+    <div style="padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;background:white">
+      <div style="width:34px;height:34px;border-radius:9px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700;color:var(--text)">New Client</div>
+        <div style="font-size:11px;color:var(--text4)">Fill in the client information below</div>
+      </div>
+      <button class="icon-btn" onclick="closeNewClientModal()" style="border:1px solid var(--border2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
-    <div class="modal-body">
-      <!-- Personal Info -->
-      <div class="form-section">
-        <div class="form-section-title">Personal Information</div>
-        <div class="form-row-3" style="margin-bottom:10px">
-          <div class="form-field"><label class="form-label">First Name *</label><input class="form-input" id="nc_first" placeholder="First name"></div>
-          <div class="form-field"><label class="form-label">Last Name *</label><input class="form-input" id="nc_last" placeholder="Last name"></div>
-          <div class="form-field"><label class="form-label">Maternal Last Name</label><input class="form-input" id="nc_last2" placeholder="2nd last name"></div>
-        </div>
-        <div class="form-row" style="margin-bottom:10px">
-          <div class="form-field"><label class="form-label">Date of Birth</label><input class="form-input" id="nc_dob" type="date"></div>
-          <div class="form-field"><label class="form-label">Gender</label><select class="form-select" id="nc_gender"><option value="">— Select —</option><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select></div>
-        </div>
-        <div class="form-row" style="margin-bottom:10px">
-          <div class="form-field">
-            <label class="form-label">Marital Status</label>
-            <select class="form-select" id="nc_marital" onchange="toggleSpouseSection()"><option value="">— Select —</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option><option>Domestic Partner</option></select>
-          </div>
-          <div class="form-field"><label class="form-label">SSN (Last 4)</label><input class="form-input" id="nc_ssn" placeholder="XXXX" maxlength="4"></div>
-        </div>
-        <!-- ID Info (moved here from Professional) -->
-        <div class="form-row" style="margin-bottom:10px">
-          <div class="form-field"><label class="form-label">ID Type</label><select class="form-select" id="nc_id_type"><option value="">— Select —</option><option>TX Driver License</option><option>Other State DL</option><option>Passport</option><option>State ID</option><option>International ID / Matricula</option><option>Other</option></select></div>
-          <div class="form-field"><label class="form-label">ID Number</label><input class="form-input" id="nc_id_num" placeholder="ID number"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-field"><label class="form-label">ID Expiration</label><input class="form-input" id="nc_id_exp" type="date"></div>
-          <div class="form-field"><label class="form-label">ID State / Country</label><input class="form-input" id="nc_id_state" placeholder="e.g. TX, Mexico"></div>
-        </div>
+    <div style="flex:1;overflow-y:auto">
 
-        <!-- Spouse/Co-insured section — shown when Married or Domestic Partner -->
-        <div id="spouseSection" style="display:none;margin-top:14px">
-          <div class="spouse-section">
-            <div class="spouse-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Spouse / Co-Insured Information</div>
-            <div class="form-row" style="margin-bottom:10px">
-              <div class="form-field"><label class="form-label">Spouse First Name</label><input class="form-input" id="sp_first" placeholder="First name"></div>
-              <div class="form-field"><label class="form-label">Spouse Last Name</label><input class="form-input" id="sp_last" placeholder="Last name"></div>
-            </div>
-            <div class="form-row" style="margin-bottom:10px">
-              <div class="form-field"><label class="form-label">Date of Birth</label><input class="form-input" id="sp_dob" type="date"></div>
-              <div class="form-field"><label class="form-label">SSN (Last 4)</label><input class="form-input" id="sp_ssn" placeholder="XXXX" maxlength="4"></div>
-            </div>
-            <div class="form-row">
-              <div class="form-field"><label class="form-label">ID Type</label><select class="form-select" id="sp_id_type"><option value="">— Select —</option><option>TX Driver License</option><option>Other State DL</option><option>Passport</option><option>State ID</option><option>International ID / Matricula</option><option>Other</option></select></div>
-              <div class="form-field"><label class="form-label">ID Number</label><input class="form-input" id="sp_id_num" placeholder="ID number"></div>
-            </div>
+      <!-- APPLICANT INFO -->
+      <div class="iem-flat-section">
+        <div class="iem-flat-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>
+          Applicant Info
+        </div>
+        <div class="iem-row-4">
+          <div class="form-field"><label class="form-label">Prefix</label><select class="form-select" id="nc_prefix"><option value="">—</option><option>Mr.</option><option>Mrs.</option><option>Ms.</option><option>Dr.</option></select></div>
+          <div class="form-field"><label class="form-label">First Name <span class="req">*</span></label><input class="form-input" id="nc_firstName" placeholder="First name"></div>
+          <div class="form-field"><label class="form-label">Middle Initial</label><input class="form-input" id="nc_mi" style="text-align:center" placeholder="M.I."></div>
+          <div class="form-field"><label class="form-label">Last Name <span class="req">*</span></label><input class="form-input" id="nc_lastName" placeholder="Last name"></div>
+        </div>
+        <div class="iem-row-4">
+          <div class="form-field"><label class="form-label">2nd Last Name</label><input class="form-input" id="nc_lastName2" placeholder="Maternal last name"></div>
+          <div class="form-field"><label class="form-label">Suffix</label><select class="form-select" id="nc_suffix"><option value="">—</option><option>Jr.</option><option>Sr.</option><option>II</option><option>III</option></select></div>
+          <div class="form-field"><label class="form-label">Maiden Name</label><input class="form-input" id="nc_maiden" placeholder=""></div>
+          <div class="form-field"><label class="form-label">Nickname</label><input class="form-input" id="nc_nickname" placeholder=""></div>
+        </div>
+        <div class="iem-row-4">
+          <div class="form-field"><label class="form-label">Gender <span class="req">*</span></label><select class="form-select" id="nc_gender"><option value="">— Select —</option><option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option></select></div>
+          <div class="form-field"><label class="form-label">Date of Birth <span class="req">*</span></label><input type="date" class="form-input" id="nc_dob"></div>
+          <div class="form-field"><label class="form-label">Marital Status</label><select class="form-select" id="nc_marital" onchange="ncMaritalChange(this.value)"><option value="">— Select —</option><option value="single">Single</option><option value="married">Married</option><option value="divorced">Divorced</option><option value="widowed">Widowed</option><option value="domestic">Domestic Partner</option></select></div>
+          <div class="form-field"><label class="form-label">SSN (last 4)</label><input class="form-input" id="nc_ssn" placeholder="●●●●" maxlength="4" style="font-family:'DM Mono',monospace;letter-spacing:.15em"></div>
+        </div>
+        <div class="iem-row-4" style="align-items:start">
+          <div class="form-field"><label class="form-label">ID Type <span class="req">*</span></label><select class="form-select" id="nc_idType" onchange="ncUpdateIdFields(this.value)"><option value="dl-us" selected>DL — U.S. State</option><option value="dl-intl">DL — International</option><option value="passport">Passport</option><option value="state-id">State ID</option><option value="intl-id">International ID</option><option value="prc">Permanent Residency Card</option><option value="other">Other</option></select></div>
+          <div id="nc_idFields-dl-us" class="nc-id-group" style="display:contents">
+            <div class="form-field"><label class="form-label">DL Number <span class="req">*</span></label><input class="form-input" id="nc_dlNum" placeholder="TX-DL-0000000" style="font-family:'DM Mono',monospace"></div>
+            <div class="form-field"><label class="form-label">DL Status</label><select class="form-select" id="nc_dlStatus"><option>Valid</option><option>Expired</option><option>Suspended</option><option>Revoked</option></select></div>
+            <div class="form-field"><label class="form-label">State Issued</label><select class="form-select" id="nc_dlState"><option>Texas</option><option>California</option><option>Florida</option><option>New York</option><option>Arizona</option><option>New Mexico</option><option>Nevada</option><option>Other</option></select></div>
+          </div>
+          <div id="nc_idFields-dl-intl" class="nc-id-group" style="display:none">
+            <div class="form-field"><label class="form-label">License # <span class="req">*</span></label><input class="form-input" placeholder="Intl DL #" style="font-family:'DM Mono',monospace"></div>
+            <div class="form-field"><label class="form-label">Country</label><input class="form-input" placeholder="Country"></div>
+            <div class="form-field"><label class="form-label">Expiration</label><input type="date" class="form-input"></div>
+          </div>
+          <div id="nc_idFields-passport" class="nc-id-group" style="display:none">
+            <div class="form-field"><label class="form-label">Passport # <span class="req">*</span></label><input class="form-input" id="nc_passportNum" placeholder="Passport #" style="font-family:'DM Mono',monospace"></div>
+            <div class="form-field"><label class="form-label">Country Issued</label><input class="form-input" id="nc_passportCountry" placeholder="Country"></div>
+            <div class="form-field"><label class="form-label">Expiration</label><input type="date" class="form-input" id="nc_passportExp"></div>
+          </div>
+          <div id="nc_idFields-state-id" class="nc-id-group" style="display:none">
+            <div class="form-field"><label class="form-label">ID # <span class="req">*</span></label><input class="form-input" placeholder="State ID #" style="font-family:'DM Mono',monospace"></div>
+            <div class="form-field"><label class="form-label">State Issued</label><select class="form-select"><option>Texas</option><option>California</option><option>Other</option></select></div>
+            <div></div>
+          </div>
+          <div id="nc_idFields-intl-id" class="nc-id-group" style="display:none">
+            <div class="form-field"><label class="form-label">ID # <span class="req">*</span></label><input class="form-input" placeholder="ID #" style="font-family:'DM Mono',monospace"></div>
+            <div class="form-field"><label class="form-label">Country</label><input class="form-input" placeholder="Country"></div>
+            <div></div>
+          </div>
+          <div id="nc_idFields-prc" class="nc-id-group" style="display:none">
+            <div class="form-field"><label class="form-label">A-Number <span class="req">*</span></label><input class="form-input" placeholder="A-000000000" style="font-family:'DM Mono',monospace"></div>
+            <div class="form-field"><label class="form-label">Card Expiration</label><input type="date" class="form-input"></div>
+            <div></div>
+          </div>
+          <div id="nc_idFields-other" class="nc-id-group" style="display:none">
+            <div class="form-field"><label class="form-label">ID Description</label><input class="form-input" placeholder="Type of ID"></div>
+            <div class="form-field"><label class="form-label">ID Number</label><input class="form-input" placeholder="#" style="font-family:'DM Mono',monospace"></div>
+            <div></div>
           </div>
         </div>
       </div>
 
-      <!-- Contact Info -->
-      <div class="form-section">
-        <div class="form-section-title">Contact Information</div>
-        <div style="margin-bottom:10px">
-          <label class="form-label" style="margin-bottom:6px;display:block">Phone(s) *</label>
-          <div id="phoneFields">
-            <div class="multi-field-row">
-              <input class="form-input" placeholder="(915) 000-0000" name="nc_phone[]">
-              <select class="form-select" style="width:100px;flex-shrink:0"><option>Mobile</option><option>Home</option><option>Work</option></select>
-              <button class="multi-add-btn" onclick="addPhoneField()" title="Add phone">+</button>
-            </div>
-          </div>
+      <!-- PROFESSIONAL -->
+      <div class="iem-flat-section">
+        <div class="iem-flat-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          Professional & Contact
         </div>
-        <div style="margin-bottom:10px">
-          <label class="form-label" style="margin-bottom:6px;display:block">Email(s)</label>
-          <div id="emailFields">
-            <div class="multi-field-row">
-              <input class="form-input" type="email" placeholder="email@example.com" name="nc_email[]">
-              <select class="form-select" style="width:100px;flex-shrink:0"><option>Personal</option><option>Work</option></select>
-              <button class="multi-add-btn" onclick="addEmailField()" title="Add email">+</button>
-            </div>
-          </div>
+        <div class="iem-row-4">
+          <div class="form-field"><label class="form-label">Industry</label><select class="form-select" id="nc_industry"><option value="">— Select —</option><option>Healthcare</option><option>Education</option><option>Construction</option><option>Technology</option><option>Retail</option><option>Finance</option><option>Government</option><option>Transportation</option><option>Hospitality</option><option>Self-Employed</option><option>Other</option></select></div>
+          <div class="form-field"><label class="form-label">Occupation</label><input class="form-input" id="nc_occupation" placeholder="e.g. Nurse, Driver"></div>
+          <div class="form-field"><label class="form-label">Years at Job</label><input class="form-input" id="nc_yearsJob" type="number" min="0" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Education</label><select class="form-select" id="nc_education"><option value="">— Select —</option><option>High School</option><option>Some College</option><option>Associate's</option><option>Bachelor's Degree</option><option>Master's</option><option>Doctorate</option><option>Other</option></select></div>
         </div>
-        <div class="form-row">
-          <div class="form-field"><label class="form-label">Preferred Language</label><select class="form-select" id="nc_lang"><option>Spanish</option><option>English</option><option>Both</option></select></div>
-          <div class="form-field"><label class="form-label">Best Time to Contact</label><select class="form-select" id="nc_contact_time"><option value="">— Any time —</option><option>Morning (8am–12pm)</option><option>Afternoon (12pm–5pm)</option><option>Evening (5pm–8pm)</option></select></div>
+        <div class="iem-row-4">
+          <div class="form-field"><label class="form-label">Preferred Language</label><select class="form-select" id="nc_language"><option value="">— Select —</option><option>Spanish</option><option>English</option><option>Both</option><option>Other</option></select></div>
+          <div class="form-field"><label class="form-label">Applicant Type</label><select class="form-select" id="nc_appType"><option>Lead</option><option>Active Client</option><option>Prospect</option><option>Inactive</option></select></div>
+          <div class="form-field"><label class="form-label">Lead Source</label><select class="form-select" id="nc_source"><option value="">— Select —</option><option>Referral</option><option>Walk-in</option><option>Facebook Ad</option><option>Google Ad</option><option>Phone Call</option><option>Returning Client</option><option>Agent Outreach</option><option>Other</option></select></div>
+          <div class="form-field"><label class="form-label">Customer Since</label><input type="date" class="form-input" id="nc_customerSince"></div>
         </div>
       </div>
 
-      <!-- Address -->
-      <div class="form-section">
-        <div class="form-section-title">Address</div>
-        <div class="form-field" style="margin-bottom:10px">
-          <label class="form-label">Street Address</label>
-          <input class="form-input" id="nc_street" placeholder="Start typing address…" autocomplete="off">
-          <div style="font-size:10px;color:var(--text4);margin-top:3px">💡 Suggestions appear as you type</div>
+      <!-- ADDRESS -->
+      <div class="iem-flat-section">
+        <div class="iem-flat-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Primary Address
         </div>
-        <div class="form-row-3" style="margin-bottom:10px">
-          <div class="form-field"><label class="form-label">City</label><input class="form-input" id="nc_city" placeholder="El Paso"></div>
-          <div class="form-field"><label class="form-label">State</label><select class="form-select" id="nc_state"><option>TX</option><option>NM</option><option>CA</option><option>FL</option><option>AZ</option><option>CO</option><option>NY</option><option>Other</option></select></div>
-          <div class="form-field"><label class="form-label">ZIP</label><input class="form-input" id="nc_zip" placeholder="79912" maxlength="5"></div>
+        <div class="iem-row-4" style="align-items:end">
+          <div class="form-field"><label class="form-label">Address Type</label><select class="form-select"><option>Home</option><option>Mailing</option><option>Business</option></select></div>
+          <div class="form-field" style="grid-column:span 2;position:relative">
+            <label class="form-label">Street Address <span class="req">*</span></label>
+            <input class="form-input" id="nc_street" placeholder="Start typing address…" autocomplete="off" oninput="ncAddrAutocomplete(this.value)">
+            <div id="nc_addrSugg" style="display:none;position:absolute;z-index:300;background:white;border:1px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow-md);width:100%;top:calc(100% + 2px);overflow:hidden"></div>
+          </div>
+          <div class="form-field"><label class="form-label">Unit / Apt</label><input class="form-input" id="nc_unit" placeholder="Unit"></div>
         </div>
-        <div class="form-row">
-          <div class="form-field"><label class="form-label">Apt / Unit</label><input class="form-input" id="nc_apt" placeholder="Apt #, Suite, etc."></div>
+        <div class="iem-row-4">
+          <div class="form-field"><label class="form-label">Address Line 2</label><input class="form-input" placeholder="Address Line 2"></div>
+          <div class="form-field"><label class="form-label">City <span class="req">*</span></label><input class="form-input" id="nc_city" placeholder="El Paso"></div>
+          <div class="form-field"><label class="form-label">State <span class="req">*</span></label><select class="form-select" id="nc_state"><option>TX</option><option>CA</option><option>FL</option><option>NM</option><option>AZ</option><option>NV</option><option>CO</option><option>NY</option><option>Other</option></select></div>
+          <div class="form-field"><label class="form-label">Postal Code <span class="req">*</span></label><input class="form-input" id="nc_zip" placeholder="79912" style="font-family:'DM Mono',monospace" maxlength="10"></div>
+        </div>
+        <div class="iem-row-4">
           <div class="form-field"><label class="form-label">County</label><input class="form-input" id="nc_county" placeholder="El Paso County" readonly style="background:var(--surface2)"></div>
+          <div class="form-field"><label class="form-label">Years at Address</label><input class="form-input" id="nc_yearsAddr" type="number" min="0" placeholder="0"></div>
+          <div class="form-field"><label class="form-label">Months at Address</label><input class="form-input" id="nc_monthsAddr" type="number" min="0" max="11" placeholder="0"></div>
+          <div></div>
         </div>
       </div>
 
-      <!-- Professional Info -->
-      <div class="form-section">
-        <div class="form-section-title">Professional Information</div>
-        <div class="form-row" style="margin-bottom:10px">
-          <div class="form-field"><label class="form-label">Occupation</label><input class="form-input" id="nc_occupation" placeholder="e.g. Nurse, Teacher, Driver"></div>
-          <div class="form-field"><label class="form-label">Industry</label><select class="form-select" id="nc_industry"><option value="">— Select —</option><option>Healthcare</option><option>Construction</option><option>Education</option><option>Transportation</option><option>Retail</option><option>Government</option><option>Food Service</option><option>Self-Employed</option><option>Military</option><option>Other</option></select></div>
+      <!-- PHONES -->
+      <div class="iem-flat-section">
+        <div class="iem-flat-title" style="justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:7px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.87a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91A16 16 0 0013.91 16l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            Phone Numbers
+          </div>
+          <button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 10px" onclick="ncAddPhone()">+ Add Phone</button>
         </div>
-        <div class="form-row">
-          <div class="form-field"><label class="form-label">Employer</label><input class="form-input" id="nc_employer" placeholder="Company / Employer name"></div>
-          <div class="form-field"><label class="form-label">Years at Job</label><select class="form-select" id="nc_job_years"><option value="">— Select —</option><option>Less than 1 year</option><option>1–2 years</option><option>3–5 years</option><option>5+ years</option></select></div>
+        <div id="nc_phonesList" style="display:flex;flex-direction:column;gap:8px">
+          <div class="iem-phone-row">
+            <input class="form-input" placeholder="(915) 000-0000" id="nc_phone_0" style="flex:1">
+            <select class="form-select" style="width:110px;flex-shrink:0" id="nc_phoneLabel_0"><option>Mobile</option><option>Home</option><option>Work</option><option>Other</option></select>
+            <label style="font-size:11px;display:flex;align-items:center;gap:4px;white-space:nowrap"><input type="radio" name="nc_primaryPhone" value="0" checked> Primary</label>
+          </div>
         </div>
       </div>
 
-      <!-- Assignment -->
-      <div class="form-section">
-        <div class="form-section-title">Assignment & Lead</div>
-        <div class="form-row" style="margin-bottom:10px">
-          <div class="form-field"><label class="form-label">Assigned Agent *</label><select class="form-select" id="nc_agent"><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select></div>
-          <div class="form-field"><label class="form-label">Status</label><select class="form-select" id="nc_status"><option>Active Client</option><option>Lead</option><option>Prospect</option></select></div>
+      <!-- EMAILS -->
+      <div class="iem-flat-section">
+        <div class="iem-flat-title" style="justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:7px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email Addresses
+          </div>
+          <button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 10px" onclick="ncAddEmail()">+ Add Email</button>
         </div>
-        <div class="form-row">
-          <div class="form-field"><label class="form-label">Lead Source</label><select class="form-select" id="nc_source"><option value="">— Select —</option><option>Referral</option><option>Walk-in</option><option>Phone Call</option><option>Website</option><option>Facebook</option><option>Google Ads</option><option>TikTok</option><option>Other</option></select></div>
+        <div id="nc_emailsList" style="display:flex;flex-direction:column;gap:8px">
+          <div class="iem-email-row">
+            <input class="form-input" type="email" placeholder="email@example.com" id="nc_email_0" style="flex:1">
+            <select class="form-select" style="width:110px;flex-shrink:0" id="nc_emailLabel_0"><option>Personal</option><option>Work</option><option>Other</option></select>
+            <label style="font-size:11px;display:flex;align-items:center;gap:4px;white-space:nowrap"><input type="radio" name="nc_primaryEmail" value="0" checked> Primary</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPOUSE -->
+      <div class="iem-flat-section" id="ncSpouseSection" style="display:none">
+        <div class="iem-flat-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Spouse / Household Member
+        </div>
+        <div class="iem-row-4">
+          <div class="form-field"><label class="form-label">First Name</label><input class="form-input" id="nc_spFirstName" placeholder="First name"></div>
+          <div class="form-field"><label class="form-label">M.I.</label><input class="form-input" id="nc_spMi" style="text-align:center" placeholder="M.I."></div>
+          <div class="form-field"><label class="form-label">Last Name</label><input class="form-input" id="nc_spLastName" placeholder="Last name"></div>
+          <div class="form-field"><label class="form-label">Gender</label><select class="form-select" id="nc_spGender"><option value="">— Select —</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+        </div>
+        <div class="iem-row-4">
+          <div class="form-field"><label class="form-label">Date of Birth</label><input type="date" class="form-input" id="nc_spDob"></div>
+          <div class="form-field"><label class="form-label">Occupation</label><input class="form-input" id="nc_spOccupation" placeholder="Occupation"></div>
+          <div class="form-field"><label class="form-label">ID Type</label><select class="form-select" id="nc_spIdType"><option value="dl-us">DL — U.S.</option><option value="passport">Passport</option><option value="dl-intl">DL — Intl</option><option value="state-id">State ID</option><option value="prc">PRC</option><option value="other">Other</option></select></div>
+          <div class="form-field"><label class="form-label">ID Number</label><input class="form-input" id="nc_spIdNum" placeholder="ID #" style="font-family:'DM Mono',monospace"></div>
+        </div>
+      </div>
+
+      <!-- ASSIGNMENT -->
+      <div class="iem-flat-section">
+        <div class="iem-flat-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Assignment & Internal
+        </div>
+        <div class="iem-row-4">
+          <div class="form-field"><label class="form-label">Assigned Agent <span class="req">*</span></label><select class="form-select" id="nc_agent"><option value="">— Select —</option><option>Christian Saenz</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select></div>
           <div class="form-field"><label class="form-label">Notes</label><input class="form-input" id="nc_notes" placeholder="Additional notes…"></div>
+          <div></div><div></div>
         </div>
       </div>
+
     </div>
     <div class="modal-footer">
-      <button class="topbar-btn btn-outline" onclick="closeNewClientModal()">Cancel</button>
-      <button class="topbar-btn btn-primary" onclick="confirmNewClient()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Client</button>
+      <button class="topbar-btn btn-ghost" onclick="closeNewClientModal()">Cancel</button>
+      <button class="topbar-btn btn-primary" onclick="confirmNewClient()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Create Client
+      </button>
     </div>
   </div>
 </div>
@@ -4836,6 +4907,8 @@ function openProfileView(clientId) {
   showView('profile', document.getElementById('nav-clients'));
   profileShowTab('overview');
   if (typeof renderProductFunnel === 'function') setTimeout(renderProductFunnel, 100);
+  if (typeof renderClientNotes === 'function') setTimeout(renderClientNotes, 50);
+  if (typeof renderTasksInProfileTab === 'function') setTimeout(renderTasksInProfileTab, 50);
   if (gmailAccessToken) setTimeout(loadClientEmails, 300);
 }
 function closeProfileView() {
@@ -5037,7 +5110,11 @@ function confirmAddTask(){
 }
 function toggleTaskDone(id){
   const t=tasksData.find(x=>x.id===id);
-  if(t){t.done=!t.done;renderTasksPanel();}
+  if(t){
+    t.done=!t.done;
+    if(supaReady) sb.from('tasks').upsert({id:String(id),data:t}).then(({error})=>{if(error)console.warn('Task update error:',error);});
+    renderTasksPanel();
+  }
 }
 function renderTasksPanel(){
   const sf=(document.getElementById('taskFilterStatus')||{}).value||'';
@@ -5640,42 +5717,152 @@ function openCallsPanel(){renderCallsPanel();openPanel('allCallsPanel');}
 // CLIENT MODAL
 // ═══════════════════════════════════════
 function openNewClientModal(){
-  document.getElementById('newClientModal').classList.add('open');
-  setTimeout(()=>{if(typeof google!=='undefined'&&google.maps)initGooglePlaces();},100);
+  document.getElementById('newClientModal').style.display = 'flex';
+  // Reset all fields
+  document.getElementById('newClientModal').querySelectorAll('input:not([type=radio]),textarea').forEach(el=>el.value='');
+  document.getElementById('newClientModal').querySelectorAll('select').forEach(el=>el.selectedIndex=0);
+  document.querySelectorAll('input[name="nc_primaryPhone"]').forEach((r,i)=>r.checked=(i===0));
+  document.querySelectorAll('input[name="nc_primaryEmail"]').forEach((r,i)=>r.checked=(i===0));
+  // Reset ID fields
+  document.querySelectorAll('.nc-id-group').forEach(g=>g.style.display='none');
+  const dlUs = document.getElementById('nc_idFields-dl-us');
+  if (dlUs) dlUs.style.display = 'contents';
+  // Set today as customer since
+  document.getElementById('nc_customerSince').value = new Date().toISOString().split('T')[0];
+  // Hide spouse section
+  const sp = document.getElementById('ncSpouseSection');
+  if (sp) sp.style.display = 'none';
 }
-function closeNewClientModal(){document.getElementById('newClientModal').classList.remove('open');}
+function closeNewClientModal(){
+  document.getElementById('newClientModal').style.display = 'none';
+}
+function ncMaritalChange(val){
+  const sp = document.getElementById('ncSpouseSection');
+  if (sp) sp.style.display = (val==='married'||val==='domestic') ? '' : 'none';
+}
+function ncUpdateIdFields(val){
+  document.querySelectorAll('.nc-id-group').forEach(g=>g.style.display='none');
+  const t = document.getElementById('nc_idFields-'+val);
+  if (t) t.style.display = 'contents';
+}
+let ncPhoneCount = 1;
+function ncAddPhone(){
+  const idx = ncPhoneCount++;
+  const row = document.createElement('div');
+  row.className = 'iem-phone-row';
+  row.innerHTML = `<input class="form-input" placeholder="(915) 000-0000" id="nc_phone_${idx}" style="flex:1">
+    <select class="form-select" style="width:110px;flex-shrink:0" id="nc_phoneLabel_${idx}"><option>Mobile</option><option>Home</option><option>Work</option><option>Other</option></select>
+    <label style="font-size:11px;display:flex;align-items:center;gap:4px;white-space:nowrap"><input type="radio" name="nc_primaryPhone" value="${idx}"> Primary</label>
+    <button onclick="this.closest('.iem-phone-row').remove()" style="background:none;border:none;color:var(--text4);cursor:pointer;font-size:16px;padding:0 4px">×</button>`;
+  document.getElementById('nc_phonesList').appendChild(row);
+}
+let ncEmailCount = 1;
+function ncAddEmail(){
+  const idx = ncEmailCount++;
+  const row = document.createElement('div');
+  row.className = 'iem-email-row';
+  row.innerHTML = `<input class="form-input" type="email" placeholder="email@example.com" id="nc_email_${idx}" style="flex:1">
+    <select class="form-select" style="width:110px;flex-shrink:0" id="nc_emailLabel_${idx}"><option>Personal</option><option>Work</option><option>Other</option></select>
+    <label style="font-size:11px;display:flex;align-items:center;gap:4px;white-space:nowrap"><input type="radio" name="nc_primaryEmail" value="${idx}"> Primary</label>
+    <button onclick="this.closest('.iem-email-row').remove()" style="background:none;border:none;color:var(--text4);cursor:pointer;font-size:16px;padding:0 4px">×</button>`;
+  document.getElementById('nc_emailsList').appendChild(row);
+}
+function ncAddrAutocomplete(val){
+  if (!val || val.length < 3 || typeof google === 'undefined') return;
+  const sugg = document.getElementById('nc_addrSugg');
+  if (!sugg) return;
+  const mock = [`${val}, El Paso, TX 79912`,`${val}, El Paso, TX 79924`,`${val}, El Paso, TX 79936`];
+  sugg.style.display = '';
+  sugg.innerHTML = mock.map(s=>`<div style="padding:9px 14px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border)" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="ncSelectAddr('${s}')">${s}</div>`).join('');
+}
+function ncSelectAddr(addr){
+  const parts = addr.split(',');
+  const s = document.getElementById('nc_street'); if(s) s.value = parts[0].trim();
+  const ci = document.getElementById('nc_city');  if(ci) ci.value = parts[1]?.trim()||'';
+  if(parts[2]){ const sv=parts[2].trim().split(' '); const st=document.getElementById('nc_state'); if(st) st.value=sv[0]||''; const zp=document.getElementById('nc_zip'); if(zp) zp.value=sv[1]||''; }
+  const sg=document.getElementById('nc_addrSugg'); if(sg) sg.style.display='none';
+}
 function confirmNewClient(){
-  const first=document.getElementById('nc_first').value.trim();
-  const last=document.getElementById('nc_last').value.trim();
+  const first = document.getElementById('nc_firstName')?.value.trim();
+  const last  = document.getElementById('nc_lastName')?.value.trim();
   if(!first||!last){showToast('First and last name are required','red');return;}
+
+  // Collect phones
+  const phones = [];
+  const primaryPhoneVal = document.querySelector('input[name="nc_primaryPhone"]:checked')?.value || '0';
+  document.querySelectorAll('#nc_phonesList .iem-phone-row, #nc_phonesList [class*="phone-row"]').forEach((row,i)=>{
+    const num = row.querySelector('input[type=text], input:not([type])');
+    const lbl = row.querySelector('select');
+    const radio = row.querySelector('input[type=radio]');
+    if (num && num.value.trim()) phones.push({ number: num.value.trim(), label: lbl?.value||'Mobile', primary: radio?.value === primaryPhoneVal });
+  });
+
+  // Collect emails
+  const emails = [];
+  const primaryEmailVal = document.querySelector('input[name="nc_primaryEmail"]:checked')?.value || '0';
+  document.querySelectorAll('#nc_emailsList .iem-email-row, #nc_emailsList [class*="email-row"]').forEach((row,i)=>{
+    const addr = row.querySelector('input[type=email]');
+    const lbl  = row.querySelector('select');
+    const radio = row.querySelector('input[type=radio]');
+    if (addr && addr.value.trim()) emails.push({ address: addr.value.trim(), label: lbl?.value||'Personal', primary: radio?.value === primaryEmailVal });
+  });
+
+  const gv = id => document.getElementById(id)?.value.trim() || '';
   clientSeq++;
-  const phones=[...document.querySelectorAll('#phoneFields input[name="nc_phone[]"]')].map((el,i)=>{const type=el.parentElement.querySelector('select');return{number:el.value,type:type?type.value:'Mobile'};}).filter(p=>p.number);
-  const emails=[...document.querySelectorAll('#emailFields input[name="nc_email[]"]')].map((el,i)=>{const type=el.parentElement.querySelector('select');return{address:el.value,type:type?type.value:'Personal'};}).filter(e=>e.address);
-  const newClient={
-    id:'CLT-00'+clientSeq,first,last,
-    phone:phones[0]?phones[0].number:'—',
-    phones,emails,
-    agent:document.getElementById('nc_agent').value,
-    status:document.getElementById('nc_status').value,
-    lobs:[],premium:0,
-    since:new Date().toISOString().split('T')[0],
-    city:document.getElementById('nc_city').value||'El Paso',
-    zip:document.getElementById('nc_zip').value,
-    street:document.getElementById('nc_street').value,
-    state:document.getElementById('nc_state').value,
-    county:document.getElementById('nc_county').value,
-    color:AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)],
-    lastViewed:new Date().toISOString(),
-    dob:document.getElementById('nc_dob').value,
-    lang:document.getElementById('nc_lang').value,
-    notes:document.getElementById('nc_notes')?document.getElementById('nc_notes').value:'',
+  const newClient = {
+    id:         'CLT-00'+clientSeq,
+    clientNum:  'CLT-00'+clientSeq,
+    prefix:     gv('nc_prefix'),
+    first,
+    mi:         gv('nc_mi'),
+    last,
+    last2:      gv('nc_lastName2'),
+    suffix:     gv('nc_suffix'),
+    maiden:     gv('nc_maiden'),
+    nickname:   gv('nc_nickname'),
+    gender:     gv('nc_gender'),
+    dob:        gv('nc_dob'),
+    marital:    gv('nc_marital'),
+    ssn:        gv('nc_ssn'),
+    idType:     gv('nc_idType'),
+    dlNum:      gv('nc_dlNum'),
+    dlStatus:   gv('nc_dlStatus'),
+    dlState:    gv('nc_dlState'),
+    industry:   gv('nc_industry'),
+    occupation: gv('nc_occupation'),
+    yearsJob:   gv('nc_yearsJob'),
+    education:  gv('nc_education'),
+    language:   gv('nc_language'),
+    status:     gv('nc_appType') || 'Lead',
+    source:     gv('nc_source'),
+    since:      gv('nc_customerSince') || new Date().toISOString().split('T')[0],
+    street:     gv('nc_street'),
+    unit:       gv('nc_unit'),
+    city:       gv('nc_city') || 'El Paso',
+    state:      gv('nc_state') || 'TX',
+    zip:        gv('nc_zip'),
+    county:     gv('nc_county'),
+    yearsAddr:  gv('nc_yearsAddr'),
+    monthsAddr: gv('nc_monthsAddr'),
+    phones,
+    emails,
+    phone:      phones[0]?.number || '—',
+    agent:      gv('nc_agent'),
+    notes:      gv('nc_notes'),
+    lobs: [], premium: 0,
+    color: AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)],
+    lastViewed: new Date().toISOString(),
+    spouse: (gv('nc_marital')==='married'||gv('nc_marital')==='domestic') ? {
+      first: gv('nc_spFirstName'), mi: gv('nc_spMi'), last: gv('nc_spLastName'),
+      gender: gv('nc_spGender'), dob: gv('nc_spDob'), occupation: gv('nc_spOccupation'),
+      idType: gv('nc_spIdType'), idNum: gv('nc_spIdNum')
+    } : null,
   };
   clients.unshift(newClient);
   saveClientToSupabase(newClient);
-  closeNewClientModal();clInit();
-  showToast('✓ Client created — #CLT-00'+clientSeq+' · '+first+' '+last,'green');
-  document.getElementById('newClientModal').querySelectorAll('input,select,textarea').forEach(el=>{if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
-  document.getElementById('spouseSection').style.display='none';
+  closeNewClientModal();
+  clInit();
+  showToast('✓ Client created — '+newClient.id+' · '+first+' '+last, 'green');
 }
 
 // ═══════════════════════════════════════
@@ -5715,7 +5902,8 @@ function formatDate(d){if(!d)return'—';const[y,m,day]=d.split('-');const month
 function showToast(msg,type){const colors={green:'background:#ECFDF3;color:#027A48;border:1px solid #A7F3D0',red:'background:#FEF3F2;color:#9B1C1C;border:1px solid #FECACA',orange:'background:#FFFAEB;color:#92400E;border:1px solid #FDE68A',accent:'background:#EEF2FF;color:#1e3a8a;border:1px solid #BFDBFE'};const t=document.createElement('div');t.className='toast';t.style.cssText=colors[type]||colors.accent;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(8px)';t.style.transition='all .3s';setTimeout(()=>t.remove(),300);},2500);}
 
 document.addEventListener('click',e=>{
-  ['newClientModal','addLeadModal','addContactModal'].forEach(id=>{const el=document.getElementById(id);if(e.target===el)el.classList.remove('open');});
+  ['addLeadModal','addContactModal'].forEach(id=>{const el=document.getElementById(id);if(e.target===el)el.classList.remove('open');});
+  ['newClientModal','infoEditModal'].forEach(id=>{const el=document.getElementById(id);if(e.target===el)el.style.display='none';});
 });
 
 // ═══════════════════════════════════════
@@ -5887,20 +6075,129 @@ document.addEventListener('DOMContentLoaded',()=>{
       general:  { label:'🔵 General',    style:'background:var(--accent-light);color:var(--accent)' },
       sale:     { label:'🟢 Venta',      style:'background:var(--green-light);color:var(--green)' }
     };
-    const tag = tagMap[type];
+    const tag = tagMap[type] || tagMap.general;
     const now = new Date();
-    const timeStr = now.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
-    const newNote = document.createElement('div');
-    newNote.className = 'note-item';
-    newNote.innerHTML = `
+    const dateStr = now.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+
+    const newNote = {
+      id: Date.now(),
+      text,
+      type,
+      author: 'Christian Saenz',
+      date: now.toISOString(),
+      clientId: currentProfileClientId
+    };
+
+    // Save to client object
+    const c = currentProfileClientId ? clients.find(x => x.id === currentProfileClientId) : null;
+    if (c) {
+      if (!c.notes) c.notes = [];
+      c.notes.unshift(newNote);
+      // Save client to Supabase (notes stored in client jsonb)
+      saveClientToSupabase(c);
+      // Update count
+      tc('tc_notes', c.notes.length);
+      const notesCount = document.getElementById('notesCount');
+      if (notesCount) notesCount.textContent = c.notes.length + ' note' + (c.notes.length !== 1 ? 's' : '') + ' on record';
+    }
+
+    // Render the new note in the DOM
+    const noteEl = document.createElement('div');
+    noteEl.className = 'note-item';
+    noteEl.setAttribute('data-note-id', newNote.id);
+    noteEl.innerHTML = `
       <div class="note-header">
         <span class="note-tag" style="${tag.style}">${tag.label}</span>
-        <span class="note-author">Christian Saenz</span>
-        <span class="note-date">Hoy ${timeStr}</span>
+        <span class="note-author">${newNote.author}</span>
+        <span class="note-date">${dateStr} ${timeStr}</span>
       </div>
       <div class="note-text">${text}</div>`;
-    document.getElementById('notesList').prepend(newNote);
+
+    const notesList = document.getElementById('notesList');
+    if (notesList) {
+      // Remove empty state if present
+      const empty = notesList.querySelector('[style*="text-align:center"]');
+      if (empty) empty.remove();
+      notesList.prepend(noteEl);
+    }
+
     closeNoteModal();
+    showToast('✓ Note saved', 'green');
+  }
+
+  // Render notes for current client from client object
+  function renderClientNotes() {
+    const c = currentProfileClientId ? clients.find(x => x.id === currentProfileClientId) : null;
+    const notesList = document.getElementById('notesList');
+    if (!notesList) return;
+    const notes = (c && c.notes) ? c.notes : [];
+    const notesCount = document.getElementById('notesCount');
+    if (notesCount) notesCount.textContent = notes.length + ' note' + (notes.length !== 1 ? 's' : '') + ' on record';
+    tc('tc_notes', notes.length);
+    if (!notes.length) {
+      notesList.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text4)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><div style="font-size:13px;font-weight:600">No notes yet</div><div style="font-size:12px;margin-top:4px">Add a note to keep track of important details</div></div>';
+      return;
+    }
+    const tagMap = {
+      urgent:   { label:'🔴 Urgente',    style:'background:var(--red-light);color:var(--red)' },
+      followup: { label:'🟡 Seguimiento', style:'background:var(--orange-light);color:var(--orange)' },
+      general:  { label:'🔵 General',    style:'background:var(--accent-light);color:var(--accent)' },
+      sale:     { label:'🟢 Venta',      style:'background:var(--green-light);color:var(--green)' }
+    };
+    notesList.innerHTML = notes.map(n => {
+      const tag = tagMap[n.type] || tagMap.general;
+      const d = n.date ? new Date(n.date) : new Date();
+      const dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+      const timeStr = d.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+      return `<div class="note-item" data-note-id="${n.id}">
+        <div class="note-header">
+          <span class="note-tag" style="${tag.style}">${tag.label}</span>
+          <span class="note-author">${n.author||'Agent'}</span>
+          <span class="note-date">${dateStr} ${timeStr}</span>
+        </div>
+        <div class="note-text">${n.text}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Render tasks for current client in the Tasks tab
+  function renderTasksInProfileTab() {
+    const listEl = document.getElementById('tasksTabList');
+    if (!listEl) return;
+    const clientTasks = tasksData.filter(t => t.clientId === currentProfileClientId);
+    tc('tc_tasks', clientTasks.filter(t=>!t.done).length);
+    if (!clientTasks.length) {
+      listEl.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text4)"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><div style="font-size:13px;font-weight:600">No tasks yet</div><div style="font-size:12px;margin-top:4px">Add a task using the button above</div></div>';
+      return;
+    }
+    const typeClasses = { renewal:'type-renewal', payment:'type-payment', followup:'type-followup', cancellation:'type-cancellation', other:'type-other' };
+    const typeLabels  = { renewal:'Renewal', payment:'Payment', followup:'Follow-up', cancellation:'Cancellation', other:'Other' };
+    const prioClasses = { high:'priority-high', med:'priority-med', low:'priority-low', urgent:'priority-high', normal:'priority-low' };
+    const prioLabels  = { high:'High', med:'Medium', low:'Low', urgent:'Urgent', normal:'Normal' };
+    listEl.innerHTML = clientTasks.map(t => `
+      <div class="task-row-full ${t.done?'task-done':''}" data-task-id="${t.id}">
+        <div class="task-check-lg ${t.done?'checked':''}" onclick="toggleProfileTaskDone(${t.id},this)"></div>
+        <div class="task-row-body">
+          <div class="task-row-title">${t.title}</div>
+          <div class="task-row-meta">
+            ${t.type ? `<span class="task-type-badge ${typeClasses[t.type]||'type-other'}">${typeLabels[t.type]||t.type}</span>` : ''}
+            ${t.priority ? `<span class="task-priority ${prioClasses[t.priority]||'priority-low'}">${prioLabels[t.priority]||t.priority}</span>` : ''}
+            <span style="font-size:11px;color:var(--text4)">${t.agent||''}</span>
+            ${t.due ? `<span class="task-date-chip">${t.due}</span>` : ''}
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function toggleProfileTaskDone(id, el) {
+    const t = tasksData.find(x => x.id === id);
+    if (!t) return;
+    t.done = !t.done;
+    // Save to Supabase
+    if (supaReady) sb.from('tasks').upsert({ id: String(id), data: t }).then(({error}) => { if(error) console.warn('Task update error:', error); });
+    renderTasksInProfileTab();
+    renderTasksPanel();
   }
 
   document.getElementById('noteModal').addEventListener('click', function(e) {
@@ -6135,23 +6432,54 @@ document.addEventListener('DOMContentLoaded',()=>{
     const c = clients.find(x => x.id === currentProfileClientId);
     if (!c) return;
     const emails = c.emails && c.emails.length ? c.emails.map(e=>e.address) : [];
-    if (!emails.length) return;
-    const query = emails.map(e=>`from:${e} OR to:${e}`).join(' OR ');
+    
+    // Build query — includes emails TO/FROM client AND emails sent by us to client
+    let query;
+    if (emails.length) {
+      // Search inbox + sent: from/to client email
+      query = emails.map(e=>`from:${e} OR to:${e}`).join(' OR ');
+    } else {
+      // Fall back to searching by client name
+      query = `(${c.first} ${c.last})`;
+    }
+
+    const list = document.getElementById('emailList');
+    if (list) list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text4);font-size:12px">Loading emails…</div>';
+
     try {
-      const r = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(query)}&maxResults=20`, {
+      // Search ALL mail including sent — use "in:anywhere" to include sent folder
+      const r = await fetch(`https://www.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent('in:anywhere ' + query)}&maxResults=25`, {
         headers: { Authorization: 'Bearer ' + gmailAccessToken }
       });
       const data = await r.json();
-      if (!data.messages || !data.messages.length) return;
+      
+      if (!data.messages || !data.messages.length) {
+        if (list) list.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text4)"><div style="font-size:13px;font-weight:600">No emails found</div><div style="font-size:12px;margin-top:4px">No email history with this client yet</div></div>';
+        tc('tc_emails', 0);
+        return;
+      }
+
       // Fetch details for each message
-      const details = await Promise.all(data.messages.slice(0,10).map(m =>
+      const details = await Promise.all(data.messages.slice(0, 20).map(m =>
         fetch(`https://www.googleapis.com/gmail/v1/users/me/messages/${m.id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Date`, {
           headers: { Authorization: 'Bearer ' + gmailAccessToken }
         }).then(r=>r.json())
       ));
-      renderEmailList(details);
-      tc('tc_emails', details.length);
-    } catch(e) { console.error('Gmail load error:', e); }
+
+      // Deduplicate threads — show one per thread
+      const seen = new Set();
+      const unique = details.filter(m => {
+        if (seen.has(m.threadId)) return false;
+        seen.add(m.threadId);
+        return true;
+      });
+
+      renderEmailList(unique);
+      tc('tc_emails', unique.length);
+    } catch(e) { 
+      console.error('Gmail load error:', e);
+      if (list) list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--red);font-size:12px">Error loading emails. Check connection.</div>';
+    }
   }
 
   function renderEmailList(messages) {
@@ -6304,7 +6632,9 @@ document.addEventListener('DOMContentLoaded',()=>{
       document.getElementById('emailSubject').value = '';
       document.getElementById('emailBody').value = '';
       document.getElementById('emailTo').value = '';
-      setTimeout(loadClientEmails, 2000); // refresh email list
+      // Refresh email list after short delay so Gmail indexes the sent message
+      setTimeout(loadClientEmails, 1500);
+      setTimeout(loadClientEmails, 5000); // second refresh in case first is too fast
     } catch(e) {
       showToast('Error sending: ' + e.message, 'red');
     } finally {
@@ -6412,28 +6742,43 @@ document.addEventListener('DOMContentLoaded',()=>{
     const priority = document.getElementById('panelTaskPriority').value;
     const due      = document.getElementById('panelTaskDue').value;
     const agent    = document.getElementById('panelTaskAgent').value;
-    const typeClasses = { renewal:'type-renewal', payment:'type-payment', followup:'type-followup', cancellation:'type-cancellation', other:'type-other' };
-    const typeLabels  = { renewal:'Renewal', payment:'Payment', followup:'Follow-up', cancellation:'Cancellation', other:'Other' };
-    const prioClasses = { high:'priority-high', med:'priority-med', low:'priority-low' };
-    const prioLabels  = { high:'High', med:'Medium', low:'Low' };
-    // Add to Tasks tab list
-    const listEl = document.getElementById('tasksTabList');
-    if (listEl) {
-      const row = document.createElement('div');
-      row.className = 'task-row-full';
-      row.innerHTML = `
-        <div class="task-check-lg" onclick="event.stopPropagation();toggleTaskLg(this)"></div>
-        <div class="task-row-body">
-          <div class="task-row-title">${title}</div>
-          <div class="task-row-meta">
-            <span class="task-type-badge ${typeClasses[type]}">${typeLabels[type]}</span>
-            <span class="task-priority ${prioClasses[priority]}">${prioLabels[priority]}</span>
-            <span style="font-size:11px;color:var(--text4)">${agent}</span>
-            ${due ? `<span class="task-date-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${due}</span>` : ''}
-          </div>
-        </div>`;
-      listEl.prepend(row);
+
+    // Build task object
+    const taskId = ++taskSeq;
+    const client = currentProfileClientId ? clients.find(c=>c.id===currentProfileClientId) : null;
+    const newTask = {
+      id: taskId,
+      title,
+      type,
+      priority,
+      due,
+      agent,
+      done: false,
+      clientId: currentProfileClientId || null,
+      client: client ? client.first + ' ' + client.last : 'General',
+      created: new Date().toISOString(),
+      notes: ''
+    };
+    tasksData.unshift(newTask);
+
+    // Save to Supabase tasks table
+    if (supaReady) {
+      sb.from('tasks').upsert({ id: String(taskId), data: newTask })
+        .then(({ error }) => {
+          if (error) { console.warn('Task save error:', error); showToast('⚠ Task may not have saved', 'orange'); }
+          else showToast('✓ Task saved', 'green');
+        });
     }
+
+    // Refresh task tab if open
+    renderTasksInProfileTab();
+
+    // Update tab count
+    const clientTasks = tasksData.filter(t => t.clientId === currentProfileClientId && !t.done);
+    tc('tc_tasks', clientTasks.length);
+    const el_ov = document.getElementById('ov_tasks');
+    if (el_ov) el_ov.textContent = clientTasks.length;
+
     document.getElementById('panelTaskTitle').value = '';
     closeTaskPanel();
   }
@@ -6443,14 +6788,97 @@ document.addEventListener('DOMContentLoaded',()=>{
   // INFO EDIT MODAL
   // ═══════════════════════════════════════════════════════════
   function openInfoEditModal() {
+    const c = currentProfileClientId ? clients.find(x => x.id === currentProfileClientId) : null;
+    if (!c) return;
+
+    // ── Header
+    const fullName = [c.first, c.last, c.last2].filter(Boolean).join(' ');
+    const sub = document.getElementById('iemHeaderSub');
+    if (sub) sub.textContent = fullName + (c.clientNum ? ' · #' + c.clientNum : '');
+
+    // ── Helper: set field value
+    const sv = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    const so = (id, val) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const opt = [...el.options].find(o => o.value.toLowerCase() === (val||'').toLowerCase() || o.text.toLowerCase() === (val||'').toLowerCase());
+      if (opt) el.value = opt.value; else el.value = val || '';
+    };
+
+    // ── Applicant Info
+    sv('iem_prefix',    c.prefix);
+    sv('iem_firstName', c.first);
+    sv('iem_mi',        c.mi);
+    sv('iem_lastName',  c.last);
+    sv('iem_lastName2', c.last2);
+    sv('iem_suffix',    c.suffix);
+    sv('iem_maiden',    c.maiden);
+    sv('iem_nickname',  c.nickname);
+    so('iem_gender',    c.gender);
+    sv('iem_dob',       c.dob);
+    so('iem_marital',   c.marital);
+    sv('iem_ssn',       c.ssn);
+
+    // ── ID
+    const idTypeMap = { 'dl': 'dl-us', 'dl-us': 'dl-us', 'passport': 'passport', 'state-id': 'state-id', 'dl-intl': 'dl-intl', 'prc': 'prc', 'intl-id': 'intl-id' };
+    const idVal = idTypeMap[(c.idType||'dl-us').toLowerCase()] || 'dl-us';
+    so('iem_idType', idVal);
+    sv('iem_dlNum',  c.dlNum);
+    so('iem_dlStatus', c.dlStatus || 'Valid');
+    so('iem_dlState',  c.dlState);
+    iemUpdateIdFields(idVal);
+
+    // ── Professional
+    so('iem_industry',      c.industry);
+    sv('iem_occupation',    c.occupation);
+    sv('iem_yearsJob',      c.yearsJob);
+    so('iem_education',     c.education);
+    so('iem_language',      c.language);
+    so('iem_appType',       c.status || 'Active Client');
+    so('iem_leadSource',    c.source);
+    sv('iem_customerSince', c.since);
+
+    // ── Address
+    sv('iem_street',     c.street);
+    sv('iem_unit',       c.unit);
+    sv('iem_city',       c.city);
+    so('iem_state',      c.state);
+    sv('iem_zip',        c.zip);
+    sv('iem_county',     c.county);
+    sv('iem_yearsAddr',  c.yearsAddr);
+    sv('iem_monthsAddr', c.monthsAddr);
+
+    // ── Maps / Zillow links
+    const addr = `${c.street||''} ${c.city||''} ${c.state||''} ${c.zip||''}`.trim();
+    const mapsLink = document.getElementById('iem_mapsLink');
+    if (mapsLink && addr) mapsLink.href = 'https://maps.google.com/?q=' + encodeURIComponent(addr);
+    const zillowLink = document.getElementById('iem_zillowLink');
+    if (zillowLink && addr) zillowLink.href = 'https://www.zillow.com/homes/' + encodeURIComponent(addr) + '_rb/';
+
+    // ── Spouse
+    if (c.spouse) {
+      sv('iem_spFirstName',  c.spouse.first);
+      sv('iem_spMi',         c.spouse.mi);
+      sv('iem_spLastName',   c.spouse.last);
+      so('iem_spGender',     c.spouse.gender);
+      sv('iem_spDob',        c.spouse.dob);
+      sv('iem_spOccupation', c.spouse.occupation);
+      so('iem_spIdType',     c.spouse.idType || 'dl-us');
+      iemUpdateSpouseId(c.spouse.idType || 'dl-us');
+    }
+
+    // ── Assigned agent
+    const agentSel = document.getElementById('iem_agent');
+    if (agentSel) so('iem_agent', c.agent);
+
+    // ── Phones / Emails from client data
     iemRenderPhones();
     iemRenderEmails();
-    // Restore spouse section based on marital status
-    const marital = document.getElementById('iem_marital');
-    if (marital) iemMaritalChange(marital.value);
-    // Restore ID fields based on current id type
-    const idType = document.getElementById('iem_idType');
-    if (idType) iemUpdateIdFields(idType.value);
+
+    // ── Spouse & ID section visibility
+    iemMaritalChange(c.marital || '');
+    iemUpdateIdFields(idVal);
+
     document.getElementById('infoEditModal').style.display = 'flex';
   }
   function closeInfoEditModal() {
@@ -6482,7 +6910,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if (!wrap) return;
     const tpl = {
       'dl-us':    `<div class="form-field"><label class="form-label">DL Number</label><input class="form-input" placeholder="DL #" style="font-family:'DM Mono',monospace"></div><div class="form-field"><label class="form-label">State</label><select class="form-select"><option>Texas</option><option>California</option><option>Other</option></select></div>`,
-      'passport': `<div class="form-field"><label class="form-label">Passport Number</label><input class="form-input" value="MX-84729310" style="font-family:'DM Mono',monospace"></div><div class="form-field"><label class="form-label">Country Issued</label><input class="form-input" value="Mexico"></div>`,
+      'passport': `<div class="form-field"><label class="form-label">Passport Number</label><input class="form-input" id="iem_spPassportNum" placeholder="Passport #" style="font-family:'DM Mono',monospace"></div><div class="form-field"><label class="form-label">Country Issued</label><input class="form-input" value="Mexico"></div>`,
       'dl-intl':  `<div class="form-field"><label class="form-label">License #</label><input class="form-input" placeholder="Intl DL #" style="font-family:'DM Mono',monospace"></div><div class="form-field"><label class="form-label">Country</label><input class="form-input"></div>`,
       'state-id': `<div class="form-field"><label class="form-label">ID Number</label><input class="form-input" placeholder="State ID #" style="font-family:'DM Mono',monospace"></div><div class="form-field"><label class="form-label">State</label><select class="form-select"><option>Texas</option><option>Other</option></select></div>`,
       'prc':      `<div class="form-field"><label class="form-label">A-Number</label><input class="form-input" placeholder="A-000000000" style="font-family:'DM Mono',monospace"></div><div class="form-field"><label class="form-label">Expiration</label><input type="date" class="form-input"></div>`,
@@ -6717,8 +7145,74 @@ document.addEventListener('DOMContentLoaded',()=>{
   function saveInfoEditModal() {
     const fn = document.getElementById('iem_firstName')?.value.trim();
     const ln = document.getElementById('iem_lastName')?.value.trim();
-    if (!fn || !ln) { showToast('First Name and Last Name are required', 'red'); showIemSection('personal', document.getElementById('iemTab-personal')); return; }
-    setTimeout(() => { closeInfoEditModal(); showToast('✓ Client information saved', 'green'); }, 300);
+    if (!fn || !ln) { showToast('First Name and Last Name are required', 'red'); return; }
+
+    const c = currentProfileClientId ? clients.find(x => x.id === currentProfileClientId) : null;
+    if (!c) { showToast('No client selected', 'red'); return; }
+
+    const gv = id => document.getElementById(id)?.value.trim() || '';
+
+    // ── Update client object
+    c.prefix    = gv('iem_prefix');
+    c.first     = fn;
+    c.mi        = gv('iem_mi');
+    c.last      = ln;
+    c.last2     = gv('iem_lastName2');
+    c.suffix    = gv('iem_suffix');
+    c.maiden    = gv('iem_maiden');
+    c.nickname  = gv('iem_nickname');
+    c.gender    = gv('iem_gender');
+    c.dob       = gv('iem_dob');
+    c.marital   = gv('iem_marital');
+    c.ssn       = gv('iem_ssn');
+    c.idType    = gv('iem_idType');
+    c.dlNum     = gv('iem_dlNum');
+    c.dlStatus  = gv('iem_dlStatus');
+    c.dlState   = gv('iem_dlState');
+    c.industry  = gv('iem_industry');
+    c.occupation= gv('iem_occupation');
+    c.yearsJob  = gv('iem_yearsJob');
+    c.education = gv('iem_education');
+    c.language  = gv('iem_language');
+    c.status    = gv('iem_appType');
+    c.source    = gv('iem_leadSource');
+    c.since     = gv('iem_customerSince');
+    c.street    = gv('iem_street');
+    c.unit      = gv('iem_unit');
+    c.city      = gv('iem_city');
+    c.state     = gv('iem_state');
+    c.zip       = gv('iem_zip');
+    c.county    = gv('iem_county');
+    c.yearsAddr = gv('iem_yearsAddr');
+    c.monthsAddr= gv('iem_monthsAddr');
+    if (gv('iem_agent')) c.agent = gv('iem_agent');
+
+    // ── Spouse
+    const spMarital = c.marital;
+    if (spMarital === 'married' || spMarital === 'domestic') {
+      c.spouse = {
+        first:      gv('iem_spFirstName'),
+        mi:         gv('iem_spMi'),
+        last:       gv('iem_spLastName'),
+        gender:     gv('iem_spGender'),
+        dob:        gv('iem_spDob'),
+        occupation: gv('iem_spOccupation'),
+        idType:     gv('iem_spIdType'),
+        idNum:      gv('iem_spPassportNum') || gv('iem_spDlNum') || '',
+      };
+    }
+
+    // ── Phones & emails from iem lists (already updated in real-time by iemRenderPhones/Emails)
+    // They are stored in c.phones / c.emails directly by the render functions
+
+    // ── Update profile view display
+    openProfileView(c.id);
+
+    // ── Save to Supabase
+    saveClientToSupabase(c);
+
+    closeInfoEditModal();
+    showToast('✓ Client information saved', 'green');
   }
 
   // Policies loaded from Supabase per client
