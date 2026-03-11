@@ -3242,97 +3242,61 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 <!-- ─── TASK PANEL (slide-in from right) ──────────────── -->
-<div class="task-panel-overlay" id="taskPanelOverlay" onclick="closeTaskPanel(event)">
-  <div class="task-panel">
-    <div class="task-panel-header">
-      <div style="width:30px;height:30px;border-radius:8px;background:var(--orange-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" width="15" height="15"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+<div class="modal-overlay" id="taskPanelOverlay">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <div style="width:30px;height:30px;border-radius:7px;background:var(--orange-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" width="15" height="15"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
       </div>
-      <div class="task-panel-title">Tasks</div>
-      <span style="font-size:11px;background:var(--red-light);color:var(--red);font-weight:700;padding:2px 8px;border-radius:20px">1 overdue</span>
-      <button class="modal-close" onclick="closeTaskPanel()" style="margin-left:8px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <div class="modal-title">New Task</div>
+      <button class="modal-close" onclick="closeTaskPanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-
-    <div class="task-panel-body">
-
-      <!-- Overdue section -->
-      <div>
-        <div class="task-panel-section-label">⚠️ Overdue</div>
-        <div style="background:var(--red-light);border:1px solid #FECACA;border-radius:var(--radius);padding:12px 14px;display:flex;flex-direction:column;gap:5px">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-            <div style="font-size:13px;font-weight:600;color:#9B1C1C">Confirm payment method</div>
-            <span class="task-type-badge type-payment" style="flex-shrink:0">Payment</span>
-          </div>
-          <div style="font-size:11px;color:var(--red)">Client changed card. Update before the 15th.</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:3px">
-            <span style="font-size:11px;color:var(--red);font-weight:600">📅 Today — Overdue</span>
-            <span class="task-priority priority-high" style="font-size:10px">High</span>
-          </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label">Task Description <span class="req">*</span></label>
+        <input class="form-input" id="panelTaskTitle" placeholder="e.g. Follow up on renewal quote">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-field">
+          <label class="form-label">Type</label>
+          <select class="form-select" id="panelTaskType">
+            <option value="renewal">Renewal</option>
+            <option value="payment">Payment</option>
+            <option value="followup">Follow-up</option>
+            <option value="cancellation">Cancellation</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Priority</label>
+          <select class="form-select" id="panelTaskPriority">
+            <option value="normal">Normal</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
         </div>
       </div>
-
-      <!-- Upcoming section -->
-      <div>
-        <div class="task-panel-section-label">📅 Upcoming</div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">
-              <div style="font-size:13px;font-weight:600;color:var(--text)">Send home renewal quote</div>
-              <span class="task-type-badge type-renewal" style="flex-shrink:0">Renewal</span>
-            </div>
-            <div style="font-size:11px;color:var(--text4)">📅 Mar 10 · Ana Gutierrez</div>
-          </div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">
-              <div style="font-size:13px;font-weight:600;color:var(--text)">Quote second vehicle</div>
-              <span class="task-type-badge type-followup" style="flex-shrink:0">Follow-up</span>
-            </div>
-            <div style="font-size:11px;color:var(--text4)">📅 Mar 15 · Carlos Reyes</div>
-          </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-field">
+          <label class="form-label">Due Date</label>
+          <input type="date" class="form-input" id="panelTaskDue">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Assign To</label>
+          <select class="form-select" id="panelTaskAgent">
+            <option>Christian Saenz</option>
+            <option>Jennifer Fierro</option>
+            <option>Marina Contreras</option>
+          </select>
         </div>
       </div>
-
-      <!-- New task inline form -->
-      <div style="border-top:1px solid var(--border);padding-top:16px">
-        <div class="task-panel-section-label">➕ Quick New Task</div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <input type="text" id="panelTaskTitle" class="form-input" placeholder="Task title...">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <select class="form-select" id="panelTaskType">
-              <option value="renewal">Renewal</option>
-              <option value="payment">Payment</option>
-              <option value="followup">Follow-up</option>
-              <option value="cancellation">Cancellation</option>
-              <option value="other">Other</option>
-            </select>
-            <select class="form-select" id="panelTaskPriority">
-              <option value="high">High priority</option>
-              <option value="med">Medium</option>
-              <option value="low">Low</option>
-            </select>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <input type="date" id="panelTaskDue" class="form-input" style="font-size:12px">
-            <select class="form-select" id="panelTaskAgent">
-              <option>Ana Gutierrez</option>
-              <option>Carlos Reyes</option>
-              <option>Christian Saenz</option>
-            </select>
-          </div>
-          <button class="topbar-btn btn-primary" style="width:100%;justify-content:center" onclick="savePanelTask()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            Save Task
-          </button>
-        </div>
-      </div>
-
-      <!-- View all link -->
-      <button class="topbar-btn btn-ghost" style="width:100%;justify-content:center;font-size:12px;color:var(--accent)" onclick="closeTaskPanel();profileShowTab('tasks')">
-        View all tasks in Tasks tab →
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-outline" onclick="closeTaskPanel()">Cancel</button>
+      <button class="topbar-btn btn-primary" onclick="savePanelTask()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Save Task
       </button>
-
     </div>
   </div>
 </div>
@@ -4687,6 +4651,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 <script>
+
 // ═══════════════════════════════════════
 // SUPABASE
 // ═══════════════════════════════════════
@@ -4866,6 +4831,9 @@ function pnavSetActive(el) {
   document.querySelectorAll('.pnav-item').forEach(b => b.classList.remove('pnav-active'));
   el.classList.add('pnav-active');
 }
+// Global helper — update tab counter badge
+function tc(id, v) { const e = document.getElementById(id); if (e) e.textContent = v || 0; }
+
 function openProfileView(clientId) {
   const c = clients.find(x => x.id === clientId);
   if (!c) { showToast('Client not found', 'red'); return; }
@@ -4901,7 +4869,6 @@ function openProfileView(clientId) {
     statusBadge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span> ${c.status}`;
   }
   // Tab counts from real data
-  const tc = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v||0; };
   const clientPolicies = (samplePolicies||[]).filter(p=>p.clientId===id);
   const clientTasks = tasksData.filter(t=>t.clientId===id && !t.done);
   const clientNotes = (c.notes||[]).length;
@@ -6124,7 +6091,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   // Close modal on overlay click
-  document.getElementById('taskModal').addEventListener('click', function(e) {
+  (document.getElementById('taskModal')||{addEventListener:()=>{}}).addEventListener('click', function(e) {
     if (e.target === this) closeTaskModal();
   });
 
@@ -6274,7 +6241,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     renderTasksPanel();
   }
 
-  document.getElementById('noteModal').addEventListener('click', function(e) {
+  (document.getElementById('noteModal')||{addEventListener:()=>{}}).addEventListener('click', function(e) {
     if (e.target === this) closeNoteModal();
   });
 
@@ -6454,7 +6421,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   }
 
-  document.getElementById('docModal').addEventListener('click', function(e) { if(e.target===this) closeDocModal(); });
+  (document.getElementById('docModal')||{addEventListener:()=>{}}).addEventListener('click', function(e) { if(e.target===this) closeDocModal(); });
 
   // ─── EMAIL COMPOSE ──────────────────────────────────────
   // ═══════════════════════════════════════════════════════
@@ -6605,7 +6572,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     }).join('');
   }
 
-  document.getElementById('stripeModal').addEventListener('click', function(e) { if(e.target===this) closeStripeModal(); });
+  (document.getElementById('stripeModal')||{addEventListener:()=>{}}).addEventListener('click', function(e) { if(e.target===this) closeStripeModal(); });
 
   // ═══════════════════════════════════════════════════════
   // GMAIL OAUTH + SEND
@@ -6866,7 +6833,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   }
 
-  document.getElementById('emailModal').addEventListener('click', function(e) { if(e.target===this) closeEmailModal(); });
+  (document.getElementById('emailModal')||{addEventListener:()=>{}}).addEventListener('click', function(e) { if(e.target===this) closeEmailModal(); });
 
   // ─── ATTACH PICKER ──────────────────────────────────────
   function openAttachPicker(target) {
@@ -6943,7 +6910,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('attachModal').classList.remove('open');
   }
 
-  document.getElementById('attachModal').addEventListener('click', function(e) { if(e.target===this) closeAttachModal(); });
+  (document.getElementById('attachModal')||{addEventListener:()=>{}}).addEventListener('click', function(e) { if(e.target===this) closeAttachModal(); });
 
   // ─── TASK PANEL ─────────────────────────────────────────
   function openTaskPanel() {
@@ -8241,6 +8208,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if (el2) el2.value = fmt;
     // renderPhones/renderEmails/updateMaritalUI called when profile opens
   // });
+
 
 
 </script>
