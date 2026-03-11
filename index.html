@@ -6,6 +6,7 @@
 <title>Safe House AMS</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBrKS6WdCcnXZi_VqhHZam6GKJe8DF8LC0&libraries=places&callback=initGooglePlaces" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --bg:#F0F2F5;--surface:#fff;--surface2:#F7F8FA;
@@ -430,6 +431,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <button class="mobile-menu-btn" onclick="toggleMobileSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <div class="breadcrumb" id="topbarBreadcrumb"><strong>Clients</strong></div>
     <div class="topbar-spacer"></div>
+    <div id="syncIndicator" style="font-size:11px;font-weight:600;min-width:80px;text-align:right"></div>
     <div id="topbarActions">
       <button class="topbar-btn btn-primary" onclick="openNewClientModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Client
@@ -880,6 +882,84 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 
 <script>
+// ═══════════════════════════════════════
+// SUPABASE
+// ═══════════════════════════════════════
+const SUPA_URL='https://pfmvuauvoxkbqutmxion.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmbXZ1YXV2b3hrYnF1dG14aW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMDAyOTEsImV4cCI6MjA4ODc3NjI5MX0.JxsAI7JSwcN4rzWEUFIeIsq0ri5Ymu_a090JmSdYv28';
+let sb=null;
+let supaReady=false;
+
+function initSupabase(){
+  try{
+    sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+    supaReady=true;
+    console.log('✅ Supabase connected');
+    syncFromSupabase();
+  }catch(e){
+    console.warn('Supabase init failed, running local only:',e);
+  }
+}
+
+// LOAD all data from Supabase on startup
+async function syncFromSupabase(){
+  if(!supaReady)return;
+  try{
+    showSyncIndicator('syncing');
+    // Load clients
+    const {data:dbClients,error:ce}=await sb.from('clients').select('*').order('created_at',{ascending:false});
+    if(!ce&&dbClients&&dbClients.length>0){
+      clients=dbClients.map(r=>({...r.data,id:r.id,_updated:r.updated_at}));
+      clInit();
+    }
+    // Load pipeline
+    const {data:dbPipeline,error:pe}=await sb.from('pipeline').select('*').order('created_at',{ascending:false});
+    if(!pe&&dbPipeline&&dbPipeline.length>0){
+      pipelineItems=dbPipeline.map(r=>({...r.data,id:r.id}));
+      renderPipeline();
+    }
+    showSyncIndicator('ok');
+  }catch(e){
+    console.warn('Sync error:',e);
+    showSyncIndicator('error');
+  }
+}
+
+// SAVE a client to Supabase
+async function saveClientToSupabase(client){
+  if(!supaReady)return;
+  try{
+    const {error}=await sb.from('clients').upsert({id:client.id,data:client,updated_at:new Date().toISOString()});
+    if(error)console.warn('Save client error:',error);
+  }catch(e){console.warn('Save client error:',e);}
+}
+
+// SAVE a pipeline item to Supabase
+async function savePipelineToSupabase(item){
+  if(!supaReady)return;
+  try{
+    const {error}=await sb.from('pipeline').upsert({id:item.id,data:item});
+    if(error)console.warn('Save pipeline error:',error);
+  }catch(e){console.warn('Save pipeline error:',e);}
+}
+
+// DELETE from Supabase
+async function deleteFromSupabase(table,id){
+  if(!supaReady)return;
+  try{
+    await sb.from(table).delete().eq('id',id);
+  }catch(e){console.warn('Delete error:',e);}
+}
+
+// SYNC INDICATOR in topbar
+function showSyncIndicator(state){
+  let el=document.getElementById('syncIndicator');
+  if(!el)return;
+  if(state==='syncing'){el.innerHTML='<span style="color:var(--orange)">⟳ Syncing…</span>';}
+  else if(state==='ok'){el.innerHTML='<span style="color:var(--green)">✓ Synced</span>';setTimeout(()=>{if(el)el.innerHTML='';},3000);}
+  else if(state==='error'){el.innerHTML='<span style="color:var(--red)" title="Working offline — changes saved locally">⚠ Offline</span>';}
+}
+
 // ═══════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════
@@ -1738,7 +1818,29 @@ function confirmNewClient(){
   const last=document.getElementById('nc_last').value.trim();
   if(!first||!last){showToast('First and last name are required','red');return;}
   clientSeq++;
-  clients.unshift({id:'CLT-00'+clientSeq,first,last,phone:document.getElementById('nc_phone').value||'—',agent:document.getElementById('nc_agent').value,status:document.getElementById('nc_status').value,lobs:[],premium:0,since:new Date().toISOString().split('T')[0],city:document.getElementById('nc_city').value||'El Paso',zip:document.getElementById('nc_zip').value,color:AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)],lastViewed:new Date().toISOString()});
+  const phones=[...document.querySelectorAll('#phoneFields input[name="nc_phone[]"]')].map((el,i)=>{const type=el.parentElement.querySelector('select');return{number:el.value,type:type?type.value:'Mobile'};}).filter(p=>p.number);
+  const emails=[...document.querySelectorAll('#emailFields input[name="nc_email[]"]')].map((el,i)=>{const type=el.parentElement.querySelector('select');return{address:el.value,type:type?type.value:'Personal'};}).filter(e=>e.address);
+  const newClient={
+    id:'CLT-00'+clientSeq,first,last,
+    phone:phones[0]?phones[0].number:'—',
+    phones,emails,
+    agent:document.getElementById('nc_agent').value,
+    status:document.getElementById('nc_status').value,
+    lobs:[],premium:0,
+    since:new Date().toISOString().split('T')[0],
+    city:document.getElementById('nc_city').value||'El Paso',
+    zip:document.getElementById('nc_zip').value,
+    street:document.getElementById('nc_street').value,
+    state:document.getElementById('nc_state').value,
+    county:document.getElementById('nc_county').value,
+    color:AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)],
+    lastViewed:new Date().toISOString(),
+    dob:document.getElementById('nc_dob').value,
+    lang:document.getElementById('nc_lang').value,
+    notes:document.getElementById('nc_notes')?document.getElementById('nc_notes').value:'',
+  };
+  clients.unshift(newClient);
+  saveClientToSupabase(newClient);
   closeNewClientModal();clInit();
   showToast('✓ Client created — #CLT-00'+clientSeq+' · '+first+' '+last,'green');
   document.getElementById('newClientModal').querySelectorAll('input,select,textarea').forEach(el=>{if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
@@ -1790,8 +1892,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderPipeline();
   initDashboard();
   showView('clients',document.getElementById('nav-clients'));
-  // Init Google Places if API already loaded
   if(typeof google!=='undefined'&&google.maps)initGooglePlaces();
+  if(typeof supabase!=='undefined')initSupabase();
 });
 </script>
 </body>
