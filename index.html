@@ -4923,8 +4923,8 @@ function openProfileView(clientId) {
     statusBadge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span> ${c.status}`;
   }
   // Tab counts from real data
-  const clientPolicies = (samplePolicies||[]).filter(p=>p.clientId===id);
-  const clientTasks = tasksData.filter(t=>t.clientId===id && !t.done);
+  const clientPolicies = (samplePolicies||[]).filter(p=>p.clientId===clientId);
+  const clientTasks = tasksData.filter(t=>t.clientId===clientId && !t.done);
   const clientNotes = (c.notes||[]).length;
   const clientDocs = (c.docs||[]).length;
   tc('tc_policies', clientPolicies.length);
