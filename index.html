@@ -115,8 +115,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 /* MODALS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(16,24,40,.45);z-index:1000;align-items:flex-start;justify-content:center;backdrop-filter:blur(2px);padding:20px;overflow-y:auto;}
 .modal-overlay.open{display:flex;}
-.modal{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:560px;animation:modalIn .2s ease;margin:auto;}
-.modal-lg{max-width:720px;}
+.modal{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:560px;animation:modalIn .2s ease;margin:auto;max-height:90vh;display:flex;flex-direction:column;}
+.modal-body{padding:20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;flex:1;}.modal-lg{max-width:720px;}
 .modal-xl{max-width:940px;}
 @keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
@@ -124,7 +124,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .modal-close{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:var(--radius-sm);}
 .modal-close:hover{background:var(--surface2);}
 .modal-close svg{width:18px;height:18px;display:block;}
-.modal-body{padding:20px;display:flex;flex-direction:column;gap:14px;}
 .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
 
 /* TOAST */
@@ -333,6 +332,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   .modal-xl,.modal-lg{max-width:calc(100vw - 16px);}
   .topbar{padding:0 12px;}
   .dir-grid{grid-template-columns:1fr;}
+}
+@media(max-width:1100px){
+  .dash-3col{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:900px){
+  .dash-2col,.dash-3col{grid-template-columns:1fr;}
+  .cl-kpi-row{grid-template-columns:repeat(2,1fr);}
+  .dash-kpi-row{grid-template-columns:repeat(2,1fr);}
 }
 @media(max-width:480px){
   .cl-kpi-row{grid-template-columns:1fr;}
@@ -650,7 +657,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
   /* LEFT COLUMN */
   .col-left {
-    width: 296px;
+    width: 280px;
+    min-width: 240px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -672,13 +680,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
   /* RIGHT COLUMN */
   .col-right {
-    width: 276px;
+    width: 260px;
+    min-width: 220px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     gap: 16px;
     overflow-y: auto;
     padding: 20px 20px 32px 18px;
+  }
+
+  @media(max-width:1200px){
+    .col-left { width: 250px; min-width: 210px; }
+    .col-right { width: 230px; min-width: 200px; }
+  }
+  @media(max-width:960px){
+    #view-profile .content { flex-wrap: wrap; overflow-y: auto; }
+    .col-left { width: 100%; min-width: unset; padding: 16px 16px 0; overflow-y: visible; }
+    .col-center { padding: 0 16px; overflow-y: visible; min-width: unset; }
+    .col-right { width: 100%; min-width: unset; padding: 0 16px 24px; overflow-y: visible; }
   }
 
   /* CARDS */
@@ -1380,7 +1400,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
   .modal-close:hover { background: var(--surface2); color: var(--text); }
   .modal-close svg { width: 18px; height: 18px; display: block; }
 
-  .modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
 
   .form-field { display: flex; flex-direction: column; gap: 5px; }
   .form-label { font-size: 12px; font-weight: 600; color: var(--text2); }
@@ -2181,25 +2201,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
             <!-- VIEW MODE -->
             <div class="info-view-mode" id="infoview-personal">
               <div class="info-list" style="padding:14px 16px">
-                <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">María M. López Hernández</span></div>
-                <div class="info-row"><span class="info-label">Gender</span><span class="info-value">Female</span></div>
-                <div class="info-row"><span class="info-label">Date of Birth</span><span class="info-value">Mar 14, 1985 <span style="color:var(--text4);font-size:11px">(40 yrs)</span></span></div>
-                <div class="info-row"><span class="info-label">ID Type</span><span class="info-value">Driver's License — U.S. State</span></div>
-                <div class="info-row"><span class="info-label">DL Number</span><span class="info-value" style="font-family:'DM Mono',monospace;font-size:12px">TX-DL-8842917</span></div>
-                <div class="info-row"><span class="info-label">State Issued</span><span class="info-value">Texas</span></div>
-                <div class="info-row"><span class="info-label">Created</span><span class="info-value">Jan 12, 2024</span></div>
+                <div class="info-row"><span class="info-label">Full Name</span><span class="info-value" id="pv_fullName">—</span></div>
+                <div class="info-row"><span class="info-label">Gender</span><span class="info-value" id="pv_gender">—</span></div>
+                <div class="info-row"><span class="info-label">Date of Birth</span><span class="info-value" id="pv_dob">—</span></div>
+                <div class="info-row"><span class="info-label">ID Type</span><span class="info-value" id="pv_idType">—</span></div>
+                <div class="info-row"><span class="info-label">DL Number</span><span class="info-value" id="pv_dlNum" style="font-family:'DM Mono',monospace;font-size:12px">—</span></div>
+                <div class="info-row"><span class="info-label">State Issued</span><span class="info-value" id="pv_dlState">—</span></div>
+                <div class="info-row"><span class="info-label">Created</span><span class="info-value" id="pv_created">—</span></div>
               </div>
             </div>
             <!-- EDIT MODE -->
             <div class="info-edit-mode" id="infoedit-personal" style="display:none">
               <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
                 <div class="form-row">
-                  <div class="form-field"><label class="form-label">First Name</label><input class="form-input" value="María" style="font-size:12px;padding:7px 10px"></div>
-                  <div class="form-field" style="max-width:70px"><label class="form-label">M.I.</label><input class="form-input" value="M." style="font-size:12px;padding:7px 10px"></div>
+                  <div class="form-field"><label class="form-label">First Name</label><input class="form-input" id="edit_firstName" value="" style="font-size:12px;padding:7px 10px"></div>
+                  <div class="form-field" style="max-width:70px"><label class="form-label">M.I.</label><input class="form-input" id="edit_mi" value="" style="font-size:12px;padding:7px 10px"></div>
                 </div>
                 <div class="form-row">
-                  <div class="form-field"><label class="form-label">Last Name</label><input class="form-input" value="López" style="font-size:12px;padding:7px 10px"></div>
-                  <div class="form-field"><label class="form-label">2nd Last Name</label><input class="form-input" value="Hernández" style="font-size:12px;padding:7px 10px"></div>
+                  <div class="form-field"><label class="form-label">Last Name</label><input class="form-input" id="edit_lastName" value="" style="font-size:12px;padding:7px 10px"></div>
+                  <div class="form-field"><label class="form-label">2nd Last Name</label><input class="form-input" id="edit_lastName2" value="" style="font-size:12px;padding:7px 10px"></div>
                 </div>
                 <div class="form-row">
                   <div class="form-field">
@@ -2226,7 +2246,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
                 <!-- Dynamic ID fields -->
                 <div id="idFields-dl-us" class="id-fields-group">
                   <div class="form-row">
-                    <div class="form-field"><label class="form-label">DL Number</label><input class="form-input" value="TX-DL-8842917" style="font-size:12px;padding:7px 10px;font-family:'DM Mono',monospace"></div>
+                    <div class="form-field"><label class="form-label">DL Number</label><input class="form-input" id="edit_dlNum" value="" style="font-size:12px;padding:7px 10px;font-family:'DM Mono',monospace"></div>
                     <div class="form-field">
                       <label class="form-label">State Issued</label>
                       <select class="form-select" style="font-size:12px;padding:7px 10px">
@@ -2313,8 +2333,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
                 <div class="info-row" style="align-items:flex-start">
                   <span class="info-label" style="padding-top:2px">Address</span>
                   <div style="display:flex;flex-direction:column;gap:5px;flex:1">
-                    <span class="info-value" style="font-size:12px;font-weight:600">1423 Mesa Hills Dr</span>
-                    <span style="font-size:12px;color:var(--text3)">El Paso, TX 79912</span>
+                    <span class="info-value" id="pv_street" style="font-size:12px;font-weight:600">—</span>
+                    <span id="pv_cityStateZip" style="font-size:12px;color:var(--text3)">—</span>
                     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:2px">
                       <a href="https://maps.google.com/?q=1423+Mesa+Hills+Dr+El+Paso+TX+79912" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--accent);text-decoration:none;padding:3px 8px;background:var(--accent-light);border-radius:5px;border:1px solid #C7D7FF">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Map
@@ -2335,15 +2355,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
                 <div class="form-field">
                   <label class="form-label">Street Address</label>
                   <div style="position:relative">
-                    <input class="form-input" id="addrStreet" value="1423 Mesa Hills Dr" placeholder="Start typing address..." style="font-size:12px;padding:7px 10px;padding-right:80px" oninput="addrAutocomplete(this.value)">
+                    <input class="form-input" id="addrStreet" value="" placeholder="Start typing address..." style="font-size:12px;padding:7px 10px;padding-right:80px" oninput="addrAutocomplete(this.value)">
                     <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;background:var(--green-light);color:var(--green);padding:2px 6px;border-radius:4px;font-weight:600">✓ USPS</span>
                   </div>
                   <div id="addrSuggestions" style="display:none;position:absolute;z-index:200;background:white;border:1px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow-md);max-height:160px;overflow-y:auto;min-width:260px"></div>
                 </div>
                 <div class="form-row">
-                  <div class="form-field"><label class="form-label">City</label><input class="form-input" id="addrCity" value="El Paso" style="font-size:12px;padding:7px 10px"></div>
-                  <div class="form-field" style="max-width:90px"><label class="form-label">State</label><input class="form-input" id="addrState" value="TX" style="font-size:12px;padding:7px 10px;text-transform:uppercase"></div>
-                  <div class="form-field" style="max-width:90px"><label class="form-label">ZIP</label><input class="form-input" id="addrZip" value="79912" maxlength="10" style="font-size:12px;padding:7px 10px;font-family:'DM Mono',monospace"></div>
+                  <div class="form-field"><label class="form-label">City</label><input class="form-input" id="addrCity" value="" style="font-size:12px;padding:7px 10px"></div>
+                  <div class="form-field" style="max-width:90px"><label class="form-label">State</label><input class="form-input" id="addrState" value="" style="font-size:12px;padding:7px 10px;text-transform:uppercase"></div>
+                  <div class="form-field" style="max-width:90px"><label class="form-label">ZIP</label><input class="form-input" id="addrZip" value="" maxlength="10" style="font-size:12px;padding:7px 10px;font-family:'DM Mono',monospace"></div>
                 </div>
                 <div style="background:var(--green-light);border:1px solid #A7F3D0;border-radius:var(--radius-sm);padding:8px 12px;font-size:11px;color:#065F46;display:flex;align-items:center;gap:6px">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
@@ -2357,10 +2377,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           <div class="info-section" id="infosec-professional" style="display:none">
             <div class="info-view-mode" id="infoview-professional">
               <div class="info-list" style="padding:14px 16px">
-                <div class="info-row"><span class="info-label">Industry</span><span class="info-value">Healthcare</span></div>
-                <div class="info-row"><span class="info-label">Occupation</span><span class="info-value">Registered Nurse</span></div>
-                <div class="info-row"><span class="info-label">Pref. Language</span><span class="info-value">Spanish</span></div>
-                <div class="info-row"><span class="info-label">Marital Status</span><span class="info-value">Married 💍</span></div>
+                <div class="info-row"><span class="info-label">Industry</span><span class="info-value" id="pv_industry">—</span></div>
+                <div class="info-row"><span class="info-label">Occupation</span><span class="info-value" id="pv_occupation">—</span></div>
+                <div class="info-row"><span class="info-label">Pref. Language</span><span class="info-value" id="pv_language">—</span></div>
+                <div class="info-row"><span class="info-label">Marital Status</span><span class="info-value" id="pv_marital">—</span></div>
               </div>
             </div>
             <div class="info-edit-mode" id="infoedit-professional" style="display:none">
@@ -2372,7 +2392,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
                       <option>Healthcare</option><option>Education</option><option>Construction</option><option>Technology</option><option>Retail</option><option>Finance</option><option>Government</option><option>Transportation</option><option>Hospitality</option><option>Self-Employed</option><option>Other</option>
                     </select>
                   </div>
-                  <div class="form-field"><label class="form-label">Occupation</label><input class="form-input" value="Registered Nurse" style="font-size:12px;padding:7px 10px"></div>
+                  <div class="form-field"><label class="form-label">Occupation</label><input class="form-input" id="edit_occupation" value="" style="font-size:12px;padding:7px 10px"></div>
                 </div>
                 <div class="form-row">
                   <div class="form-field">
@@ -2399,19 +2419,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
           <div class="info-section" id="infosec-household" style="display:none">
             <div class="info-view-mode" id="infoview-household">
               <div class="info-list" style="padding:14px 16px">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-                  <div style="width:32px;height:32px;border-radius:50%;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--purple)">JL</div>
-                  <div>
-                    <div style="font-size:13px;font-weight:700;color:var(--text)">Jorge A. López</div>
-                    <div style="font-size:11px;color:var(--text4)">Spouse · Household member</div>
-                  </div>
-                </div>
-                <div class="info-row"><span class="info-label">Gender</span><span class="info-value">Male</span></div>
-                <div class="info-row"><span class="info-label">Date of Birth</span><span class="info-value">Aug 22, 1983 <span style="color:var(--text4);font-size:11px">(41 yrs)</span></span></div>
-                <div class="info-row"><span class="info-label">ID Type</span><span class="info-value">Passport</span></div>
-                <div class="info-row"><span class="info-label">Passport #</span><span class="info-value" style="font-family:'DM Mono',monospace;font-size:12px">MX-84729310</span></div>
-                <div class="info-row"><span class="info-label">Country Issued</span><span class="info-value">Mexico</span></div>
-                <div class="info-row"><span class="info-label">Occupation</span><span class="info-value">Construction Manager</span></div>
+                <div id="pv_householdContent" style="color:var(--text4);font-size:13px;text-align:center;padding:12px 0">No household members added</div>
               </div>
             </div>
             <div class="info-edit-mode" id="infoedit-household" style="display:none">
@@ -2422,7 +2430,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
                   <div class="form-field" style="max-width:70px"><label class="form-label">M.I.</label><input class="form-input" value="A." style="font-size:12px;padding:7px 10px"></div>
                 </div>
                 <div class="form-row">
-                  <div class="form-field"><label class="form-label">Last Name</label><input class="form-input" value="López" style="font-size:12px;padding:7px 10px"></div>
+                  <div class="form-field"><label class="form-label">Last Name</label><input class="form-input" id="edit_lastName" value="" style="font-size:12px;padding:7px 10px"></div>
                   <div class="form-field">
                     <label class="form-label">Gender</label>
                     <select class="form-select" style="font-size:12px;padding:7px 10px"><option>Male</option><option>Female</option><option>Other</option></select>
@@ -5586,17 +5594,57 @@ function openProfileView(clientId) {
     statusBadge.style.color = isActive ? 'var(--green)' : 'var(--orange)';
     statusBadge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span> ${c.status}`;
   }
-  // Info rows
-  document.querySelectorAll('#view-profile .info-row').forEach(row => {
-    const label = row.querySelector('.info-label');
-    const val = row.querySelector('.info-value');
-    if (!label || !val) return;
-    if (label.textContent.trim() === 'Created') val.textContent = formatDate(c.since);
-    if (label.textContent.trim() === 'Full Name') val.textContent = c.first + ' ' + c.last;
-  });
-  // Agent
+  // ── Populate all info fields from client data
+  const sv = id => { const el = document.getElementById(id); if(el) return el; };
+  const setv = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val||'—'; };
+
+  // Personal view
+  setv('pv_fullName', [c.first, c.last, c.last2].filter(Boolean).join(' '));
+  setv('pv_gender', c.gender||'—');
+  if (c.dob) {
+    const d = new Date(c.dob+'T00:00:00'); 
+    const age = Math.floor((new Date()-d)/31557600000);
+    const fmt = d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    setv('pv_dob', fmt + ' (' + age + ' yrs)');
+  } else { setv('pv_dob','—'); }
+  const idTypeLabels = {'dl-us':"Driver's License — U.S. State",'dl-intl':"Driver's License — Intl.",'passport':'Passport','state-id':'State ID','intl-id':'International ID','prc':'Permanent Residency Card','other':'Other'};
+  setv('pv_idType', idTypeLabels[c.idType] || c.idType || '—');
+  setv('pv_dlNum', c.dlNum || '—');
+  setv('pv_dlState', c.dlState || '—');
+  setv('pv_street', c.street || '—');
+  setv('pv_cityStateZip', [c.city, c.state, c.zip].filter(Boolean).join(', ') || '—');
+  setv('pv_industry', c.industry || '—');
+  setv('pv_occupation', c.occupation || '—');
+  setv('pv_language', c.language || '—');
+  setv('pv_marital', c.marital ? (c.marital.charAt(0).toUpperCase()+c.marital.slice(1)) : '—');
+  // Created date
+  const createdEl = document.getElementById('pv_created');
+  if (createdEl) createdEl.textContent = formatDate(c.since);
+
+  // Phones
+  const phonesSection = document.getElementById('phonesList');
+  if (phonesSection) {
+    if (c.phones && c.phones.length) {
+      phonesSection.innerHTML = c.phones.map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:12px;font-weight:600;font-family:'DM Mono',monospace">${p.number}</span><span style="font-size:10px;color:var(--text4);background:var(--surface2);border:1px solid var(--border);padding:2px 7px;border-radius:20px">${p.label||'Mobile'}</span>${p.primary?'<span style="font-size:10px;color:#92400E;background:#FEF3C7;padding:2px 7px;border-radius:20px;font-weight:600">⭐ Primary</span>':''}</div>`).join('');
+    } else {
+      phonesSection.innerHTML = '<div style="font-size:12px;color:var(--text4);padding:8px 0">No phone numbers added</div>';
+    }
+  }
+  // Emails
+  const emailsSection = document.getElementById('emailsList');
+  if (emailsSection) {
+    if (c.emails && c.emails.length) {
+      emailsSection.innerHTML = c.emails.map(e=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:12px;font-weight:600">${e.address}</span><span style="font-size:10px;color:var(--text4);background:var(--surface2);border:1px solid var(--border);padding:2px 7px;border-radius:20px">${e.label||'Personal'}</span>${e.primary?'<span style="font-size:10px;color:#92400E;background:#FEF3C7;padding:2px 7px;border-radius:20px;font-weight:600">⭐ Primary</span>':''}</div>`).join('');
+    } else {
+      emailsSection.innerHTML = '<div style="font-size:12px;color:var(--text4);padding:8px 0">No emails added</div>';
+    }
+  }
+
+  // Agent display
   const agentNameEl = document.querySelector('#view-profile .agent-name');
   if (agentNameEl) agentNameEl.textContent = c.agent || '—';
+  const agentAvEl = document.querySelector('#view-profile .agent-avatar-text');
+  if (agentAvEl) agentAvEl.textContent = (c.agent||'').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2) || '?';
 
   // ── Switch to profile view (keeps sidebar visible, highlights Clients nav)
   showView('profile', document.getElementById('nav-clients'));
