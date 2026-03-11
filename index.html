@@ -2138,6 +2138,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
               </button>
             </div>
           </div>
+
+          <!-- Delete Client -->
+          <div style="border-top:1px solid var(--border);padding:12px 16px 14px">
+            <button onclick="confirmDeleteClient()" style="width:100%;padding:9px;border-radius:var(--radius-sm);border:1.5px solid var(--red);background:var(--red-light);color:var(--red);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s" onmouseover="this.style.background='var(--red)';this.style.color='white'" onmouseout="this.style.background='var(--red-light)';this.style.color='var(--red)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              Delete Client
+            </button>
+          </div>
         </div>
 
         <!-- ══ INFORMATION CARD (expanded) ══ -->
@@ -5600,6 +5608,41 @@ function closeProfileView() {
   currentProfileClientId = null;
 }
 
+function confirmDeleteClient() {
+  const id = currentProfileClientId;
+  if (!id) return;
+  const client = clients.find(c => c.id === id);
+  const name = client ? `${client.first} ${client.last}` : id;
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `<div style="background:white;border-radius:12px;padding:28px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+      </div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--text)">Delete Client</div>
+        <div style="font-size:12px;color:var(--text4);margin-top:2px">This action cannot be undone</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px">Are you sure you want to permanently delete <strong>${name}</strong> and all associated data?</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="this.closest('[style*=fixed]').remove()" style="padding:9px 18px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:white;font-size:13px;font-weight:600;cursor:pointer">Cancel</button>
+      <button onclick="executeDeleteClient('${id}');this.closest('[style*=fixed]').remove()" style="padding:9px 18px;border-radius:var(--radius-sm);border:none;background:var(--red);color:white;font-size:13px;font-weight:600;cursor:pointer">Delete Permanently</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+}
+
+async function executeDeleteClient(id) {
+  await deleteFromSupabase('clients', id);
+  clients = clients.filter(c => c.id !== id);
+  closeProfileView();
+  renderClientTable();
+  showToast('Client deleted', 'red');
+}
+
+
 // ═══════════════════════════════════════
 // GOOGLE PLACES AUTOCOMPLETE
 // ═══════════════════════════════════════
@@ -7045,12 +7088,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     hasSpouse:true, spouseOccupation:'Construction Manager',
     homeowner:true, hasVehicles:true, hasLife:true, hasDependents:true
   };
-  let productFunnelItems = [
-    { id:1, lob:'auto',  stage:'sold',   notes:'PRG-TX-20241182-A — Active policy' },
-    { id:2, lob:'home',  stage:'quoted', notes:'Renewal needed — GEICO expired Mar 2025' },
-    { id:3, lob:'life',  stage:'sold',   notes:'AIG-LF-20241095 — 20yr term active' }
-  ];
-  let pfSeq = 4;
+  let productFunnelItems = [];
+  let pfSeq = 1;
 
   function getAiRecommendations() {
     const existing = productFunnelItems.map(p => p.lob);
@@ -7155,12 +7194,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   // DOMContentLoaded-profile: () => { renderProductFunnel(); });
 
   // IEM Phone Manager
-  let iemPhones = [
-    { id:1, number:'(915) 555-1234', label:'Mobile',  primary:true },
-    { id:2, number:'(915) 555-9087', label:'Home',    primary:false },
-    { id:3, number:'(915) 555-3321', label:'Spouse',  primary:false }
-  ];
-  let iemPhoneSeq = 4;
+  let iemPhones = [];
+  let iemPhoneSeq = 1;
   function iemRenderPhones() {
     const el = document.getElementById('iem_phonesList');
     if (!el) return;
@@ -7200,11 +7235,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   // IEM Email Manager
-  let iemEmails = [
-    { id:1, address:'maria.lopez@gmail.com', label:'Personal', primary:true },
-    { id:2, address:'mlopez@uhsystem.edu',   label:'Work',     primary:false }
-  ];
-  let iemEmailSeq = 3;
+  let iemEmails = [];
+  let iemEmailSeq = 1;
   function iemRenderEmails() {
     const el = document.getElementById('iem_emailsList');
     if (!el) return;
@@ -7266,64 +7298,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     setTimeout(() => { closeInfoEditModal(); showToast('✓ Client information saved', 'green'); }, 300);
   }
 
-  // ═══════════════════════════════════════════════════════════
-  // POLICY DATA (sample — in production this comes from Supabase)
-  // ═══════════════════════════════════════════════════════════
-  const policies = [
-    {
-      id: 0,
-      policyNum: 'PRG-TX-20241182-A',
-      lob: '🚗 Auto',
-      carrier: 'Progressive',
-      term: '1 Year',
-      billing: 'Direct Billing',
-      effective: 'Jan 15, 2025',
-      expiration: 'Jan 15, 2026',
-      writtenPremium: '$2,244/yr',
-      fees: '$125',
-      annualPremium: '$2,244',
-      status: 'active',
-      agent: 'Ana Gutierrez',
-      logoInitials: 'PRG',
-      logoBg: 'linear-gradient(135deg,#3B5BDB,#4C6EF5)'
-    },
-    {
-      id: 1,
-      policyNum: 'GIC-HO-20230498',
-      lob: '🏠 Home',
-      carrier: 'GEICO',
-      term: '1 Year',
-      billing: 'Agency Billing',
-      effective: 'Mar 3, 2024',
-      expiration: 'Mar 3, 2025',
-      writtenPremium: '$1,240/yr',
-      fees: '$200',
-      annualPremium: '$1,240',
-      status: 'expired',
-      agent: 'Ana Gutierrez',
-      logoInitials: 'GIC',
-      logoBg: 'linear-gradient(135deg,#2E7D32,#43A047)'
-    },
-    {
-      id: 2,
-      policyNum: 'AIG-LF-20241095',
-      lob: '❤️ Life',
-      carrier: 'AIG',
-      term: '20-Year Term',
-      billing: 'Direct Billing',
-      effective: 'Jun 1, 2024',
-      expiration: 'Jun 1, 2044',
-      writtenPremium: '$64/mo',
-      fees: '$0',
-      annualPremium: '$768',
-      status: 'active',
-      agent: 'Ana Gutierrez',
-      logoInitials: 'AIG',
-      logoBg: 'linear-gradient(135deg,#B91C1C,#EF4444)'
-    }
-  ];
-
-  let activePolicyId = 0;
+  // Policies loaded from Supabase per client
+  const policies = [];
+  let activePolicyId = null;
 
   // ─── NEW POLICY MODAL ─────────────────────────────────────────
   function openNewPolicyModal() {
