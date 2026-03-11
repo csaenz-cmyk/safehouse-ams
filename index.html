@@ -1439,7 +1439,7 @@ function openClientProfile(id){
       </div>
     </div>
     <div style="display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
-      <button class="topbar-btn btn-primary" onclick="showToast('Opening full client profile…','accent')">Open Full Profile</button>
+      <button class="topbar-btn btn-primary" onclick="window.location.href='profile.html?id=${c.id}&name='+encodeURIComponent('${c.first} ${c.last}')">Open Full Profile</button>
       <button class="topbar-btn btn-outline" onclick="showToast('Opening new quote for ${c.first}…','accent')">+ New Quote</button>
       <button class="topbar-btn btn-outline" onclick="openTasksPanel('${c.id}','${c.first} ${c.last}')">📋 Tasks</button>
       <button class="topbar-btn btn-outline" onclick="showToast('Opening payment for ${c.first}…','accent')">💳 Payment</button>
