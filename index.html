@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safe House AMS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F0F2F5;--surface:#fff;--surface2:#F7F8FA;
+  --border:#E4E7EC;--border2:#D0D5DD;
+  --text:#101828;--text2:#344054;--text3:#667085;--text4:#98A2B3;
+  --accent:#1B4FD8;--accent-light:#EEF2FF;--accent2:#0BA5EC;
+  --green:#12B76A;--green-light:#ECFDF3;
+  --red:#F04438;--red-light:#FEF3F2;
+  --orange:#F79009;--orange-light:#FFFAEB;
+  --purple:#7F56D9;--purple-light:#F9F5FF;
+  --shadow-sm:0 1px 2px rgba(16,24,40,.05);
+  --shadow:0 1px 3px rgba(16,24,40,.1),0 1px 2px rgba(16,24,40,.06);
+  --shadow-md:0 4px 8px -2px rgba(16,24,40,.1),0 2px 4px -2px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 16px -4px rgba(16,24,40,.08),0 4px 6px -2px rgba(16,24,40,.03);
+  --radius:10px;--radius-sm:6px;--radius-lg:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;}
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:60px;flex-shrink:0;background:#0F1728;display:flex;flex-direction:column;overflow:hidden;height:100vh;transition:width .22s cubic-bezier(.4,0,.2,1),box-shadow .22s;position:relative;z-index:100;}
+.sidebar:hover{width:220px;box-shadow:4px 0 24px rgba(0,0,0,.18);}
+.sidebar-logo{padding:16px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.07);min-height:64px;overflow:hidden;flex-shrink:0;}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-icon svg{width:18px;height:18px;fill:white;}
+.logo-text{font-size:13px;font-weight:700;color:white;line-height:1.2;white-space:nowrap;opacity:0;transform:translateX(-6px);transition:opacity .18s ease .06s,transform .18s ease .06s;}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.4);white-space:nowrap;}
+.sidebar:hover .logo-text{opacity:1;transform:translateX(0);}
+.sidebar-nav{padding:10px;flex:1;overflow-y:auto;overflow-x:hidden;}
+.nav-label{font-size:9px;font-weight:700;color:rgba(255,255,255,0);text-transform:uppercase;letter-spacing:.1em;padding:10px 10px 5px;white-space:nowrap;transition:color .15s ease .08s;display:block;height:28px;}
+.sidebar:hover .nav-label{color:rgba(255,255,255,.3);}
+.nav-item{display:flex;align-items:center;gap:0;padding:9px 12px;border-radius:8px;color:rgba(255,255,255,.55);cursor:pointer;font-size:13px;font-weight:500;transition:background .15s,color .15s;text-decoration:none;white-space:nowrap;overflow:hidden;position:relative;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:white;}
+.nav-item.active{background:var(--accent);color:white;}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.85;}
+.nav-item-label{margin-left:0;max-width:0;opacity:0;overflow:hidden;transition:max-width .2s ease .04s,opacity .18s ease .04s,margin-left .2s ease .04s;font-size:13px;}
+.sidebar:hover .nav-item-label{max-width:160px;opacity:1;margin-left:10px;}
+.nav-badge{background:var(--red);color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;margin-left:auto;flex-shrink:0;opacity:0;transform:scale(.7);transition:opacity .15s ease .1s,transform .15s ease .1s;}
+.sidebar:hover .nav-badge{opacity:1;transform:scale(1);}
+.nav-item::after{content:attr(data-tooltip);position:absolute;left:56px;top:50%;transform:translateY(-50%);background:#1e2d4a;color:white;font-size:12px;font-weight:500;padding:5px 10px;border-radius:6px;white-space:nowrap;pointer-events:none;opacity:0;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:999;transition:opacity .1s;}
+.nav-item:hover::after{opacity:1;}
+.sidebar:hover .nav-item::after{opacity:0!important;}
+.sidebar-user{padding:12px 14px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;overflow:hidden;flex-shrink:0;}
+.user-avatar-sm{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0;}
+.user-info-sm{flex:1;min-width:0;opacity:0;transform:translateX(-4px);transition:opacity .18s ease .06s,transform .18s ease .06s;white-space:nowrap;}
+.sidebar:hover .user-info-sm{opacity:1;transform:translateX(0);}
+.user-name-sm{font-size:12px;font-weight:600;color:white;}
+.user-role-sm{font-size:10px;color:rgba(255,255,255,.35);}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:10px;flex-shrink:0;}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text3);}
+.breadcrumb strong{color:var(--text);font-weight:600;}
+.breadcrumb svg{width:14px;height:14px;}
+.topbar-spacer{flex:1;}
+.topbar-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;font-family:inherit;}
+.btn-primary{background:var(--accent);color:white;}
+.btn-primary:hover{background:#1642b8;}
+.btn-outline{background:white;color:var(--text2);border:1px solid var(--border2);box-shadow:var(--shadow-sm);}
+.btn-outline:hover{background:var(--surface2);}
+.btn-green{background:var(--green);color:white;}
+.btn-green:hover{background:#0d9b5a;}
+.topbar-btn svg{width:15px;height:15px;}
+.content{flex:1;overflow-y:auto;padding:20px 24px 32px;min-height:0;}
+.view{display:none;}
+.view.active{display:block;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;}
+.card-header{padding:13px 16px 11px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.card-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card-icon svg{width:15px;height:15px;}
+.card-title{font-size:13px;font-weight:600;color:var(--text);}
+.card-subtitle{font-size:11px;color:var(--text4);margin-top:1px;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge .dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.badge-green{background:var(--green-light);color:var(--green);}
+.badge-red{background:var(--red-light);color:var(--red);}
+.badge-orange{background:var(--orange-light);color:var(--orange);}
+.badge-blue{background:var(--accent-light);color:var(--accent);}
+.badge-gray{background:var(--surface2);color:var(--text3);}
+.badge-purple{background:var(--purple-light);color:var(--purple);}
+
+/* FORMS */
+.form-field{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);}
+.form-input,.form-select{padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;color:var(--text);background:white;outline:none;transition:border-color .15s;}
+.form-input:focus,.form-select:focus{border-color:var(--accent);}
+.form-textarea{padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;color:var(--text);background:white;outline:none;resize:vertical;min-height:70px;}
+.form-textarea:focus{border-color:var(--accent);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.form-section{border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px;}
+.form-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.form-section-title{font-size:11px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+.addr-suggestions{position:absolute;top:100%;left:0;right:0;background:white;border:1px solid var(--border2);border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);box-shadow:var(--shadow-md);z-index:200;max-height:180px;overflow-y:auto;}
+.addr-suggestion{padding:8px 12px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);}
+.addr-suggestion:hover{background:var(--accent-light);color:var(--accent);}
+.addr-suggestion:last-child{border-bottom:none;}
+.addr-wrap{position:relative;}
+
+/* MODALS */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(16,24,40,.45);z-index:1000;align-items:flex-start;justify-content:center;backdrop-filter:blur(2px);padding:20px;overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:560px;animation:modalIn .2s ease;margin:auto;}
+.modal-lg{max-width:720px;}
+.modal-xl{max-width:940px;}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.modal-title{font-size:15px;font-weight:700;color:var(--text);flex:1;}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:var(--radius-sm);}
+.modal-close:hover{background:var(--surface2);}
+.modal-close svg{width:18px;height:18px;display:block;}
+.modal-body{padding:20px;display:flex;flex-direction:column;gap:14px;}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:var(--radius);box-shadow:var(--shadow-lg);font-size:13px;font-weight:500;z-index:9999;animation:toastIn .25s ease;}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* CLIENT TABLE */
+.cl-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.cl-search-wrap{position:relative;flex:1;min-width:200px;max-width:320px;}
+.cl-search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text4);pointer-events:none;}
+.cl-search{width:100%;padding:8px 12px 8px 34px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;background:white;color:var(--text);outline:none;transition:border-color .15s;}
+.cl-search:focus{border-color:var(--accent);}
+.cl-filter{padding:7px 11px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;font-weight:500;font-family:inherit;background:white;color:var(--text2);cursor:pointer;outline:none;}
+.cl-filter:focus{border-color:var(--accent);}
+.cl-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+.cl-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm);}
+.cl-kpi-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cl-kpi-icon svg{width:17px;height:17px;}
+.cl-kpi-num{font-size:20px;font-weight:700;color:var(--text);line-height:1;}
+.cl-kpi-lbl{font-size:11px;color:var(--text4);margin-top:2px;}
+.cl-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;}
+.cl-table{width:100%;border-collapse:collapse;}
+.cl-table thead{background:var(--surface2);}
+.cl-table th{padding:10px 14px;font-size:11px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:.06em;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+.cl-table th:hover{color:var(--text2);}
+.cl-table td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.cl-table tr:last-child td{border-bottom:none;}
+.cl-table tbody tr{cursor:pointer;transition:background .1s;}
+.cl-table tbody tr:hover{background:var(--surface2);}
+.cl-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0;}
+.cl-name-cell{display:flex;align-items:center;gap:10px;}
+.cl-name{font-size:13px;font-weight:600;color:var(--text);}
+.cl-id{font-size:10px;color:var(--text4);font-family:'DM Mono',monospace;margin-top:1px;}
+.cl-phone{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);}
+.cl-premium{font-size:13px;font-weight:700;color:var(--text);}
+.cl-lob-dot{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.cl-actions{display:flex;gap:5px;opacity:0;transition:opacity .15s;}
+.cl-table tbody tr:hover .cl-actions{opacity:1;}
+.cl-act-btn{width:26px;height:26px;border-radius:5px;border:1px solid var(--border2);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .15s;}
+.cl-act-btn:hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent);}
+.cl-act-btn svg{width:12px;height:12px;}
+.cl-empty{text-align:center;padding:40px 20px;color:var(--text4);font-size:13px;}
+.cl-pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);background:var(--surface2);}
+.cl-page-info{font-size:12px;color:var(--text4);}
+.cl-page-btns{display:flex;gap:4px;}
+.cl-page-btn{padding:5px 10px;font-size:12px;font-weight:500;font-family:inherit;border:1px solid var(--border2);background:white;color:var(--text2);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;}
+.cl-page-btn:hover{background:var(--surface2);}
+.cl-page-btn.active{background:var(--accent);color:white;border-color:var(--accent);}
+.cl-page-btn:disabled{opacity:.4;cursor:not-allowed;}
+.view-toggle{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
+.view-toggle-btn{padding:6px 12px;font-size:12px;font-weight:600;font-family:inherit;border:none;background:none;color:var(--text4);cursor:pointer;transition:all .15s;}
+.view-toggle-btn.active{background:white;color:var(--text);box-shadow:var(--shadow-sm);}
+
+/* PIPELINE */
+.pipeline-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.ps-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow-sm);}
+.ps-label{font-size:10px;color:var(--text4);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.ps-value{font-size:18px;font-weight:700;color:var(--text);}
+.ps-sub{font-size:11px;color:var(--text4);margin-top:2px;}
+.pipeline-board{display:grid;grid-template-columns:repeat(8,minmax(180px,1fr));gap:10px;overflow-x:auto;padding-bottom:12px;}
+.pipeline-col{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;min-height:480px;}
+.pipeline-col-header{padding:10px 12px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.pipeline-col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.pipeline-col-title{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;flex:1;}
+.pipeline-col-count{font-size:10px;font-weight:700;color:var(--text4);background:var(--border);padding:1px 6px;border-radius:20px;}
+.pipeline-col-total{font-size:9px;color:var(--text4);font-family:'DM Mono',monospace;}
+.pipeline-cards{padding:8px;display:flex;flex-direction:column;gap:7px;flex:1;overflow-y:auto;}
+.pipeline-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 11px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow-sm);}
+.pipeline-card:hover{box-shadow:var(--shadow-md);border-color:var(--border2);transform:translateY(-1px);}
+.pipeline-col.drag-over{background:var(--accent-light);border-color:var(--accent);}
+.pc-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:5px;}
+.pc-lob{font-size:10px;font-weight:600;padding:2px 6px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;margin-bottom:5px;}
+.pc-agent{font-size:10px;color:var(--text4);display:flex;align-items:center;gap:4px;margin-top:4px;}
+.pc-agent svg{width:10px;height:10px;}
+.pc-premium{font-size:11px;font-weight:700;color:var(--text2);margin-top:5px;border-top:1px solid var(--border);padding-top:5px;}
+.pipeline-tabs{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
+.pipeline-tab{padding:7px 14px;font-size:12px;font-weight:600;font-family:inherit;border:none;background:none;color:var(--text4);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.pipeline-tab.active{background:white;color:var(--text);box-shadow:var(--shadow-sm);border-radius:4px;}
+
+/* DASHBOARD */
+.dash-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.dash-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow-sm);cursor:pointer;transition:all .15s;}
+.dash-kpi:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.dash-kpi-label{font-size:11px;font-weight:600;color:var(--text4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.dash-kpi-value{font-size:26px;font-weight:700;color:var(--text);line-height:1;}
+.dash-kpi-sub{font-size:12px;color:var(--text4);margin-top:4px;display:flex;align-items:center;gap:5px;}
+.dash-kpi-trend{font-size:11px;font-weight:700;padding:2px 6px;border-radius:20px;}
+.trend-up{background:var(--green-light);color:var(--green);}
+.trend-down{background:var(--red-light);color:var(--red);}
+.trend-flat{background:var(--surface2);color:var(--text4);}
+.dash-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.dash-3col{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;}
+.agent-perf-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.agent-perf-row:last-child{border-bottom:none;}
+.agent-avatar2{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0;}
+.agent-perf-name{font-size:13px;font-weight:600;color:var(--text);}
+.agent-perf-role{font-size:10px;color:var(--text4);}
+.agent-bar-wrap{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.agent-bar{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
+.agent-perf-stat{font-size:12px;font-weight:700;color:var(--text);text-align:right;min-width:60px;}
+.dash-activity-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.dash-activity-item:last-child{border-bottom:none;}
+.dash-act-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dash-act-dot svg{width:13px;height:13px;}
+.dash-act-text{font-size:12px;color:var(--text);font-weight:500;line-height:1.4;}
+.dash-act-time{font-size:10px;color:var(--text4);white-space:nowrap;flex-shrink:0;}
+.renew-table{width:100%;border-collapse:collapse;}
+.renew-table th{font-size:10px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2);}
+.renew-table td{padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.renew-table tr:last-child td{border-bottom:none;}
+.renew-table tbody tr:hover{background:var(--surface2);cursor:pointer;}
+.urgent-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.task-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;}
+.task-chip:hover{transform:translateY(-1px);box-shadow:var(--shadow);}
+.call-item-dash{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.call-item-dash:last-child{border-bottom:none;}
+.call-dir-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.call-dir-icon svg{width:13px;height:13px;}
+.call-in{background:var(--green-light);color:var(--green);}
+.call-out{background:var(--accent-light);color:var(--accent);}
+.call-missed{background:var(--red-light);color:var(--red);}
+.call-client-name{font-size:12px;font-weight:600;color:var(--text);}
+.call-meta{font-size:10px;color:var(--text4);margin-top:1px;}
+.call-duration{font-size:11px;font-weight:600;color:var(--text2);font-family:'DM Mono',monospace;white-space:nowrap;}
+
+/* SLIDE PANEL */
+.slide-panel{position:fixed;right:-110%;top:0;height:100vh;width:700px;max-width:96vw;background:white;box-shadow:-4px 0 30px rgba(0,0,0,.15);z-index:500;transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.slide-panel.open{right:0;}
+.slide-panel-overlay{position:fixed;inset:0;background:rgba(16,24,40,.2);z-index:499;display:none;}
+.slide-panel-overlay.open{display:block;}
+.slide-panel-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.slide-panel-title{font-size:15px;font-weight:700;color:var(--text);flex:1;}
+.slide-panel-body{flex:1;overflow-y:auto;padding:20px;}
+.slide-panel-toolbar{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-shrink:0;}
+
+/* POLICY DETAIL PANEL */
+.policy-detail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:14px;}
+.policy-detail-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.policy-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin:14px 0;}
+.policy-info-row{display:flex;flex-direction:column;gap:2px;}
+.policy-info-label{font-size:10px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:.05em;}
+.policy-info-value{font-size:13px;color:var(--text);font-weight:500;}
+.policy-action-bar{display:flex;gap:6px;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap;}
+
+/* SETTINGS TABS */
+.settings-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px;overflow-x:auto;}
+.settings-tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s;}
+.settings-tab:hover{color:var(--text);}
+.settings-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+.settings-section{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;}
+.settings-section-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.settings-section-sub{font-size:12px;color:var(--text4);margin-bottom:16px;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;padding-bottom:0;}
+.settings-row-label{font-size:13px;font-weight:500;color:var(--text);}
+.settings-row-sub{font-size:11px;color:var(--text4);margin-top:1px;}
+.toggle-switch{width:40px;height:22px;background:var(--border2);border-radius:20px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle-switch.on{background:var(--accent);}
+.toggle-knob{width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle-switch.on .toggle-knob{left:20px;}
+.agent-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:14px;}
+.perm-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;background:var(--green-light);color:var(--green);}
+.perm-chip.off{background:var(--surface2);color:var(--text4);}
+.carrier-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:12px;}
+.carrier-logo{width:36px;height:36px;border-radius:8px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.template-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+.template-card:hover{border-color:var(--accent);}
+
+/* DIRECTORY */
+.dir-card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow-sm);}
+.dir-card:hover{box-shadow:var(--shadow-md);border-color:var(--border2);}
+.dir-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+.dir-name{font-size:13px;font-weight:600;color:var(--text);}
+.dir-title{font-size:11px;color:var(--text4);margin-top:1px;}
+.dir-tag{display:inline-flex;align-items:center;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:600;}
+.dir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+
+/* SPOUSE SECTION */
+.spouse-section{background:var(--accent-light);border:1px solid #c7d7f9;border-radius:var(--radius);padding:14px;margin-top:4px;}
+.spouse-section-title{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/></svg></div>
+    <div><div class="logo-text">Safe House</div><div class="logo-sub">Agency Management</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Main</div>
+    <a class="nav-item" id="nav-dashboard" href="#" onclick="showView('dashboard',this);return false;" data-tooltip="Dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-item-label">Dashboard</span>
+    </a>
+    <a class="nav-item active" id="nav-clients" href="#" onclick="showView('clients',this);return false;" data-tooltip="Clients">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.87"/></svg>
+      <span class="nav-item-label">Clients</span>
+      <span class="nav-badge" id="nb-clients">10</span>
+    </a>
+    <a class="nav-item" id="nav-pipeline" href="#" onclick="showView('pipeline',this);return false;" data-tooltip="Pipeline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+      <span class="nav-item-label">Leads / Pipeline</span>
+      <span class="nav-badge">7</span>
+    </a>
+    <a class="nav-item" href="#" data-tooltip="Policies">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span class="nav-item-label">Policies</span>
+    </a>
+    <div class="nav-label">Communication</div>
+    <a class="nav-item" href="#" data-tooltip="Calls">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+      <span class="nav-item-label">Calls</span>
+    </a>
+    <a class="nav-item" href="#" data-tooltip="SMS">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <span class="nav-item-label">SMS / Messages</span>
+    </a>
+    <a class="nav-item" href="#" data-tooltip="Emails">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span class="nav-item-label">Emails</span>
+    </a>
+    <div class="nav-label">Tools</div>
+    <a class="nav-item" id="nav-directory" href="#" onclick="showView('directory',this);return false;" data-tooltip="Directory">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      <span class="nav-item-label">Directory</span>
+    </a>
+    <a class="nav-item" href="#" data-tooltip="Reports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span class="nav-item-label">Reports</span>
+    </a>
+    <div class="nav-label">Admin</div>
+    <a class="nav-item" id="nav-settings" href="#" onclick="showView('settings',this);return false;" data-tooltip="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 004.93 19.07M18.36 5.64A10 10 0 005.64 18.36"/></svg>
+      <span class="nav-item-label">Settings</span>
+    </a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar-sm">CS</div>
+    <div class="user-info-sm"><div class="user-name-sm">Christian Saenz</div><div class="user-role-sm">Admin</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="breadcrumb" id="topbarBreadcrumb"><strong>Clients</strong></div>
+    <div class="topbar-spacer"></div>
+    <div id="topbarActions">
+      <button class="topbar-btn btn-primary" onclick="openNewClientModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Client
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ VIEW: CLIENTS ═══ -->
+    <div class="view active" id="view-clients">
+      <div class="cl-kpi-row" id="clKpiRow"></div>
+      <div class="cl-toolbar">
+        <div class="cl-search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="cl-search" id="clSearch" placeholder="Search clients, phone…" oninput="clPage=1;clRender()">
+        </div>
+        <select class="cl-filter" id="clFilterAgent" onchange="clPage=1;clRender()">
+          <option value="">All Agents</option>
+          <option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option>
+        </select>
+        <select class="cl-filter" id="clFilterStatus" onchange="clPage=1;clRender()">
+          <option value="">All Status</option>
+          <option>Active Client</option><option>Lead</option><option>Prospect</option><option>Inactive</option>
+        </select>
+        <select class="cl-filter" id="clFilterLob" onchange="clPage=1;clRender()">
+          <option value="">All Products</option>
+          <option value="auto">Auto</option><option value="home">Homeowners</option><option value="renters">Renters</option>
+          <option value="motorcycle">Motorcycle</option><option value="business">Business</option>
+          <option value="commercial_auto">Commercial Auto</option>
+        </select>
+        <div class="view-toggle" style="margin-left:4px">
+          <button class="view-toggle-btn active" id="clViewAll" onclick="setClientView('all',this)">All</button>
+          <button class="view-toggle-btn" id="clViewRecent" onclick="setClientView('recent',this)">⏱ Recent</button>
+        </div>
+        <div style="margin-left:auto;font-size:12px;color:var(--text4)" id="clCount"></div>
+      </div>
+      <div class="cl-table-wrap">
+        <table class="cl-table">
+          <thead><tr>
+            <th onclick="clSort('name')">Client <span style="opacity:.4;font-size:9px">↕</span></th>
+            <th onclick="clSort('phone')">Phone</th>
+            <th onclick="clSort('agent')">Agent</th>
+            <th>Products</th>
+            <th onclick="clSort('premium')">Annual Premium <span style="opacity:.4;font-size:9px">↕</span></th>
+            <th onclick="clSort('status')">Status</th>
+            <th onclick="clSort('since')">Client Since</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="clTableBody"></tbody>
+        </table>
+        <div class="cl-pagination">
+          <div class="cl-page-info" id="clPageInfo"></div>
+          <div class="cl-page-btns" id="clPageBtns"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ VIEW: PIPELINE ═══ -->
+    <div class="view" id="view-pipeline">
+      <div class="pipeline-summary" id="pipelineSummary"></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="flex:1"><div style="font-size:16px;font-weight:700">Global Pipeline</div><div style="font-size:12px;color:var(--text4);margin-top:2px">Drag cards to move between stages</div></div>
+        <select class="cl-filter" id="pipelineFilterAgent" onchange="renderPipeline()"><option value="">All Agents</option><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select>
+        <select class="cl-filter" id="pipelineFilterLob" onchange="renderPipeline()"><option value="">All Products</option><option value="auto">Auto</option><option value="home">Homeowners</option><option value="renters">Renters</option><option value="motorcycle">Motorcycle</option><option value="business">Business</option><option value="commercial_auto">Commercial Auto</option></select>
+        <button class="topbar-btn btn-primary" style="font-size:13px" onclick="openAddLeadModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Lead</button>
+        <div class="pipeline-tabs">
+          <button class="pipeline-tab active" onclick="setPipelineView('board',this)">Board</button>
+          <button class="pipeline-tab" onclick="setPipelineView('list',this)">List</button>
+        </div>
+      </div>
+      <div id="pipelineBoard" class="pipeline-board"></div>
+      <div id="pipelineListView" style="display:none">
+        <div class="cl-table-wrap">
+          <table class="cl-table"><thead><tr><th>Client</th><th>Product</th><th>Stage</th><th>Agent</th><th>Est. Premium</th><th>Created</th><th></th></tr></thead>
+          <tbody id="pipelineListBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ VIEW: DASHBOARD ═══ -->
+    <div class="view" id="view-dashboard">
+      <div class="dash-kpi-row" id="dashKpiRow"></div>
+      <div class="dash-2col">
+        <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--purple-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div><div><div class="card-title">Agent Performance</div><div class="card-subtitle">Policies sold — March 2026</div></div></div><div style="padding:14px 18px" id="agentPerfList"></div></div>
+        <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--accent-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="card-title">Recent Activity</div><div class="card-subtitle">Agency-wide feed</div></div></div><div style="padding:14px 18px" id="dashActivityFeed"></div></div>
+      </div>
+      <div class="dash-3col">
+        <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--green-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div style="flex:1"><div class="card-title">Monthly Production</div><div class="card-subtitle">Policies written per month</div></div><div style="font-size:20px;font-weight:700;color:var(--green)" id="dashTotalPolicies"></div></div><div style="padding:18px 20px 14px"><div style="display:flex;align-items:flex-end;gap:8px;height:80px" id="dashBarChart"></div><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:6px" id="dashBarLabels"></div></div></div>
+        <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--orange-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="card-title">Upcoming Renewals</div><div class="card-subtitle">Next 30 days</div></div></div><div style="padding:0 0 4px"><table class="renew-table" id="renewalTable"></table></div></div>
+      </div>
+      <div class="dash-2col">
+        <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--red-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><div style="flex:1"><div class="card-title">Tasks Overview</div><div class="card-subtitle">All agents combined</div></div></div><div style="padding:14px 18px" id="dashTasksOverview"></div></div>
+        <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--orange-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg></div><div><div class="card-title">Pipeline Snapshot</div><div class="card-subtitle">Leads by stage</div></div></div><div style="padding:14px 18px" id="dashPipelineSnap"></div></div>
+      </div>
+      <div class="dash-2col">
+        <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--red-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div style="flex:1"><div class="card-title">Policies Pending Cancellation</div><div class="card-subtitle" id="pendingCancelSubtitle"></div></div><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="openPendingCancelPanel()">View All</button></div><div id="pendingCancelList"></div></div>
+        <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--surface2)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div style="flex:1"><div class="card-title">Canceled Policies</div><div class="card-subtitle" id="canceledSubtitle">Last 30 days</div></div><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="openCanceledPanel()">View All</button></div><div id="canceledPolicyList"></div></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--accent-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg></div>
+          <div style="flex:1"><div class="card-title">Call Activity</div><div class="card-subtitle" id="callsSubtitle">Today</div></div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select class="cl-filter" id="callFilterType" onchange="renderDashCalls()" style="font-size:11px;padding:5px 8px"><option value="">All</option><option value="inbound">Inbound</option><option value="outbound">Outbound</option><option value="missed">Missed</option></select>
+            <select class="cl-filter" id="callFilterAgent" onchange="renderDashCalls()" style="font-size:11px;padding:5px 8px"><option value="">All Agents</option><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select>
+            <select class="cl-filter" id="callFilterPeriod" onchange="renderDashCalls()" style="font-size:11px;padding:5px 8px"><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option></select>
+            <button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="openCallsPanel()">View All</button>
+          </div>
+        </div>
+        <div style="padding:10px 16px 8px;display:flex;gap:10px;border-bottom:1px solid var(--border)" id="callSummaryChips"></div>
+        <div style="padding:4px 16px 8px;max-height:220px;overflow-y:auto" id="dashCallsList"></div>
+      </div>
+    </div>
+
+    <!-- ═══ VIEW: DIRECTORY ═══ -->
+    <div class="view" id="view-directory">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <div style="flex:1"><div style="font-size:16px;font-weight:700">Agency Directory</div><div style="font-size:12px;color:var(--text4);margin-top:2px">Contacts, partners, referrals & key people</div></div>
+        <input class="cl-search" id="dirSearch" placeholder="Search contacts…" oninput="renderDirectory()" style="width:240px">
+        <select class="cl-filter" id="dirFilterCat" onchange="renderDirectory()">
+          <option value="">All Categories</option>
+          <option>Carrier Rep</option><option>Referral Partner</option><option>Vendor</option><option>Agent</option><option>Attorney</option><option>Lender</option><option>Other</option>
+        </select>
+        <button class="topbar-btn btn-primary" onclick="openAddContactModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Contact</button>
+      </div>
+      <div class="dir-grid" id="directoryGrid"></div>
+    </div>
+
+    <!-- ═══ VIEW: SETTINGS ═══ -->
+    <div class="view" id="view-settings">
+      <div style="margin-bottom:16px"><div style="font-size:16px;font-weight:700">Settings</div><div style="font-size:12px;color:var(--text4);margin-top:2px">Manage agency configuration</div></div>
+      <div class="settings-tabs" id="settingsTabs">
+        <button class="settings-tab active" onclick="showSettingsTab('agents',this)">Agents & Users</button>
+        <button class="settings-tab" onclick="showSettingsTab('permissions',this)">Permissions</button>
+        <button class="settings-tab" onclick="showSettingsTab('carriers',this)">Carriers</button>
+        <button class="settings-tab" onclick="showSettingsTab('referrals',this)">Referral Sources</button>
+        <button class="settings-tab" onclick="showSettingsTab('email_tpl',this)">Email Templates</button>
+        <button class="settings-tab" onclick="showSettingsTab('sms_tpl',this)">SMS Templates</button>
+        <button class="settings-tab" onclick="showSettingsTab('general',this)">General</button>
+        <button class="settings-tab" onclick="showSettingsTab('notifications',this)">Notifications</button>
+      </div>
+      <div id="settingsContent"></div>
+    </div>
+
+  </div><!-- content -->
+</div><!-- main -->
+</div><!-- app -->
+
+<!-- PANELS -->
+<div class="slide-panel-overlay" id="panelOverlay" onclick="closeAllPanels()"></div>
+
+<!-- PENDING CANCEL PANEL -->
+<div class="slide-panel" id="pendingCancelPanel">
+  <div class="slide-panel-header"><div class="card-icon" style="background:var(--red-light);width:32px;height:32px;border-radius:8px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="slide-panel-title">Pending Cancellations</div><button class="modal-close" onclick="closeAllPanels()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="slide-panel-toolbar"><input class="cl-search" id="pcSearch" placeholder="Search…" oninput="renderPendingCancelPanel()" style="width:160px"><select class="cl-filter" id="pcFilterAgent" onchange="renderPendingCancelPanel()"><option value="">All Agents</option><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select><select class="cl-filter" id="pcFilterReason" onchange="renderPendingCancelPanel()"><option value="">All Reasons</option><option>Non-Payment</option><option>Client Request</option><option>Underwriting</option><option>Address Change</option><option>Switched Carrier</option></select><div style="margin-left:auto;font-size:12px;color:var(--text4)" id="pcCount"></div></div>
+  <div class="slide-panel-body" id="pendingCancelPanelBody"></div>
+</div>
+
+<!-- CANCELED PANEL -->
+<div class="slide-panel" id="canceledPanel">
+  <div class="slide-panel-header"><div class="card-icon" style="background:var(--surface2);width:32px;height:32px;border-radius:8px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div class="slide-panel-title">Canceled Policies</div><button class="modal-close" onclick="closeAllPanels()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="slide-panel-toolbar"><input class="cl-search" id="cxSearch" placeholder="Search…" oninput="renderCanceledPanel()" style="width:160px"><select class="cl-filter" id="cxFilterAgent" onchange="renderCanceledPanel()"><option value="">All Agents</option><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select><select class="cl-filter" id="cxFilterReason" onchange="renderCanceledPanel()"><option value="">All Reasons</option><option>Non-Payment</option><option>Client Request</option><option>Underwriting</option><option>Switched Carrier</option></select><select class="cl-filter" id="cxFilterPeriod" onchange="renderCanceledPanel()"><option value="30">Last 30 days</option><option value="60">Last 60 days</option><option value="90">Last 90 days</option><option value="all">All time</option></select><div style="margin-left:auto;font-size:12px;color:var(--text4)" id="cxCount"></div></div>
+  <div class="slide-panel-body" id="canceledPanelBody"></div>
+</div>
+
+<!-- CALLS PANEL -->
+<div class="slide-panel" id="allCallsPanel">
+  <div class="slide-panel-header"><div class="card-icon" style="background:var(--accent-light);width:32px;height:32px;border-radius:8px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" width="15" height="15"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg></div><div class="slide-panel-title">Call Activity</div><button class="modal-close" onclick="closeAllPanels()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="slide-panel-toolbar"><input class="cl-search" id="callPanelSearch" placeholder="Search…" oninput="renderCallsPanel()" style="width:160px"><select class="cl-filter" id="callPanelType" onchange="renderCallsPanel()"><option value="">All</option><option value="inbound">Inbound</option><option value="outbound">Outbound</option><option value="missed">Missed</option></select><select class="cl-filter" id="callPanelAgent" onchange="renderCallsPanel()"><option value="">All Agents</option><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select><select class="cl-filter" id="callPanelPeriod" onchange="renderCallsPanel()"><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option><option value="all">All Time</option></select></div>
+  <div class="slide-panel-body" id="callsPanelBody"></div>
+</div>
+
+<!-- POLICY DETAIL PANEL -->
+<div class="slide-panel" id="policyDetailPanel">
+  <div class="slide-panel-header">
+    <div class="card-icon" style="background:var(--purple-light);width:32px;height:32px;border-radius:8px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" width="15" height="15"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    <div class="slide-panel-title" id="policyPanelTitle">Policy Detail</div>
+    <button class="modal-close" onclick="closeAllPanels()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="slide-panel-body" id="policyDetailBody"></div>
+</div>
+
+<!-- NEW CLIENT MODAL -->
+<div class="modal-overlay" id="newClientModal">
+  <div class="modal modal-xl">
+    <div class="modal-header">
+      <div class="card-icon" style="background:var(--accent-light);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" width="15" height="15"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg></div>
+      <div class="modal-title">New Client</div>
+      <button class="modal-close" onclick="closeNewClientModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <!-- Personal Info -->
+      <div class="form-section">
+        <div class="form-section-title">Personal Information</div>
+        <div class="form-row-3" style="margin-bottom:10px">
+          <div class="form-field"><label class="form-label">First Name *</label><input class="form-input" id="nc_first" placeholder="First name"></div>
+          <div class="form-field"><label class="form-label">Last Name *</label><input class="form-input" id="nc_last" placeholder="Last name"></div>
+          <div class="form-field"><label class="form-label">Maternal Last Name</label><input class="form-input" id="nc_last2" placeholder="2nd last name"></div>
+        </div>
+        <div class="form-row" style="margin-bottom:10px">
+          <div class="form-field"><label class="form-label">Date of Birth</label><input class="form-input" id="nc_dob" type="date"></div>
+          <div class="form-field"><label class="form-label">Gender</label><select class="form-select" id="nc_gender"><option value="">— Select —</option><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option></select></div>
+        </div>
+        <div class="form-row" style="margin-bottom:10px">
+          <div class="form-field">
+            <label class="form-label">Marital Status</label>
+            <select class="form-select" id="nc_marital" onchange="toggleSpouseSection()"><option value="">— Select —</option><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option><option>Domestic Partner</option></select>
+          </div>
+          <div class="form-field"><label class="form-label">SSN (Last 4)</label><input class="form-input" id="nc_ssn" placeholder="XXXX" maxlength="4"></div>
+        </div>
+        <!-- ID Info (moved here from Professional) -->
+        <div class="form-row" style="margin-bottom:10px">
+          <div class="form-field"><label class="form-label">ID Type</label><select class="form-select" id="nc_id_type"><option value="">— Select —</option><option>TX Driver License</option><option>Other State DL</option><option>Passport</option><option>State ID</option><option>International ID / Matricula</option><option>Other</option></select></div>
+          <div class="form-field"><label class="form-label">ID Number</label><input class="form-input" id="nc_id_num" placeholder="ID number"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label class="form-label">ID Expiration</label><input class="form-input" id="nc_id_exp" type="date"></div>
+          <div class="form-field"><label class="form-label">ID State / Country</label><input class="form-input" id="nc_id_state" placeholder="e.g. TX, Mexico"></div>
+        </div>
+
+        <!-- Spouse/Co-insured section — shown when Married or Domestic Partner -->
+        <div id="spouseSection" style="display:none;margin-top:14px">
+          <div class="spouse-section">
+            <div class="spouse-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Spouse / Co-Insured Information</div>
+            <div class="form-row" style="margin-bottom:10px">
+              <div class="form-field"><label class="form-label">Spouse First Name</label><input class="form-input" id="sp_first" placeholder="First name"></div>
+              <div class="form-field"><label class="form-label">Spouse Last Name</label><input class="form-input" id="sp_last" placeholder="Last name"></div>
+            </div>
+            <div class="form-row" style="margin-bottom:10px">
+              <div class="form-field"><label class="form-label">Date of Birth</label><input class="form-input" id="sp_dob" type="date"></div>
+              <div class="form-field"><label class="form-label">SSN (Last 4)</label><input class="form-input" id="sp_ssn" placeholder="XXXX" maxlength="4"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-field"><label class="form-label">ID Type</label><select class="form-select" id="sp_id_type"><option value="">— Select —</option><option>TX Driver License</option><option>Other State DL</option><option>Passport</option><option>State ID</option><option>International ID / Matricula</option><option>Other</option></select></div>
+              <div class="form-field"><label class="form-label">ID Number</label><input class="form-input" id="sp_id_num" placeholder="ID number"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="form-section">
+        <div class="form-section-title">Contact Information</div>
+        <div class="form-row" style="margin-bottom:10px">
+          <div class="form-field"><label class="form-label">Phone *</label><input class="form-input" id="nc_phone" placeholder="(915) 000-0000"></div>
+          <div class="form-field"><label class="form-label">Alternate Phone</label><input class="form-input" id="nc_phone2" placeholder="(915) 000-0000"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label class="form-label">Email</label><input class="form-input" id="nc_email" type="email" placeholder="email@example.com"></div>
+          <div class="form-field"><label class="form-label">Preferred Language</label><select class="form-select" id="nc_lang"><option>Spanish</option><option>English</option><option>Both</option></select></div>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="form-section">
+        <div class="form-section-title">Address</div>
+        <div class="form-field addr-wrap" style="margin-bottom:10px">
+          <label class="form-label">Street Address</label>
+          <input class="form-input" id="nc_street" placeholder="Start typing address…" oninput="addrAutocomplete(this,'nc_addr_suggestions')" autocomplete="off">
+          <div class="addr-suggestions" id="nc_addr_suggestions" style="display:none"></div>
+        </div>
+        <div class="form-row-3" style="margin-bottom:10px">
+          <div class="form-field"><label class="form-label">City</label><input class="form-input" id="nc_city" placeholder="El Paso"></div>
+          <div class="form-field"><label class="form-label">State</label><select class="form-select" id="nc_state"><option>TX</option><option>NM</option><option>CA</option><option>FL</option><option>AZ</option><option>CO</option><option>NY</option><option>Other</option></select></div>
+          <div class="form-field"><label class="form-label">ZIP</label><input class="form-input" id="nc_zip" placeholder="79912" maxlength="5" oninput="zipLookup(this)"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label class="form-label">Apt / Unit</label><input class="form-input" id="nc_apt" placeholder="Apt #, Suite, etc."></div>
+          <div class="form-field"><label class="form-label">County</label><input class="form-input" id="nc_county" placeholder="El Paso County" readonly style="background:var(--surface2)"></div>
+        </div>
+      </div>
+
+      <!-- Professional Info -->
+      <div class="form-section">
+        <div class="form-section-title">Professional Information</div>
+        <div class="form-row" style="margin-bottom:10px">
+          <div class="form-field"><label class="form-label">Occupation</label><input class="form-input" id="nc_occupation" placeholder="e.g. Nurse, Teacher, Driver"></div>
+          <div class="form-field"><label class="form-label">Industry</label><select class="form-select" id="nc_industry"><option value="">— Select —</option><option>Healthcare</option><option>Construction</option><option>Education</option><option>Transportation</option><option>Retail</option><option>Government</option><option>Food Service</option><option>Self-Employed</option><option>Military</option><option>Other</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label class="form-label">Employer</label><input class="form-input" id="nc_employer" placeholder="Company / Employer name"></div>
+          <div class="form-field"><label class="form-label">Years at Job</label><select class="form-select" id="nc_job_years"><option value="">— Select —</option><option>Less than 1 year</option><option>1–2 years</option><option>3–5 years</option><option>5+ years</option></select></div>
+        </div>
+      </div>
+
+      <!-- Assignment -->
+      <div class="form-section">
+        <div class="form-section-title">Assignment & Lead</div>
+        <div class="form-row" style="margin-bottom:10px">
+          <div class="form-field"><label class="form-label">Assigned Agent *</label><select class="form-select" id="nc_agent"><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select></div>
+          <div class="form-field"><label class="form-label">Status</label><select class="form-select" id="nc_status"><option>Active Client</option><option>Lead</option><option>Prospect</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label class="form-label">Lead Source</label><select class="form-select" id="nc_source"><option value="">— Select —</option><option>Referral</option><option>Walk-in</option><option>Phone Call</option><option>Website</option><option>Facebook</option><option>Google Ads</option><option>TikTok</option><option>Other</option></select></div>
+          <div class="form-field"><label class="form-label">Notes</label><input class="form-input" id="nc_notes" placeholder="Additional notes…"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-outline" onclick="closeNewClientModal()">Cancel</button>
+      <button class="topbar-btn btn-primary" onclick="confirmNewClient()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD LEAD MODAL -->
+<div class="modal-overlay" id="addLeadModal">
+  <div class="modal">
+    <div class="modal-header"><div class="card-icon" style="background:var(--orange-light);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" width="15" height="15"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg></div><div class="modal-title">Add Lead</div><button class="modal-close" onclick="closeAddLeadModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="form-field"><label class="form-label">First Name *</label><input class="form-input" id="lead_first" placeholder="First name"></div><div class="form-field"><label class="form-label">Last Name *</label><input class="form-input" id="lead_last" placeholder="Last name"></div></div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Phone</label><input class="form-input" id="lead_phone" placeholder="(915) 000-0000"></div>
+        <div class="form-field"><label class="form-label">Product *</label><select class="form-select" id="lead_lob"><option value="">— Select —</option><option value="auto">🚗 Auto</option><option value="home">🏠 Homeowners</option><option value="renters">🏘️ Renters</option><option value="motorcycle">🏍️ Motorcycle</option><option value="business">🏢 Business</option><option value="commercial_auto">🚛 Commercial Auto</option><option value="other">📋 Other</option></select></div>
+      </div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Agent</label><select class="form-select" id="lead_agent"><option>Ana Gutierrez</option><option>Jennifer Fierro</option><option>Marina Contreras</option></select></div><div class="form-field"><label class="form-label">Est. Premium</label><input class="form-input" id="lead_premium" type="number" placeholder="0.00"></div></div>
+      <div class="form-field"><label class="form-label">Notes</label><textarea class="form-textarea" id="lead_notes" rows="2" placeholder="Lead source, context…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="topbar-btn btn-outline" onclick="closeAddLeadModal()">Cancel</button><button class="topbar-btn btn-primary" onclick="confirmAddLead()">Add Lead</button></div>
+  </div>
+</div>
+
+<!-- ADD CONTACT MODAL -->
+<div class="modal-overlay" id="addContactModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><div class="card-icon" style="background:var(--green-light);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="15" height="15"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="modal-title">Add Contact</div><button class="modal-close" onclick="closeAddContactModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="form-field"><label class="form-label">First Name *</label><input class="form-input" id="ct_first" placeholder="First name"></div><div class="form-field"><label class="form-label">Last Name *</label><input class="form-input" id="ct_last" placeholder="Last name"></div></div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Company / Agency</label><input class="form-input" id="ct_company" placeholder="Company name"></div><div class="form-field"><label class="form-label">Title / Role</label><input class="form-input" id="ct_title" placeholder="e.g. Account Manager"></div></div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Category *</label><select class="form-select" id="ct_cat"><option value="">— Select —</option><option>Carrier Rep</option><option>Referral Partner</option><option>Vendor</option><option>Agent</option><option>Attorney</option><option>Lender</option><option>Other</option></select></div><div class="form-field"><label class="form-label">Carrier (if rep)</label><select class="form-select" id="ct_carrier"><option value="">— Select —</option><option>Progressive</option><option>Allstate</option><option>State Farm</option><option>GEICO</option><option>Bristol West</option><option>Gainsco</option><option>Dairyland</option><option>Encompass</option><option>Other</option></select></div></div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Phone</label><input class="form-input" id="ct_phone" placeholder="(915) 000-0000"></div><div class="form-field"><label class="form-label">Email</label><input class="form-input" id="ct_email" type="email" placeholder="email@example.com"></div></div>
+      <div class="form-row"><div class="form-field"><label class="form-label">Website</label><input class="form-input" id="ct_website" placeholder="https://"></div><div class="form-field"><label class="form-label">Visibility</label><select class="form-select" id="ct_visibility"><option>Shared (All Agents)</option><option>Private (Only Me)</option></select></div></div>
+      <div class="form-field"><label class="form-label">Notes</label><textarea class="form-textarea" id="ct_notes" rows="2" placeholder="How we know them, what they do, special instructions…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="topbar-btn btn-outline" onclick="closeAddContactModal()">Cancel</button><button class="topbar-btn btn-primary" onclick="confirmAddContact()">Add Contact</button></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+const AVATAR_COLORS=['#1B4FD8','#7F56D9','#F79009','#12B76A','#F04438','#0BA5EC','#9E165F','#027A48'];
+let clientSeq=1009;
+
+// Recently viewed (simulate)
+let recentlyViewed=['CLT-00412','CLT-00390','CLT-00435','CLT-00430','CLT-00415','CLT-00401','CLT-00440','CLT-00425'];
+
+let clients=[
+  {id:'CLT-00412',first:'María',last:'López Hernández',phone:'(915) 341-7387',agent:'Ana Gutierrez',status:'Active Client',lobs:['auto','home','life'],premium:4252,since:'2025-01-15',city:'El Paso',zip:'79912',color:'#1B4FD8',lastViewed:'2026-03-10T14:30:00'},
+  {id:'CLT-00390',first:'Carlos',last:'Reyes',phone:'(915) 208-4411',agent:'Jennifer Fierro',status:'Active Client',lobs:['auto','renters'],premium:2100,since:'2024-08-03',city:'El Paso',zip:'79905',color:'#7F56D9',lastViewed:'2026-03-10T13:45:00'},
+  {id:'CLT-00401',first:'Sandra',last:'Morales',phone:'(915) 555-0192',agent:'Marina Contreras',status:'Active Client',lobs:['home','life'],premium:2008,since:'2024-11-20',city:'El Paso',zip:'79901',color:'#F79009',lastViewed:'2026-03-10T11:20:00'},
+  {id:'CLT-00415',first:'Josefa',last:'Rodriguez',phone:'(915) 341-7387',agent:'Ana Gutierrez',status:'Active Client',lobs:['auto'],premium:1880,since:'2026-02-25',city:'El Paso',zip:'79905',color:'#12B76A',lastViewed:'2026-03-10T10:05:00'},
+  {id:'CLT-00388',first:'Miguel',last:'Torres Vega',phone:'(915) 400-8823',agent:'Jennifer Fierro',status:'Inactive',lobs:['auto'],premium:0,since:'2023-06-10',city:'El Paso',zip:'79930',color:'#F04438',lastViewed:'2026-03-09T16:10:00'},
+  {id:'CLT-00420',first:'Lucía',last:'Hernández',phone:'(915) 622-1140',agent:'Marina Contreras',status:'Lead',lobs:['auto','business'],premium:3500,since:'2026-03-01',city:'El Paso',zip:'79902',color:'#0BA5EC',lastViewed:'2026-03-09T15:00:00'},
+  {id:'CLT-00425',first:'Roberto',last:'Fuentes',phone:'(915) 745-9900',agent:'Ana Gutierrez',status:'Prospect',lobs:['home'],premium:1200,since:'2026-03-05',city:'El Paso',zip:'79912',color:'#9E165F',lastViewed:'2026-03-09T14:30:00'},
+  {id:'CLT-00430',first:'Diana',last:'Castillo',phone:'(915) 333-6677',agent:'Jennifer Fierro',status:'Active Client',lobs:['life','home'],premium:2850,since:'2025-09-18',city:'El Paso',zip:'79915',color:'#027A48',lastViewed:'2026-03-09T11:00:00'},
+  {id:'CLT-00435',first:'Pablo',last:'Ortega',phone:'(915) 881-2244',agent:'Marina Contreras',status:'Active Client',lobs:['auto','home','motorcycle'],premium:3900,since:'2025-04-12',city:'El Paso',zip:'79936',color:'#1B4FD8',lastViewed:'2026-03-08T10:30:00'},
+  {id:'CLT-00440',first:'Elena',last:'Guzmán',phone:'(915) 229-5511',agent:'Ana Gutierrez',status:'Lead',lobs:['auto'],premium:1500,since:'2026-03-08',city:'El Paso',zip:'79903',color:'#7F56D9',lastViewed:'2026-03-08T09:45:00'},
+];
+
+const LOB_META={
+  auto:{icon:'🚗',label:'Auto',bg:'#DBEAFE',color:'#1D4ED8'},
+  home:{icon:'🏠',label:'Homeowners',bg:'#D1FAE5',color:'#065F46'},
+  renters:{icon:'🏘️',label:'Renters',bg:'#E0F2FE',color:'#0C4A6E'},
+  motorcycle:{icon:'🏍️',label:'Motorcycle',bg:'#FEF3C7',color:'#92400E'},
+  business:{icon:'🏢',label:'Business',bg:'#FEF9C3',color:'#713F12'},
+  commercial_auto:{icon:'🚛',label:'Comm. Auto',bg:'#F3E8FF',color:'#6B21A8'},
+  life:{icon:'❤️',label:'Life',bg:'#FFE4E6',color:'#9F1239'},
+  other:{icon:'📋',label:'Other',bg:'#F3F4F6',color:'#374151'},
+};
+
+const STAGE_META=[
+  {id:'new_lead',label:'New Lead',color:'#94A3B8'},
+  {id:'attempted',label:'Attempted',color:'#F79009'},
+  {id:'contacted',label:'Contacted',color:'#0BA5EC'},
+  {id:'quoted',label:'Quoted',color:'#1B4FD8'},
+  {id:'follow_up',label:'Follow-up',color:'#7F56D9'},
+  {id:'sold',label:'✓ Sold',color:'#12B76A'},
+  {id:'not_interested',label:'Not Interested',color:'#94A3B8'},
+  {id:'lost',label:'Lost',color:'#F04438'},
+];
+
+let pipelineSeq=20;
+let pipelineItems=[
+  {id:1,clientId:'CLT-00440',name:'Elena Guzmán',lob:'auto',stage:'new_lead',agent:'Ana Gutierrez',premium:1500,created:'2026-03-08'},
+  {id:2,clientId:'CLT-00425',name:'Roberto Fuentes',lob:'home',stage:'quoted',agent:'Ana Gutierrez',premium:1200,created:'2026-03-05'},
+  {id:3,clientId:'CLT-00420',name:'Lucía Hernández',lob:'business',stage:'contacted',agent:'Marina Contreras',premium:3500,created:'2026-03-01'},
+  {id:4,clientId:'CLT-00420',name:'Lucía Hernández',lob:'auto',stage:'follow_up',agent:'Marina Contreras',premium:1800,created:'2026-03-01'},
+  {id:5,clientId:null,name:'Juan Vargas',lob:'auto',stage:'attempted',agent:'Jennifer Fierro',premium:900,created:'2026-03-07'},
+  {id:6,clientId:null,name:'Carmen Soto',lob:'home',stage:'new_lead',agent:'Jennifer Fierro',premium:1400,created:'2026-03-09'},
+  {id:7,clientId:null,name:'Alex Mendoza',lob:'renters',stage:'quoted',agent:'Ana Gutierrez',premium:600,created:'2026-03-06'},
+  {id:8,clientId:'CLT-00412',name:'María López',lob:'motorcycle',stage:'follow_up',agent:'Ana Gutierrez',premium:400,created:'2026-03-04'},
+  {id:9,clientId:null,name:'Patricia Leal',lob:'commercial_auto',stage:'contacted',agent:'Marina Contreras',premium:800,created:'2026-03-08'},
+  {id:10,clientId:null,name:'Marcos Jiménez',lob:'motorcycle',stage:'new_lead',agent:'Jennifer Fierro',premium:700,created:'2026-03-10'},
+];
+
+// SAMPLE POLICIES (for demo click-through)
+const samplePolicies=[
+  {id:'PRG-AU-2024-1182',client:'María López Hernández',clientId:'CLT-00412',lob:'auto',carrier:'Progressive',premium:2244,effective:'2025-01-15',expiry:'2026-01-15',status:'Active',agent:'Ana Gutierrez',vehicles:[{year:2020,make:'Toyota',model:'Camry',vin:'4T1B11HK0KU763456',plate:'ABC-1234'}],drivers:[{name:'María López',dob:'1985-06-12',lic:'TX-DL-8849234'}],deductible:'$500 comp / $500 coll',liability:'100/300/100',coverage:'Full Coverage'},
+  {id:'GIC-HO-2023-0498',client:'María López Hernández',clientId:'CLT-00412',lob:'home',carrier:'Gainsco',premium:1440,effective:'2025-03-01',expiry:'2026-03-01',status:'Active',agent:'Ana Gutierrez',address:'1423 Shadow Mountain Dr, El Paso TX 79912',dwelling:280000,deductible:'$2,500',liability:'$100,000',replacement:'Replacement Cost'},
+  {id:'AIG-LF-2022-0133',client:'Carlos Reyes',clientId:'CLT-00390',lob:'life',carrier:'AIG Life',premium:456,effective:'2022-08-01',expiry:'2032-08-01',status:'Active',agent:'Jennifer Fierro',faceAmount:250000,beneficiary:'Ana Reyes (wife)',type:'20-Year Term'},
+  {id:'ALL-AU-2023-0871',client:'Pablo Ortega',clientId:'CLT-00435',lob:'auto',carrier:'Allstate',premium:2100,effective:'2025-04-12',expiry:'2026-04-12',status:'Active',agent:'Marina Contreras',vehicles:[{year:2019,make:'Ford',model:'F-150',vin:'1FTEW1EP7KFA12345',plate:'XYZ-9876'}],drivers:[{name:'Pablo Ortega',dob:'1978-11-22',lic:'TX-DL-5512988'}],deductible:'$1,000 comp / $1,000 coll',liability:'50/100/50',coverage:'Full Coverage'},
+  {id:'MET-RN-2024-1204',client:'Carlos Reyes',clientId:'CLT-00390',lob:'renters',carrier:'MetLife',premium:420,effective:'2024-08-03',expiry:'2025-08-03',status:'Pending Renewal',agent:'Jennifer Fierro',address:'220 N Kansas St Apt 4B, El Paso TX 79905',personalProp:25000,liability:100000,deductible:'$500'},
+];
+
+// PENDING CANCELLATIONS
+const pendingCancellations=[
+  {id:'PC001',client:'María López Hernández',clientId:'CLT-00412',policy:'PRG-AU-2024-1182',lob:'auto',agent:'Ana Gutierrez',reason:'Non-Payment',requestDate:'2026-03-05',cancelDate:'2026-03-20',premium:2244,notes:'3rd notice sent. Client promised payment by March 15.'},
+  {id:'PC002',client:'Carlos Reyes',clientId:'CLT-00390',policy:'ALL-AU-2023-0871',lob:'auto',agent:'Jennifer Fierro',reason:'Client Request',requestDate:'2026-03-08',cancelDate:'2026-03-25',premium:1650,notes:'Client switching to Progressive direct.'},
+  {id:'PC003',client:'Pablo Ortega',clientId:'CLT-00435',policy:'GIC-HO-2023-0199',lob:'home',agent:'Marina Contreras',reason:'Non-Payment',requestDate:'2026-03-01',cancelDate:'2026-03-15',premium:1800,notes:'2nd notice. Issue with escrow.'},
+  {id:'PC004',client:'Sandra Morales',clientId:'CLT-00401',policy:'MET-LF-2022-1044',lob:'life',agent:'Marina Contreras',reason:'Underwriting',requestDate:'2026-03-07',cancelDate:'2026-03-30',premium:768,notes:'Carrier flagged undisclosed medical condition.'},
+  {id:'PC005',client:'Diana Castillo',clientId:'CLT-00430',policy:'AIG-HL-2025-0612',lob:'home',agent:'Jennifer Fierro',reason:'Switched Carrier',requestDate:'2026-03-09',cancelDate:'2026-04-01',premium:960,notes:'Client enrolled in employer plan.'},
+];
+
+// CANCELED
+const canceledPolicies=[
+  {id:'CX001',client:'Miguel Torres Vega',clientId:'CLT-00388',policy:'STF-AU-2022-1038',lob:'auto',agent:'Jennifer Fierro',reason:'Non-Payment',cancelDate:'2026-03-02',premium:1450,notes:'Multiple NSF. Sent to collections.'},
+  {id:'CX002',client:'Josefa Rodriguez',clientId:'CLT-00415',policy:'ALL-AU-2023-0871',lob:'auto',agent:'Ana Gutierrez',reason:'Client Request',cancelDate:'2026-02-28',premium:980,notes:'Client moved out of state.'},
+  {id:'CX003',client:'Carlos Reyes',clientId:'CLT-00390',policy:'MET-RN-2023-1204',lob:'renters',agent:'Jennifer Fierro',reason:'Address Change',cancelDate:'2026-02-20',premium:450,notes:'Moved. New address being verified.'},
+  {id:'CX004',client:'Lucía Hernández',clientId:'CLT-00420',policy:'PRG-AU-2025-1188',lob:'auto',agent:'Marina Contreras',reason:'Underwriting',cancelDate:'2026-02-15',premium:1780,notes:'DUI discovered during renewal review.'},
+  {id:'CX005',client:'Elena Guzmán',clientId:'CLT-00440',policy:'GIC-AU-2026-0011',lob:'auto',agent:'Ana Gutierrez',reason:'Non-Payment',cancelDate:'2026-03-08',premium:1200,notes:'New business, first payment returned.'},
+  {id:'CX006',client:'Pablo Ortega',clientId:'CLT-00435',policy:'HAR-MO-2023-1055',lob:'motorcycle',agent:'Marina Contreras',reason:'Client Request',cancelDate:'2026-01-30',premium:620,notes:'Sold motorcycle.'},
+];
+
+// CALLS
+const callsData=[
+  {id:1,type:'inbound',client:'María López Hernández',clientId:'CLT-00412',phone:'(915) 341-7387',agent:'Ana Gutierrez',duration:'4:32',time:'2026-03-10T09:15:00',notes:'Payment question'},
+  {id:2,type:'outbound',client:'Carlos Reyes',clientId:'CLT-00390',phone:'(915) 208-4411',agent:'Jennifer Fierro',duration:'2:18',time:'2026-03-10T09:45:00',notes:'Renewal follow-up'},
+  {id:3,type:'missed',client:'Unknown',clientId:null,phone:'(915) 400-8823',agent:'Marina Contreras',duration:'0:00',time:'2026-03-10T10:02:00',notes:''},
+  {id:4,type:'inbound',client:'Sandra Morales',clientId:'CLT-00401',phone:'(915) 555-0192',agent:'Marina Contreras',duration:'6:44',time:'2026-03-10T10:30:00',notes:'Policy change request'},
+  {id:5,type:'outbound',client:'Elena Guzmán',clientId:'CLT-00440',phone:'(915) 229-5511',agent:'Ana Gutierrez',duration:'1:55',time:'2026-03-10T11:00:00',notes:'Quote follow-up'},
+  {id:6,type:'missed',client:'Pablo Ortega',clientId:'CLT-00435',phone:'(915) 881-2244',agent:'Jennifer Fierro',duration:'0:00',time:'2026-03-10T11:22:00',notes:''},
+  {id:7,type:'inbound',client:'Diana Castillo',clientId:'CLT-00430',phone:'(915) 333-6677',agent:'Jennifer Fierro',duration:'3:10',time:'2026-03-10T13:05:00',notes:'Cancellation inquiry'},
+  {id:8,type:'outbound',client:'Josefa Rodriguez',clientId:'CLT-00415',phone:'(915) 341-7387',agent:'Ana Gutierrez',duration:'0:55',time:'2026-03-09T14:30:00',notes:'Reminder call'},
+  {id:9,type:'inbound',client:'Roberto Fuentes',clientId:'CLT-00425',phone:'(915) 745-9900',agent:'Ana Gutierrez',duration:'8:12',time:'2026-03-09T15:00:00',notes:'New home quote'},
+  {id:10,type:'outbound',client:'Lucía Hernández',clientId:'CLT-00420',phone:'(915) 622-1140',agent:'Marina Contreras',duration:'3:45',time:'2026-03-08T10:15:00',notes:'Commercial quote details'},
+];
+
+// DIRECTORY
+let contacts=[
+  {id:'DIR001',first:'Marcus',last:'Johnson',company:'Progressive Insurance',title:'Territory Sales Manager',cat:'Carrier Rep',carrier:'Progressive',phone:'(915) 200-4400',email:'mjohnson@progressive.com',color:'#1B4FD8',notes:'Our main Progressive rep. Call for appointment & binding questions.',visibility:'Shared'},
+  {id:'DIR002',first:'Patricia',last:'Vega',company:'Allstate Agency Support',title:'Agency Liaison',cat:'Carrier Rep',carrier:'Allstate',phone:'(915) 300-8811',email:'pvega@allstate.com',color:'#F04438',notes:'Contact for Allstate commercial & homeowners binding.',visibility:'Shared'},
+  {id:'DIR003',first:'Roberto',last:'Sánchez',company:'Sánchez Auto Sales',title:'Finance Manager',cat:'Referral Partner',carrier:'',phone:'(915) 588-7700',email:'rsanchez@sanchezmotors.com',color:'#12B76A',notes:'Sends 3–5 auto referrals per month. Reciprocal. Prefers text.',visibility:'Shared'},
+  {id:'DIR004',first:'Lisa',last:'Torres',company:'Starwood Realty',title:'Realtor',cat:'Referral Partner',carrier:'',phone:'(915) 400-2233',email:'lisa@starwoodrealty.com',color:'#7F56D9',notes:'Sends homeowners referrals on closings. Works El Paso west side.',visibility:'Shared'},
+  {id:'DIR005',first:'Daniel',last:'Morales',company:'Law Office of Morales',title:'Attorney',cat:'Attorney',carrier:'',phone:'(915) 222-5555',email:'dmorales@moraleslaw.com',color:'#F79009',notes:'Auto accident cases. Good for client referrals both ways.',visibility:'Shared'},
+  {id:'DIR006',first:'Sara',last:'Gutierrez',company:'BBVA Bank El Paso',title:'Mortgage Loan Officer',cat:'Lender',carrier:'',phone:'(915) 700-1100',email:'sgutierrez@bbva.com',color:'#0BA5EC',notes:'Sends homeowners leads with new mortgage clients.',visibility:'Shared'},
+  {id:'DIR007',first:'Kevin',last:'Smith',company:'TechFix Solutions',title:'IT Support',cat:'Vendor',carrier:'',phone:'(915) 455-8877',email:'kevin@techfixep.com',color:'#9E165F',notes:'Handles office computers and network. $75/hr, quick response.',visibility:'Private'},
+];
+
+// ADDRESS AUTOCOMPLETE (mock - in production connect to Google Places API)
+const mockAddresses=[
+  {street:'1423 Shadow Mountain Dr',city:'El Paso',state:'TX',zip:'79912',county:'El Paso County'},
+  {street:'220 N Kansas St',city:'El Paso',state:'TX',zip:'79901',county:'El Paso County'},
+  {street:'5500 Montana Ave',city:'El Paso',state:'TX',zip:'79925',county:'El Paso County'},
+  {street:'1000 Lee Trevino Dr',city:'El Paso',state:'TX',zip:'79936',county:'El Paso County'},
+  {street:'4400 N Mesa St',city:'El Paso',state:'TX',zip:'79902',county:'El Paso County'},
+  {street:'9801 Viscount Blvd',city:'El Paso',state:'TX',zip:'79925',county:'El Paso County'},
+  {street:'1800 Trawood Dr',city:'El Paso',state:'TX',zip:'79935',county:'El Paso County'},
+  {street:'2200 Sunland Park Dr',city:'El Paso',state:'TX',zip:'79922',county:'El Paso County'},
+  {street:'6600 Montana Ave',city:'El Paso',state:'TX',zip:'79925',county:'El Paso County'},
+  {street:'300 W Paisano Dr',city:'El Paso',state:'TX',zip:'79901',county:'El Paso County'},
+];
+
+const zipData={
+  '79912':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79901':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79902':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79903':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79904':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79905':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79907':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79915':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79922':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79925':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79930':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79935':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '79936':{city:'El Paso',state:'TX',county:'El Paso County'},
+  '88001':{city:'Las Cruces',state:'NM',county:'Doña Ana County'},
+  '88011':{city:'Las Cruces',state:'NM',county:'Doña Ana County'},
+};
+
+// ═══════════════════════════════════════
+// ADDRESS HELPERS
+// ═══════════════════════════════════════
+function addrAutocomplete(inp, listId){
+  const q=inp.value.toLowerCase().trim();
+  const list=document.getElementById(listId);
+  if(!q||q.length<3){list.style.display='none';return;}
+  const matches=mockAddresses.filter(a=>a.street.toLowerCase().includes(q));
+  if(!matches.length){list.style.display='none';return;}
+  list.innerHTML=matches.map(a=>`<div class="addr-suggestion" onclick="selectAddress('${a.street}','${a.city}','${a.state}','${a.zip}','${a.county}','${listId}')">${a.street}, ${a.city}, ${a.state} ${a.zip}</div>`).join('');
+  list.style.display='block';
+}
+function selectAddress(street,city,state,zip,county,listId){
+  document.getElementById('nc_street').value=street;
+  document.getElementById('nc_city').value=city;
+  document.getElementById('nc_state').value=state;
+  document.getElementById('nc_zip').value=zip;
+  document.getElementById('nc_county').value=county;
+  document.getElementById(listId).style.display='none';
+}
+function zipLookup(inp){
+  const z=inp.value.trim();
+  if(z.length===5&&zipData[z]){
+    const d=zipData[z];
+    document.getElementById('nc_city').value=d.city;
+    document.getElementById('nc_state').value=d.state;
+    document.getElementById('nc_county').value=d.county;
+    showToast('✓ ZIP verified: '+d.city+', '+d.state,'green');
+  }
+}
+function toggleSpouseSection(){
+  const v=document.getElementById('nc_marital').value;
+  const show=v==='Married'||v==='Domestic Partner';
+  document.getElementById('spouseSection').style.display=show?'block':'none';
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.addr-wrap'))document.querySelectorAll('.addr-suggestions').forEach(el=>el.style.display='none');
+});
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showView(viewName,navEl){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+viewName).classList.add('active');
+  if(navEl)navEl.classList.add('active');
+  const bc={clients:'Clients',pipeline:'Leads / Pipeline',dashboard:'Dashboard',directory:'Directory',settings:'Settings'};
+  const icMap={
+    clients:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>',
+    pipeline:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>',
+    dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+    directory:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
+  };
+  document.getElementById('topbarBreadcrumb').innerHTML=(icMap[viewName]||'')+'<strong>'+(bc[viewName]||viewName)+'</strong>';
+  const acts={
+    clients:'<button class="topbar-btn btn-primary" onclick="openNewClientModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Client</button>',
+    pipeline:'<button class="topbar-btn btn-primary" onclick="openAddLeadModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Lead</button>',
+    dashboard:'<button class="topbar-btn btn-primary" onclick="openNewClientModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add New Client</button><button class="topbar-btn btn-outline" style="margin-left:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</button>',
+    directory:'<button class="topbar-btn btn-primary" onclick="openAddContactModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Contact</button>',
+    settings:'',
+  };
+  document.getElementById('topbarActions').innerHTML=acts[viewName]||'';
+  if(viewName==='settings')showSettingsTab('agents',document.querySelector('.settings-tab'));
+  if(viewName==='directory')renderDirectory();
+}
+
+// ═══════════════════════════════════════
+// CLIENT LIST
+// ═══════════════════════════════════════
+let clSortKey='name',clSortAsc=true,clPage=1,clViewMode='all';
+const CL_PER_PAGE=7;
+
+function setClientView(mode,btn){
+  clViewMode=mode;clPage=1;
+  document.querySelectorAll('.view-toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  clRender();
+}
+
+function clInit(){
+  const active=clients.filter(c=>c.status==='Active Client').length;
+  const leads=clients.filter(c=>c.status==='Lead'||c.status==='Prospect').length;
+  const totalPrem=clients.reduce((s,c)=>s+c.premium,0);
+  const kpis=[
+    {icon:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>',bg:'var(--accent-light)',num:clients.length,lbl:'Total Clients'},
+    {icon:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',bg:'var(--green-light)',num:active,lbl:'Active Clients'},
+    {icon:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>',bg:'var(--orange-light)',num:leads,lbl:'Leads / Prospects'},
+    {icon:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',bg:'var(--purple-light)',num:'$'+totalPrem.toLocaleString(),lbl:'Total Annual Premium'},
+  ];
+  document.getElementById('clKpiRow').innerHTML=kpis.map(k=>`<div class="cl-kpi"><div class="cl-kpi-icon" style="background:${k.bg}">${k.icon}</div><div><div class="cl-kpi-num">${k.num}</div><div class="cl-kpi-lbl">${k.lbl}</div></div></div>`).join('');
+  clRender();
+}
+
+function clFilter(){
+  const q=document.getElementById('clSearch').value.toLowerCase();
+  const agent=document.getElementById('clFilterAgent').value;
+  const status=document.getElementById('clFilterStatus').value;
+  const lob=document.getElementById('clFilterLob').value;
+  let pool=clients;
+  if(clViewMode==='recent'){
+    const sortedByView=[...clients].sort((a,b)=>new Date(b.lastViewed||0)-new Date(a.lastViewed||0));
+    pool=sortedByView.slice(0,20);
+  }
+  return pool.filter(c=>{
+    const name=(c.first+' '+c.last).toLowerCase();
+    const qm=!q||name.includes(q)||c.phone.replace(/\D/g,'').includes(q.replace(/\D/g,''))||c.id.toLowerCase().includes(q);
+    return qm&&(!agent||c.agent===agent)&&(!status||c.status===status)&&(!lob||c.lobs.includes(lob));
+  });
+}
+
+function clSort(k){if(clSortKey===k)clSortAsc=!clSortAsc;else{clSortKey=k;clSortAsc=true;}clRender();}
+
+function clRender(){
+  let data=clFilter();
+  if(clViewMode!=='recent'){
+    data.sort((a,b)=>{
+      let av,bv;
+      if(clSortKey==='name'){av=a.last+a.first;bv=b.last+b.first;}
+      else if(clSortKey==='phone'){av=a.phone;bv=b.phone;}
+      else if(clSortKey==='agent'){av=a.agent;bv=b.agent;}
+      else if(clSortKey==='premium'){return clSortAsc?a.premium-b.premium:b.premium-a.premium;}
+      else if(clSortKey==='status'){av=a.status;bv=b.status;}
+      else if(clSortKey==='since'){av=a.since;bv=b.since;}
+      else return 0;
+      return clSortAsc?(av>bv?1:-1):(av<bv?1:-1);
+    });
+  }
+  const total=data.length;
+  const pages=Math.max(1,Math.ceil(total/CL_PER_PAGE));
+  if(clPage>pages)clPage=1;
+  const slice=data.slice((clPage-1)*CL_PER_PAGE,clPage*CL_PER_PAGE);
+  const sb={'Active Client':'badge-green','Lead':'badge-orange','Prospect':'badge-blue','Inactive':'badge-gray'};
+  document.getElementById('clCount').textContent=(clViewMode==='recent'?`Showing ${total} recently viewed`:`${total} client${total!==1?'s':''}`);
+  document.getElementById('clPageInfo').textContent=total?`${(clPage-1)*CL_PER_PAGE+1}–${Math.min(clPage*CL_PER_PAGE,total)} of ${total}`:'';
+  document.getElementById('clTableBody').innerHTML=slice.length?slice.map(c=>{
+    const timeAgo=clViewMode==='recent'&&c.lastViewed?`<div style="font-size:10px;color:var(--text4);margin-top:1px">Viewed ${relTime(c.lastViewed)}</div>`:'';
+    return`<tr onclick="openClientProfile('${c.id}')">
+      <td><div class="cl-name-cell"><div class="cl-avatar" style="background:${c.color}">${c.first[0]+c.last[0]}</div><div><div class="cl-name">${c.first} ${c.last}</div><div class="cl-id">#${c.id}</div>${timeAgo}</div></div></td>
+      <td class="cl-phone">${c.phone}</td>
+      <td><span style="font-size:12px;color:var(--text2)">${c.agent.split(' ')[0]}</span></td>
+      <td><div style="display:flex;gap:4px;flex-wrap:wrap">${c.lobs.map(l=>{const m=LOB_META[l]||{icon:'📋',bg:'#F3F4F6',color:'#374151'};return`<span class="cl-lob-dot" style="background:${m.bg};color:${m.color}">${m.icon}</span>`;}).join('')}</div></td>
+      <td class="cl-premium">${c.premium?'$'+c.premium.toLocaleString():'—'}</td>
+      <td><span class="badge ${sb[c.status]||'badge-gray'}"><span class="dot"></span>${c.status}</span></td>
+      <td style="font-size:12px;color:var(--text3)">${formatDate(c.since)}</td>
+      <td><div class="cl-actions">
+        <button class="cl-act-btn" title="Call" onclick="event.stopPropagation();showToast('Calling ${c.first}…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg></button>
+        <button class="cl-act-btn" title="Open Profile" onclick="event.stopPropagation();openClientProfile('${c.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+      </div></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="8" class="cl-empty">${clViewMode==='recent'?'No recently viewed clients.':'No clients found.'}</td></tr>`;
+  let pBtns=`<button class="cl-page-btn" onclick="clGoPage(${clPage-1})" ${clPage<=1?'disabled':''}>‹</button>`;
+  for(let i=1;i<=pages;i++)pBtns+=`<button class="cl-page-btn ${i===clPage?'active':''}" onclick="clGoPage(${i})">${i}</button>`;
+  pBtns+=`<button class="cl-page-btn" onclick="clGoPage(${clPage+1})" ${clPage>=pages?'disabled':''}>›</button>`;
+  document.getElementById('clPageBtns').innerHTML=pBtns;
+}
+function clGoPage(p){clPage=p;clRender();}
+
+function relTime(ts){
+  const diff=(Date.now()-new Date(ts))/1000;
+  if(diff<60)return'just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+
+// Open client profile — updates lastViewed and opens a demo panel
+function openClientProfile(id){
+  const c=clients.find(x=>x.id===id);
+  if(!c)return;
+  c.lastViewed=new Date().toISOString();
+  if(!recentlyViewed.includes(id))recentlyViewed.unshift(id);
+  if(recentlyViewed.length>20)recentlyViewed=recentlyViewed.slice(0,20);
+
+  const policies=samplePolicies.filter(p=>p.clientId===id);
+  const lobs=c.lobs.map(l=>LOB_META[l]||{icon:'📋',label:l,bg:'#F3F4F6',color:'#374151'});
+
+  document.getElementById('policyPanelTitle').textContent=c.first+' '+c.last+' — Profile';
+  document.getElementById('policyDetailBody').innerHTML=`
+    <!-- Client Header -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+      <div style="width:56px;height:56px;border-radius:50%;background:${c.color};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:white;flex-shrink:0">${c.first[0]+c.last[0]}</div>
+      <div style="flex:1">
+        <div style="font-size:18px;font-weight:700;color:var(--text)">${c.first} ${c.last}</div>
+        <div style="font-size:12px;color:var(--text4);margin-top:2px">${c.id} · ${c.agent} · ${c.city}, TX ${c.zip}</div>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <span class="badge badge-${c.status==='Active Client'?'green':c.status==='Lead'?'orange':'gray'}">${c.status}</span>
+          ${lobs.map(m=>`<span class="cl-lob-dot" style="background:${m.bg};color:${m.color};padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${m.icon} ${m.label}</span>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="topbar-btn btn-primary" style="font-size:12px" onclick="showToast('Calling ${c.first}…','accent')">📞 Call</button>
+        <button class="topbar-btn btn-outline" style="font-size:12px" onclick="showToast('SMS to ${c.first}…','accent')">💬 SMS</button>
+      </div>
+    </div>
+    <!-- Quick Stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--accent)">${policies.length}</div><div style="font-size:11px;color:var(--text4)">Active Policies</div></div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--green)">$${c.premium.toLocaleString()}</div><div style="font-size:11px;color:var(--text4)">Annual Premium</div></div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--text)">${c.lobs.length}</div><div style="font-size:11px;color:var(--text4)">Lines of Business</div></div>
+    </div>
+    <!-- Policies -->
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">Policies (${policies.length})</div>
+    ${policies.length?policies.map(p=>policyCard(p)).join(''):`<div style="background:var(--surface2);border:1px dashed var(--border2);border-radius:var(--radius);padding:20px;text-align:center;color:var(--text4);font-size:13px">No policies on file<br><button class="topbar-btn btn-primary" style="margin-top:10px;font-size:12px" onclick="showToast('Opening new policy flow…','accent')">+ Add Policy</button></div>`}
+    <!-- Contact info -->
+    <div style="margin-top:20px;font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">Contact Information</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:.05em">Phone</div><div style="font-size:13px;font-weight:600;font-family:'DM Mono',monospace">${c.phone}</div></div>
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:.05em">Client Since</div><div style="font-size:13px;font-weight:600">${formatDate(c.since)}</div></div>
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:.05em">Agent</div><div style="font-size:13px;font-weight:600">${c.agent}</div></div>
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:.05em">City / ZIP</div><div style="font-size:13px;font-weight:600">${c.city}, TX ${c.zip}</div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+      <button class="topbar-btn btn-primary" onclick="showToast('Opening full client profile…','accent')">Open Full Profile</button>
+      <button class="topbar-btn btn-outline" onclick="showToast('Opening new quote for ${c.first}…','accent')">+ New Quote</button>
+      <button class="topbar-btn btn-outline" onclick="showToast('Opening tasks for ${c.first}…','accent')">📋 Tasks</button>
+      <button class="topbar-btn btn-outline" onclick="showToast('Opening payment for ${c.first}…','accent')">💳 Payment</button>
+    </div>`;
+  openPanel('policyDetailPanel');
+}
+
+function policyCard(p){
+  const m=LOB_META[p.lob]||{icon:'📋',label:p.lob,bg:'#F3F4F6',color:'#374151'};
+  const statusBg=p.status==='Active'?'var(--green-light)':p.status==='Pending Renewal'?'var(--orange-light)':'var(--red-light)';
+  const statusCol=p.status==='Active'?'var(--green)':p.status==='Pending Renewal'?'var(--orange)':'var(--red)';
+  let extraInfo='';
+  if(p.vehicles)extraInfo=p.vehicles.map(v=>`<div style="font-size:11px;color:var(--text3)">${v.year} ${v.make} ${v.model} · ${v.plate}</div>`).join('');
+  if(p.address)extraInfo=`<div style="font-size:11px;color:var(--text3)">${p.address}</div>`;
+  if(p.faceAmount)extraInfo=`<div style="font-size:11px;color:var(--text3)">Face: $${p.faceAmount.toLocaleString()} · ${p.type}</div>`;
+  return`<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:box-shadow .15s" onmouseenter="this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.boxShadow=''" onclick="openPolicyDetail('${p.id}')">
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="width:32px;height:32px;border-radius:8px;background:${m.bg};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${m.icon}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">${m.label} — ${p.carrier}</div>
+          <span style="background:${statusBg};color:${statusCol};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${p.status}</span>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text4);margin-bottom:4px">${p.id}</div>
+        ${extraInfo}
+        <div style="display:flex;gap:14px;margin-top:6px;font-size:11px;color:var(--text4)">
+          <span>Effective: <strong>${formatDate(p.effective)}</strong></span>
+          <span>Expires: <strong>${formatDate(p.expiry)}</strong></span>
+          <span>Premium: <strong style="color:var(--accent)">$${p.premium.toLocaleString()}/yr</strong></span>
+        </div>
+      </div>
+      <div style="color:var(--text4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+  </div>`;
+}
+
+function openPolicyDetail(policyId){
+  const p=samplePolicies.find(x=>x.id===policyId);
+  if(!p){showToast('Policy detail not available in demo','orange');return;}
+  const m=LOB_META[p.lob]||{icon:'📋',label:p.lob,bg:'#F3F4F6',color:'#374151'};
+  const statusBg=p.status==='Active'?'var(--green-light)':'var(--orange-light)';
+  const statusCol=p.status==='Active'?'var(--green)':'var(--orange)';
+
+  let lob_specific='';
+  if(p.vehicles){lob_specific=`<div style="margin-top:14px"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px">Vehicles</div>${p.vehicles.map(v=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:6px"><div style="font-weight:600;font-size:13px">${v.year} ${v.make} ${v.model}</div><div style="font-size:11px;color:var(--text4)">VIN: ${v.vin} · Plate: ${v.plate}</div></div>`).join('')}</div><div style="margin-top:10px"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px">Drivers</div>${p.drivers.map(d=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:6px"><div style="font-weight:600;font-size:13px">${d.name}</div><div style="font-size:11px;color:var(--text4)">DOB: ${formatDate(d.dob)} · License: ${d.lic}</div></div>`).join('')}</div>`;}
+  if(p.address)lob_specific=`<div style="margin-top:10px"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px">Insured Property</div><div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px">${p.address}</div></div>`;
+  if(p.faceAmount)lob_specific=`<div style="margin-top:10px"><div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px">Life Details</div><div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px"><div style="font-size:13px;font-weight:600">Face Amount: $${p.faceAmount.toLocaleString()}</div><div style="font-size:11px;color:var(--text4);margin-top:3px">Type: ${p.type} · Beneficiary: ${p.beneficiary}</div></div></div>`;
+
+  document.getElementById('policyPanelTitle').textContent=p.id;
+  document.getElementById('policyDetailBody').innerHTML=`
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:40px;height:40px;border-radius:10px;background:${m.bg};display:flex;align-items:center;justify-content:center;font-size:20px">${m.icon}</div>
+        <div style="flex:1"><div style="font-size:15px;font-weight:700">${m.label} Policy</div><div style="font-size:12px;color:var(--text4)">${p.carrier}</div></div>
+        <span style="background:${statusBg};color:${statusCol};font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px">${p.status}</span>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);margin-bottom:12px;background:white;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border)">${p.id}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Insured</div><div style="font-size:13px;font-weight:600">${p.client}</div></div>
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Agent</div><div style="font-size:13px;font-weight:600">${p.agent}</div></div>
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Effective</div><div style="font-size:13px;font-weight:600">${formatDate(p.effective)}</div></div>
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Expiration</div><div style="font-size:13px;font-weight:600;color:var(--orange)">${formatDate(p.expiry)}</div></div>
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Annual Premium</div><div style="font-size:16px;font-weight:800;color:var(--accent)">$${p.premium.toLocaleString()}</div></div>
+        <div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Monthly</div><div style="font-size:16px;font-weight:800;color:var(--text)">$${(p.premium/12).toFixed(2)}</div></div>
+        ${p.deductible?`<div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Deductible</div><div style="font-size:13px;font-weight:600">${p.deductible}</div></div>`:''}
+        ${p.liability?`<div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Liability</div><div style="font-size:13px;font-weight:600">${p.liability}</div></div>`:''}
+        ${p.coverage?`<div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Coverage Type</div><div style="font-size:13px;font-weight:600">${p.coverage}</div></div>`:''}
+        ${p.dwelling?`<div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Dwelling Value</div><div style="font-size:13px;font-weight:600">$${p.dwelling.toLocaleString()}</div></div>`:''}
+        ${p.personalProp?`<div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Personal Property</div><div style="font-size:13px;font-weight:600">$${p.personalProp.toLocaleString()}</div></div>`:''}
+        ${p.replacement?`<div><div style="font-size:10px;color:var(--text4);font-weight:700;text-transform:uppercase">Replacement</div><div style="font-size:13px;font-weight:600">${p.replacement}</div></div>`:''}
+      </div>
+      ${lob_specific}
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="topbar-btn btn-primary" onclick="showToast('Opening endorsement form for ${p.id}…','accent')">✏️ Endorsement</button>
+      <button class="topbar-btn btn-outline" onclick="showToast('Renewing ${p.id}…','green')">🔄 Renew</button>
+      <button class="topbar-btn btn-outline" onclick="showToast('Printing ID cards for ${p.id}…','accent')">🖨️ ID Cards</button>
+      <button class="topbar-btn btn-outline" onclick="showToast('Opening payment for ${p.id}…','accent')">💳 Payment</button>
+      <button class="topbar-btn btn-outline" style="color:var(--red);border-color:var(--red)" onclick="showToast('Cancellation process started for ${p.id}','red')">✕ Cancel</button>
+    </div>`;
+  openPanel('policyDetailPanel');
+}
+
+// ═══════════════════════════════════════
+// PIPELINE
+// ═══════════════════════════════════════
+let pipelineView='board',dragItemId=null;
+function renderPipeline(){
+  const af=document.getElementById('pipelineFilterAgent').value;
+  const lf=document.getElementById('pipelineFilterLob').value;
+  let items=pipelineItems.filter(p=>(!af||p.agent===af)&&(!lf||p.lob===lf));
+  const sold=items.filter(i=>i.stage==='sold');const active=items.filter(i=>!['sold','lost','not_interested'].includes(i.stage));
+  const totEst=items.reduce((s,i)=>s+i.premium,0),soldEst=sold.reduce((s,i)=>s+i.premium,0);
+  document.getElementById('pipelineSummary').innerHTML=[
+    {label:'Total Leads',value:items.length,sub:'in pipeline'},{label:'Active',value:active.length,sub:'being worked'},
+    {label:'Estimated Pipeline',value:'$'+totEst.toLocaleString(),sub:'potential premium'},{label:'Sold This Period',value:'$'+soldEst.toLocaleString(),sub:sold.length+' policies'},
+  ].map(s=>`<div class="ps-box"><div class="ps-label">${s.label}</div><div class="ps-value">${s.value}</div><div class="ps-sub">${s.sub}</div></div>`).join('');
+  if(pipelineView==='board')renderPipelineBoard(items);else renderPipelineList(items);
+}
+function renderPipelineBoard(items){
+  const board=document.getElementById('pipelineBoard');board.innerHTML='';
+  STAGE_META.forEach(stage=>{
+    const si=items.filter(p=>p.stage===stage.id);const st=si.reduce((s,p)=>s+p.premium,0);
+    const col=document.createElement('div');col.className='pipeline-col';col.dataset.stage=stage.id;
+    col.innerHTML=`<div class="pipeline-col-header"><div class="pipeline-col-dot" style="background:${stage.color}"></div><div><div class="pipeline-col-title">${stage.label.replace('✓ ','')}</div>${st?`<div class="pipeline-col-total">$${st.toLocaleString()}</div>`:''}</div><div class="pipeline-col-count">${si.length}</div></div>
+    <div class="pipeline-cards" id="pcol-${stage.id}" ondragover="pcDragOver(event)" ondragleave="pcDragLeave(event)" ondrop="pcDrop(event,'${stage.id}')">
+      ${si.map(p=>{const m=LOB_META[p.lob]||{icon:'📋',bg:'#F3F4F6',color:'#374151'};const ai=p.agent.split(' ').map(w=>w[0]).join('');
+        return`<div class="pipeline-card" draggable="true" ondragstart="pcDragStart(event,${p.id})" onclick="${p.clientId?`openClientProfile('${p.clientId}')`:`showToast('${p.name} — no profile yet','orange')`}"><div class="pc-name">${p.name}</div><div class="pc-lob" style="background:${m.bg};color:${m.color}">${m.icon} ${m.label}</div><div class="pc-agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>${ai}</div><div class="pc-premium">Est. $${p.premium.toLocaleString()}/yr</div></div>`;
+      }).join('')}</div>`;
+    board.appendChild(col);
+  });
+}
+function renderPipelineList(items){
+  const sb={new_lead:'badge-gray',attempted:'badge-orange',contacted:'badge-blue',quoted:'badge-blue',follow_up:'badge-purple',sold:'badge-green',not_interested:'badge-gray',lost:'badge-red'};
+  document.getElementById('pipelineListBody').innerHTML=items.map(p=>{const m=LOB_META[p.lob]||{icon:'📋',bg:'#F3F4F6',color:'#374151'};const sm=STAGE_META.find(s=>s.id===p.stage)||{label:p.stage};
+    return`<tr onclick="${p.clientId?`openClientProfile('${p.clientId}')`:`showToast('${p.name} — no profile yet','orange')`}"><td><div style="font-weight:600;font-size:13px">${p.name}</div></td><td><span class="cl-lob-dot" style="background:${m.bg};color:${m.color};padding:3px 8px;border-radius:20px">${m.icon} ${m.label}</span></td><td><span class="badge ${sb[p.stage]||'badge-gray'}">${sm.label}</span></td><td style="font-size:12px;color:var(--text2)">${p.agent.split(' ')[0]}</td><td style="font-weight:700">$${p.premium.toLocaleString()}</td><td style="font-size:12px;color:var(--text4)">${formatDate(p.created)}</td><td></td></tr>`;
+  }).join('')||'<tr><td colspan="7" class="cl-empty">No leads found.</td></tr>';
+}
+function setPipelineView(v,btn){pipelineView=v;document.querySelectorAll('.pipeline-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('pipelineBoard').style.display=v==='board'?'grid':'none';document.getElementById('pipelineListView').style.display=v==='list'?'block':'none';renderPipeline();}
+function pcDragStart(e,id){dragItemId=id;}
+function pcDragOver(e){e.preventDefault();e.currentTarget.closest('.pipeline-col')?.classList.add('drag-over');}
+function pcDragLeave(e){e.currentTarget.closest('.pipeline-col')?.classList.remove('drag-over');}
+function pcDrop(e,stage){e.preventDefault();e.currentTarget.closest('.pipeline-col')?.classList.remove('drag-over');const item=pipelineItems.find(p=>p.id===dragItemId);if(item&&item.stage!==stage){item.stage=stage;showToast(`${item.name} → ${STAGE_META.find(s=>s.id===stage)?.label||stage}`,'green');renderPipeline();}dragItemId=null;}
+
+// ═══════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════
+function initDashboard(){
+  const totalPrem=clients.reduce((s,c)=>s+c.premium,0);
+  const activeCount=clients.filter(c=>c.status==='Active Client').length;
+  const openLeads=pipelineItems.filter(p=>!['sold','lost','not_interested'].includes(p.stage)).length;
+  const policies=clients.reduce((s,c)=>s+c.lobs.length,0);
+  const trendLabel={up:'↑ +12%',down:'↓ -5%',flat:'→ Stable'};
+  const trendClass={up:'trend-up',down:'trend-down',flat:'trend-flat'};
+  const kpis=[
+    {label:'Annual Premium',value:'$'+totalPrem.toLocaleString(),sub:'+12% vs last mo',trend:'up',icon:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',ic:'var(--accent)',bg:'var(--accent-light)',act:''},
+    {label:'Active Clients',value:activeCount,sub:clients.length+' total',trend:'up',icon:'<circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>',ic:'var(--green)',bg:'var(--green-light)',act:"showView('clients',document.getElementById('nav-clients'))"},
+    {label:'Open Leads',value:openLeads,sub:pipelineItems.length+' in pipeline',trend:'flat',icon:'<path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>',ic:'var(--orange)',bg:'var(--orange-light)',act:"showView('pipeline',document.getElementById('nav-pipeline'))"},
+    {label:'Total Policies',value:policies,sub:'across all clients',trend:'up',icon:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>',ic:'var(--purple)',bg:'var(--purple-light)',act:''},
+  ];
+  document.getElementById('dashKpiRow').innerHTML=kpis.map(k=>`<div class="dash-kpi" onclick="${k.act}" style="${k.act?'':'cursor:default'}"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:32px;height:32px;border-radius:8px;background:${k.bg};display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="${k.ic}" stroke-width="2" width="15" height="15">${k.icon}</svg></div><div class="dash-kpi-label" style="margin:0">${k.label}</div>${k.act?'<svg viewBox="0 0 24 24" fill="none" stroke="var(--text4)" stroke-width="2" width="11" height="11" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>':''}</div><div class="dash-kpi-value">${k.value}</div><div class="dash-kpi-sub"><span class="dash-kpi-trend ${trendClass[k.trend]}">${trendLabel[k.trend]}</span>${k.sub}</div></div>`).join('');
+
+  // Agent performance
+  document.getElementById('agentPerfList').innerHTML=[{name:'Ana Gutierrez',role:'Senior Agent',color:'#7F56D9',p:8,t:10},{name:'Jennifer Fierro',role:'Agent',color:'#12B76A',p:6,t:10},{name:'Marina Contreras',role:'Agent',color:'#F79009',p:5,t:10}].map(a=>`<div class="agent-perf-row"><div class="agent-avatar2" style="background:${a.color}">${a.name.split(' ').map(w=>w[0]).join('')}</div><div style="flex:1"><div class="agent-perf-name">${a.name}</div><div class="agent-perf-role">${a.role}</div><div style="margin-top:6px;display:flex;align-items:center;gap:8px"><div class="agent-bar-wrap"><div class="agent-bar" style="width:${Math.round(a.p/a.t*100)}%;background:${a.color}"></div></div></div></div><div class="agent-perf-stat">${a.p}/${a.t}<div style="font-size:10px;color:var(--text4);font-weight:400">policies</div></div></div>`).join('');
+
+  // Activity feed
+  document.getElementById('dashActivityFeed').innerHTML=[
+    {icon:'<circle cx="12" cy="7" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/>',bg:'var(--accent-light)',ic:'var(--accent)',text:'Ana created a new policy for <strong>María López</strong> — Auto PRG',time:'2m ago'},
+    {icon:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',bg:'var(--green-light)',ic:'var(--green)',text:'Payment received from <strong>Carlos Reyes</strong> — $1,050',time:'18m ago'},
+    {icon:'<path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>',bg:'var(--orange-light)',ic:'var(--orange)',text:'Jennifer moved <strong>Juan Vargas</strong> Auto → Quoted',time:'1h ago'},
+    {icon:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>',bg:'var(--purple-light)',ic:'var(--purple)',text:'Endorsement saved for <strong>María López</strong> — Add Vehicle',time:'2h ago'},
+    {icon:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',bg:'var(--red-light)',ic:'var(--red)',text:'<strong>PENDING CANCEL:</strong> Pablo Ortega — Home GIC (Mar 15)',time:'4h ago'},
+  ].map(a=>`<div class="dash-activity-item"><div class="dash-act-dot" style="background:${a.bg}"><svg viewBox="0 0 24 24" fill="none" stroke="${a.ic}" stroke-width="2">${a.icon}</svg></div><div style="flex:1"><div class="dash-act-text">${a.text}</div></div><div class="dash-act-time">${a.time}</div></div>`).join('');
+
+  // Bar chart
+  const months=['Oct','Nov','Dec','Jan','Feb','Mar'],vals=[12,18,14,22,19,27],maxV=Math.max(...vals);
+  document.getElementById('dashTotalPolicies').textContent=27;
+  document.getElementById('dashBarChart').innerHTML=vals.map((v,i)=>`<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:80px"><div style="font-size:10px;color:var(--text4)">${v}</div><div style="width:100%;border-radius:4px 4px 0 0;background:${i===vals.length-1?'var(--accent)':'var(--border2)'};height:${Math.round(v/maxV*60)}px"></div></div>`).join('');
+  document.getElementById('dashBarLabels').innerHTML=months.map((m,i)=>`<div style="text-align:center;font-size:10px;color:${i===months.length-1?'var(--accent)':'var(--text4)'};font-weight:${i===months.length-1?700:400}">${m}</div>`).join('');
+
+  // Renewals
+  document.getElementById('renewalTable').innerHTML=`<thead><tr><th>Client</th><th>Policy</th><th>LOB</th><th>Premium</th><th>Days</th><th>Agent</th></tr></thead><tbody>${[
+    {client:'María López',policy:'GIC-HO-0498',lob:'🏠',premium:'$1,240',days:5,agent:'Ana'},
+    {client:'Carlos Reyes',policy:'STF-AU-0881',lob:'🚗',premium:'$1,650',days:12,agent:'Jennifer'},
+    {client:'Sandra Morales',policy:'AIG-LF-0133',lob:'❤️',premium:'$768',days:18,agent:'Marina'},
+    {client:'Pablo Ortega',policy:'PRG-AU-1077',lob:'🚗',premium:'$2,100',days:24,agent:'Marina'},
+  ].map(r=>{const ug=r.days<=7?['badge-red','🔴']:r.days<=14?['badge-orange','🟡']:['badge-green','🟢'];return`<tr onclick="showToast('Opening renewal for ${r.client}','accent')"><td style="font-weight:600;font-size:12px">${r.client}</td><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text4)">${r.policy}</td><td>${r.lob}</td><td style="font-weight:700;font-size:12px">${r.premium}</td><td><span class="urgent-badge ${ug[0]}">${ug[1]} ${r.days}d</span></td><td style="font-size:12px;color:var(--text3)">${r.agent}</td></tr>`;}).join('')}</tbody>`;
+
+  // Tasks
+  document.getElementById('dashTasksOverview').innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${[{label:'Overdue',count:3,bg:'var(--red-light)',color:'var(--red)'},{label:'Due Today',count:2,bg:'var(--orange-light)',color:'var(--orange)'},{label:'This Week',count:8,bg:'var(--accent-light)',color:'var(--accent)'},{label:'Completed',count:14,bg:'var(--green-light)',color:'var(--green)'}].map(t=>`<div class="task-chip" style="background:${t.bg};color:${t.color}"><div style="font-size:20px;font-weight:700;line-height:1">${t.count}</div><div style="font-size:10px;font-weight:600;margin-top:1px">${t.label}</div></div>`).join('')}</div><div style="font-size:12px;color:var(--text3);font-weight:500;margin-bottom:8px">Overdue</div>${[{t:'Confirm payment method',c:'María López',a:'Ana'},{t:'Follow-up quote renters',c:'Elena Guzmán',a:'Jennifer'},{t:'Request DL copy',c:'Roberto Fuentes',a:'Marina'}].map(x=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)"><div style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0"></div><div style="flex:1"><div style="font-size:12px;font-weight:600">${x.t}</div><div style="font-size:10px;color:var(--text4)">${x.c} · ${x.a}</div></div></div>`).join('')}`;
+
+  // Pipeline snap
+  const snap=STAGE_META.filter(s=>!['sold','not_interested','lost'].includes(s.id));
+  document.getElementById('dashPipelineSnap').innerHTML=snap.map(s=>{const count=pipelineItems.filter(p=>p.stage===s.id).length;return`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="showView('pipeline',document.getElementById('nav-pipeline'))"><div style="width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0"></div><div style="flex:1;font-size:12px;color:var(--text2)">${s.label}</div><div style="width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;background:${s.color};width:${Math.min(count/5*100,100)}%"></div></div><div style="font-size:12px;font-weight:700;min-width:16px;text-align:right">${count}</div></div>`;}).join('')+`<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text4)">Sold this period</span><span style="font-weight:700;color:var(--green)">$${pipelineItems.filter(p=>p.stage==='sold').reduce((s,p)=>s+p.premium,0).toLocaleString()}</span></div>`;
+
+  // Pending cancel preview
+  document.getElementById('pendingCancelSubtitle').textContent=pendingCancellations.length+' pending';
+  document.getElementById('pendingCancelList').innerHTML=pendingCancellations.slice(0,3).map(p=>{const m=LOB_META[p.lob]||{};const d=Math.ceil((new Date(p.cancelDate)-new Date())/(86400000));const ug=d<=5?['var(--red-light)','var(--red)']:d<=10?['var(--orange-light)','var(--orange)']:['var(--surface2)','var(--text3)'];return`<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openPendingCancelPanel()"><div style="width:8px;height:8px;border-radius:50%;background:${ug[1]};flex-shrink:0"></div><div style="flex:1"><div style="font-size:12px;font-weight:600">${p.client}</div><div style="font-size:10px;color:var(--text4)">${p.policy} · ${m.icon||''} ${p.reason}</div></div><div style="text-align:right"><div style="font-size:10px;font-weight:700;color:${ug[1]}">${d}d left</div></div></div>`;}).join('');
+
+  // Canceled preview
+  document.getElementById('canceledSubtitle').textContent='Last 30 days · '+canceledPolicies.length+' canceled';
+  document.getElementById('canceledPolicyList').innerHTML=canceledPolicies.slice(0,3).map(p=>{const m=LOB_META[p.lob]||{};return`<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openCanceledPanel()"><div style="flex:1"><div style="font-size:12px;font-weight:600">${p.client}</div><div style="font-size:10px;color:var(--text4)">${p.policy} · ${m.icon||''} ${p.reason}</div></div><div style="font-size:10px;color:var(--text3)">${formatDate(p.cancelDate)}</div></div>`;}).join('');
+
+  renderDashCalls();
+}
+
+// ═══════════════════════════════════════
+// CALLS
+// ═══════════════════════════════════════
+function callItemHtml(c){
+  const ts={inbound:{cls:'call-in',svg:'<polyline points="16 2 16 8 22 8"/><line x1="23" y1="1" x2="16" y2="8"/><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-5-5 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>'},outbound:{cls:'call-out',svg:'<polyline points="22 8 22 2 16 2"/><line x1="23" y1="1" x2="16" y2="8"/><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-5-5 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>'},missed:{cls:'call-missed',svg:'<path d="M10.68 13.31a16 16 0 003.41 2.6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-5-5 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 8.91M23 1L1 23"/>'}};
+  const s=ts[c.type]||ts.inbound;
+  const t=new Date(c.time);const h=t.getHours()%12||12;const mn=String(t.getMinutes()).padStart(2,'0');const am=t.getHours()>=12?'PM':'AM';
+  return`<div class="call-item-dash" style="cursor:pointer" onclick="${c.clientId?`openClientProfile('${c.clientId}')`:`showToast('Unknown caller — ${c.phone}','orange')`}"><div class="call-dir-icon ${s.cls}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${s.svg}</svg></div><div style="flex:1"><div class="call-client-name">${c.client}${c.clientId?` <span style="font-size:10px;color:var(--text4);font-family:'DM Mono',monospace">${c.clientId}</span>`:''}</div><div class="call-meta">${c.agent.split(' ')[0]} · ${h}:${mn} ${am}${c.notes?' · '+c.notes:''}</div></div><div class="call-duration">${c.type==='missed'?'<span style="color:var(--red);font-size:10px">Missed</span>':c.duration}</div></div>`;
+}
+function renderDashCalls(){
+  const tf=document.getElementById('callFilterType').value;const af=document.getElementById('callFilterAgent').value;
+  const period=document.getElementById('callFilterPeriod').value;
+  const pl={today:'Today',week:'This Week',month:'This Month'};
+  document.getElementById('callsSubtitle').textContent=pl[period]||'Today';
+  let calls=callsData.filter(c=>(!tf||c.type===tf)&&(!af||c.agent===af));
+  const inb=calls.filter(c=>c.type==='inbound').length,out=calls.filter(c=>c.type==='outbound').length,mis=calls.filter(c=>c.type==='missed').length;
+  const totalDur=calls.filter(c=>c.duration!=='0:00').reduce((s,c)=>{const[m,sec]=c.duration.split(':');return s+parseInt(m)*60+parseInt(sec);},0);
+  const mins=Math.floor(totalDur/60),secs=totalDur%60;
+  document.getElementById('callSummaryChips').innerHTML=`<div style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:var(--green-light)"><div style="width:6px;height:6px;border-radius:50%;background:var(--green)"></div><span style="font-size:11px;font-weight:700;color:var(--green)">${inb} Inbound</span></div><div style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:var(--accent-light)"><div style="width:6px;height:6px;border-radius:50%;background:var(--accent)"></div><span style="font-size:11px;font-weight:700;color:var(--accent)">${out} Outbound</span></div><div style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:var(--red-light)"><div style="width:6px;height:6px;border-radius:50%;background:var(--red)"></div><span style="font-size:11px;font-weight:700;color:var(--red)">${mis} Missed</span></div><div style="margin-left:auto;font-size:11px;color:var(--text4)">Talk time: <strong style="color:var(--text2)">${mins}m ${secs}s</strong></div>`;
+  document.getElementById('dashCallsList').innerHTML=calls.slice(0,6).map(c=>callItemHtml(c)).join('')||'<div style="padding:16px;text-align:center;color:var(--text4);font-size:12px">No calls found</div>';
+}
+function renderCallsPanel(){
+  const q=(document.getElementById('callPanelSearch').value||'').toLowerCase();const tf=document.getElementById('callPanelType').value;const af=document.getElementById('callPanelAgent').value;
+  let calls=callsData.filter(c=>{const qm=!q||c.client.toLowerCase().includes(q)||c.phone.includes(q);return qm&&(!tf||c.type===tf)&&(!af||c.agent===af);});
+  document.getElementById('callsPanelBody').innerHTML=calls.length?calls.map(c=>callItemHtml(c)).join(''):'<div style="padding:40px;text-align:center;color:var(--text4)">No calls found</div>';
+}
+
+// ═══════════════════════════════════════
+// PENDING CANCEL + CANCELED PANELS
+// ═══════════════════════════════════════
+function renderPendingCancelPanel(){
+  const q=(document.getElementById('pcSearch').value||'').toLowerCase();const af=document.getElementById('pcFilterAgent').value;const rf=document.getElementById('pcFilterReason').value;
+  let data=pendingCancellations.filter(p=>{const qm=!q||p.client.toLowerCase().includes(q)||p.policy.toLowerCase().includes(q);return qm&&(!af||p.agent===af)&&(!rf||p.reason===rf);});
+  document.getElementById('pcCount').textContent=data.length+' records';
+  document.getElementById('pendingCancelPanelBody').innerHTML=data.length?data.map(p=>{const m=LOB_META[p.lob]||{};const d=Math.ceil((new Date(p.cancelDate)-new Date())/86400000);const ug=d<=5?['#FEF3F2','var(--red)']:d<=10?['#FFFAEB','var(--orange)']:['#F7F8FA','var(--text3)'];return`<div style="background:${ug[0]};border:1px solid ${ug[1]}20;border-radius:var(--radius);padding:14px 16px;margin-bottom:10px"><div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-size:14px;font-weight:700">${p.client}</div><span style="font-size:10px;color:var(--text4);font-family:'DM Mono',monospace">${p.clientId}</span></div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:6px">${p.policy}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><span style="background:${m.bg||'#F3F4F6'};color:${m.color||'#374151'};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${m.icon||'📋'} ${m.label||p.lob}</span><span style="background:var(--orange-light);color:var(--orange);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">⚠️ ${p.reason}</span></div><div style="font-size:12px;color:var(--text3);margin-bottom:6px">${p.notes}</div><div style="font-size:11px;color:var(--text4)">Requested: <strong>${formatDate(p.requestDate)}</strong> · Cancel: <strong style="color:${ug[1]}">${formatDate(p.cancelDate)}</strong> · $${p.premium.toLocaleString()}/yr</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:22px;font-weight:800;color:${ug[1]};line-height:1">${d}</div><div style="font-size:10px;color:${ug[1]};font-weight:600">days left</div></div></div><div style="display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid ${ug[1]}30"><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="openClientProfile('${p.clientId}')">Open Profile</button><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="showToast('Calling ${p.client}…','accent')">📞 Call</button><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="showToast('SMS to ${p.client}…','accent')">💬 SMS</button><button class="topbar-btn" style="font-size:11px;padding:5px 10px;background:var(--green);color:white;border-radius:var(--radius-sm)" onclick="showToast('Reinstatement started','green')">✓ Reinstate</button></div></div>`;}).join(''):'<div style="padding:40px;text-align:center;color:var(--text4)">No pending cancellations</div>';
+}
+function renderCanceledPanel(){
+  const q=(document.getElementById('cxSearch').value||'').toLowerCase();const af=document.getElementById('cxFilterAgent').value;const rf=document.getElementById('cxFilterReason').value;const days=parseInt(document.getElementById('cxFilterPeriod').value)||30;const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
+  let data=canceledPolicies.filter(p=>{const qm=!q||p.client.toLowerCase().includes(q)||p.policy.toLowerCase().includes(q);const dm=isNaN(days)||new Date(p.cancelDate)>=cutoff;return qm&&(!af||p.agent===af)&&(!rf||p.reason===rf)&&dm;});
+  document.getElementById('cxCount').textContent=data.length+' records';
+  document.getElementById('canceledPanelBody').innerHTML=data.length?data.map(p=>{const m=LOB_META[p.lob]||{};return`<div style="background:white;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px"><div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-size:14px;font-weight:700">${p.client}</div><span style="font-size:10px;color:var(--text4);font-family:'DM Mono',monospace">${p.clientId}</span></div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:6px">${p.policy}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><span style="background:${m.bg||'#F3F4F6'};color:${m.color||'#374151'};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${m.icon||'📋'} ${m.label||p.lob}</span><span style="background:var(--red-light);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">✕ ${p.reason}</span></div><div style="font-size:12px;color:var(--text3);margin-bottom:6px">${p.notes}</div><div style="font-size:11px;color:var(--text4)">Canceled: <strong>${formatDate(p.cancelDate)}</strong> · Was: <strong>$${p.premium.toLocaleString()}/yr</strong></div></div></div><div style="display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="openClientProfile('${p.clientId}')">Open Profile</button><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="showToast('Calling ${p.client}…','accent')">📞 Call</button><button class="topbar-btn" style="font-size:11px;padding:5px 10px;background:var(--accent);color:white;border-radius:var(--radius-sm)" onclick="showToast('Re-quoting ${p.client}…','accent')">↺ Re-quote</button></div></div>`;}).join(''):'<div style="padding:40px;text-align:center;color:var(--text4)">No canceled policies in selected period</div>';
+}
+
+// ═══════════════════════════════════════
+// DIRECTORY
+// ═══════════════════════════════════════
+function renderDirectory(){
+  const q=(document.getElementById('dirSearch').value||'').toLowerCase();const cf=document.getElementById('dirFilterCat').value;
+  let data=contacts.filter(c=>{const qm=!q||(c.first+' '+c.last).toLowerCase().includes(q)||c.company.toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q);return qm&&(!cf||c.cat===cf);});
+  const catColors={'Carrier Rep':'#1B4FD8','Referral Partner':'#12B76A','Vendor':'#F79009','Agent':'#7F56D9','Attorney':'#F04438','Lender':'#0BA5EC','Other':'#98A2B3'};
+  document.getElementById('directoryGrid').innerHTML=data.length?data.map(c=>`<div class="dir-card" onclick="showToast('Opening contact card: ${c.first} ${c.last}','accent')"><div class="dir-avatar" style="background:${c.color}">${c.first[0]+c.last[0]}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px;margin-bottom:2px"><div class="dir-name">${c.first} ${c.last}</div><span style="background:${catColors[c.cat]||'#98A2B3'}18;color:${catColors[c.cat]||'#98A2B3'};font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;white-space:nowrap">${c.cat}</span></div><div class="dir-title">${c.title}${c.company?' · '+c.company:''}</div><div style="font-size:11px;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace">${c.phone}</div>${c.carrier?`<div style="font-size:10px;color:var(--accent);margin-top:2px;font-weight:600">${c.carrier}</div>`:''}</div><div style="display:flex;flex-direction:column;gap:4px"><button class="cl-act-btn" onclick="event.stopPropagation();showToast('Calling ${c.first}…','accent')" title="Call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg></button><button class="cl-act-btn" onclick="event.stopPropagation();showToast('Email to ${c.first}…','accent')" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button></div></div>`).join(''):`<div style="padding:40px;text-align:center;color:var(--text4);grid-column:1/-1">No contacts found</div>`;
+}
+
+// ═══════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════
+const settingsContent={
+  agents:`
+    <div class="settings-section">
+      <div class="settings-section-title">Agency Agents</div>
+      <div class="settings-section-sub">Manage agents and their access to Safe House AMS</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${[{name:'Christian Saenz',role:'Admin / Owner',color:'#1B4FD8',email:'christian@safehouseins.com',phone:'(915) 555-0001',active:true,perms:['All Access']},
+           {name:'Ana Gutierrez',role:'Senior Agent',color:'#7F56D9',email:'ana@safehouseins.com',phone:'(915) 555-0002',active:true,perms:['Clients','Policies','Pipeline','Calls','SMS']},
+           {name:'Jennifer Fierro',role:'Agent',color:'#12B76A',email:'jennifer@safehouseins.com',phone:'(915) 555-0003',active:true,perms:['Clients','Policies','Pipeline']},
+           {name:'Marina Contreras',role:'Agent',color:'#F79009',email:'marina@safehouseins.com',phone:'(915) 555-0004',active:true,perms:['Clients','Policies','Pipeline']},
+        ].map(a=>`<div class="agent-card"><div class="agent-avatar2" style="background:${a.color}">${a.name.split(' ').map(w=>w[0]).join('')}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${a.name}</div><div style="font-size:11px;color:var(--text4)">${a.role} · ${a.email}</div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">${a.perms.map(p=>`<span class="perm-chip">${p}</span>`).join('')}</div></div><div style="display:flex;gap:6px"><button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="showToast('Editing ${a.name}…','accent')">Edit</button>${a.name!=='Christian Saenz'?`<button class="topbar-btn btn-outline" style="font-size:11px;padding:5px 10px;color:var(--red)" onclick="showToast('Deactivating ${a.name}…','red')">Deactivate</button>`:''}</div></div>`).join('')}
+      </div>
+      <div style="margin-top:14px"><button class="topbar-btn btn-primary" onclick="showToast('Opening invite new agent form…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Invite New Agent</button></div>
+    </div>`,
+  permissions:`
+    <div class="settings-section">
+      <div class="settings-section-title">Permission Controls</div>
+      <div class="settings-section-sub">Control what agents can see and do</div>
+      ${[{label:'View all clients (not just assigned)',sub:'Agents can see the full client list',on:false},{label:'Edit other agents\' clients',sub:'Allow cross-agent editing',on:false},{label:'View payment amounts',sub:'Agents can see premium & payment details',on:true},{label:'Cancel policies',sub:'Agents can initiate cancellations',on:false},{label:'Delete records',sub:'Hard delete from any module',on:false},{label:'Export data',sub:'CSV / Excel export of client or policy data',on:false},{label:'Access reports',sub:'View agency-level production reports',on:true},{label:'Manage carriers',sub:'Add/edit carrier records in settings',on:false}].map((r,i)=>`<div class="settings-row"><div><div class="settings-row-label">${r.label}</div><div class="settings-row-sub">${r.sub}</div></div><div class="toggle-switch ${r.on?'on':''}" onclick="this.classList.toggle('on');showToast('Permission updated','green')"><div class="toggle-knob"></div></div></div>`).join('')}
+    </div>`,
+  carriers:`
+    <div class="settings-section">
+      <div class="settings-section-title">Insurance Carriers</div>
+      <div class="settings-section-sub">Carriers your agency is appointed with</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:14px">
+        ${[{name:'Progressive',lobs:['Auto','Commercial Auto'],logo:'🚗',active:true},{name:'Allstate',lobs:['Auto','Homeowners'],logo:'🏠',active:true},{name:'Gainsco',lobs:['Auto','Non-Standard'],logo:'🚗',active:true},{name:'Bristol West',lobs:['Auto','Non-Standard'],logo:'🚗',active:true},{name:'Dairyland',lobs:['Auto','Motorcycle'],logo:'🏍️',active:true},{name:'Encompass',lobs:['Auto','Homeowners'],logo:'🏠',active:true},{name:'MetLife',lobs:['Renters','Life'],logo:'❤️',active:true},{name:'State Farm',lobs:['Auto','Homeowners','Life'],logo:'⭐',active:false}].map(c=>`<div class="carrier-card"><div class="carrier-logo">${c.logo}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${c.name}</div><div style="font-size:11px;color:var(--text4);margin-top:2px">${c.lobs.join(' · ')}</div></div><span style="background:${c.active?'var(--green-light)':'var(--surface2)'};color:${c.active?'var(--green)':'var(--text4)'};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${c.active?'Active':'Inactive'}</span></div>`).join('')}
+      </div>
+      <button class="topbar-btn btn-primary" onclick="showToast('Opening add carrier form…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Carrier</button>
+    </div>`,
+  referrals:`
+    <div class="settings-section">
+      <div class="settings-section-title">Referral Sources / Lead Sources</div>
+      <div class="settings-section-sub">Track where your business comes from</div>
+      <table class="cl-table" style="margin-bottom:14px">
+        <thead><tr><th>Source</th><th>Type</th><th>Leads (YTD)</th><th>Converted</th><th>Active</th><th></th></tr></thead>
+        <tbody>${[{s:'Roberto Sánchez — Sanchez Auto',t:'Referral Partner',leads:18,conv:11,active:true},{s:'Lisa Torres — Starwood Realty',t:'Referral Partner',leads:12,conv:8,active:true},{s:'Google Ads',t:'Digital',leads:34,conv:9,active:true},{s:'Facebook / Instagram',t:'Social Media',leads:22,conv:6,active:true},{s:'Walk-in',t:'Organic',leads:8,conv:8,active:true},{s:'Phone Call',t:'Organic',leads:15,conv:14,active:true},{s:'TikTok',t:'Social Media',leads:11,conv:3,active:false}].map(r=>`<tr><td style="font-weight:600;font-size:13px">${r.s}</td><td><span class="badge badge-gray">${r.t}</span></td><td style="font-weight:700">${r.leads}</td><td style="font-weight:700;color:var(--green)">${r.conv}</td><td><span style="background:${r.active?'var(--green-light)':'var(--surface2)'};color:${r.active?'var(--green)':'var(--text4)'};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${r.active?'Active':'Paused'}</span></td><td><button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 8px" onclick="showToast('Editing source…','accent')">Edit</button></td></tr>`).join('')}</tbody>
+      </table>
+      <button class="topbar-btn btn-primary" onclick="showToast('Adding lead source…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Source</button>
+    </div>`,
+  email_tpl:`
+    <div class="settings-section">
+      <div class="settings-section-title">Email Templates</div>
+      <div class="settings-section-sub">Reusable email templates for common scenarios</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+        ${[{name:'Welcome New Client',cat:'Onboarding',last:'Mar 1, 2026'},{name:'Policy Renewal Reminder',cat:'Renewals',last:'Feb 20, 2026'},{name:'Payment Reminder',cat:'Billing',last:'Feb 15, 2026'},{name:'Policy Cancellation Notice',cat:'Cancellations',last:'Jan 30, 2026'},{name:'Quote Follow-up',cat:'Sales',last:'Mar 5, 2026'},{name:'Happy Birthday',cat:'Retention',last:'Jan 10, 2026'},{name:'Claim Acknowledgement',cat:'Claims',last:'Feb 1, 2026'},{name:'Annual Review Invite',cat:'Retention',last:'Feb 28, 2026'}].map(t=>`<div class="template-card" style="cursor:pointer" onclick="showToast('Opening template: ${t.name}','accent')"><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${t.name}</div><div style="display:flex;align-items:center;gap:6px"><span class="badge badge-blue" style="font-size:10px">${t.cat}</span><span style="font-size:10px;color:var(--text4);margin-left:auto">Last edited: ${t.last}</span></div></div>`).join('')}
+      </div>
+      <div style="margin-top:14px"><button class="topbar-btn btn-primary" onclick="showToast('Creating new email template…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Template</button></div>
+    </div>`,
+  sms_tpl:`
+    <div class="settings-section">
+      <div class="settings-section-title">SMS Templates</div>
+      <div class="settings-section-sub">Quick text templates — click to preview</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${[{name:'Renewal Reminder',msg:'Hi {FirstName}! Your {LOB} policy #{PolicyNum} renews on {RenewalDate}. Call us at (915) 555-0100 to review. — Safe House Insurance'},
+           {name:'Payment Due',msg:'Hi {FirstName}, your payment of ${Amount} is due {DueDate}. Pay online or call us. — Safe House Insurance'},
+           {name:'Quote Ready',msg:'Hi {FirstName}! Your {LOB} quote is ready. Premium: ${Amount}/yr. Call us or reply to confirm. — Safe House Insurance'},
+           {name:'Welcome',msg:'Welcome to Safe House Insurance, {FirstName}! Your agent {AgentName} is here for you. Call: (915) 555-0100'},
+           {name:'Appointment Reminder',msg:'Reminder: Your appointment at Safe House Insurance is {Date} at {Time}. See you soon! — {AgentName}'},
+           {name:'Claim Update',msg:'Hi {FirstName}, update on your claim #{ClaimNum}: {Status}. Questions? Call us at (915) 555-0100.'},
+        ].map(t=>`<div class="template-card" onclick="showToast('Opening SMS template: ${t.name}','accent')" style="cursor:pointer"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:13px;font-weight:600">${t.name}</div><button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 8px" onclick="event.stopPropagation();showToast('Editing: ${t.name}','accent')">Edit</button></div><div style="font-size:12px;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px">${t.msg}</div></div>`).join('')}
+      </div>
+      <div style="margin-top:14px"><button class="topbar-btn btn-primary" onclick="showToast('Creating new SMS template…','accent')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Template</button></div>
+    </div>`,
+  general:`
+    <div class="settings-section">
+      <div class="settings-section-title">Agency Information</div>
+      <div class="settings-section-sub">Basic agency profile and branding</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-field"><label class="form-label">Agency Name</label><input class="form-input" value="Safe House Insurance"></div>
+        <div class="form-field"><label class="form-label">Agency License #</label><input class="form-input" value="TX-INS-2020-08812"></div>
+        <div class="form-field"><label class="form-label">Main Phone</label><input class="form-input" value="(915) 555-0100"></div>
+        <div class="form-field"><label class="form-label">Email</label><input class="form-input" value="info@safehouseins.com"></div>
+        <div class="form-field"><label class="form-label">Address</label><input class="form-input" value="4400 N Mesa St Suite 101"></div>
+        <div class="form-field"><label class="form-label">City / State / ZIP</label><input class="form-input" value="El Paso, TX 79902"></div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px"><button class="topbar-btn btn-primary" onclick="showToast('Agency info saved','green')">Save Changes</button></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">System Settings</div>
+      <div class="settings-section-sub">General application preferences</div>
+      ${[{label:'Auto-assign leads to available agent',sub:'Round-robin assignment for new leads',on:false},{label:'Send email on new client created',sub:'Notify assigned agent by email',on:true},{label:'Require approval for cancellations',sub:'Admin must approve before processing',on:true},{label:'Show premium in client list',sub:'Display annual premium column',on:true},{label:'Enable dark mode',sub:'Switch interface to dark theme',on:false},{label:'Two-factor authentication (2FA)',sub:'Require 2FA for all logins',on:true}].map(r=>`<div class="settings-row"><div><div class="settings-row-label">${r.label}</div><div class="settings-row-sub">${r.sub}</div></div><div class="toggle-switch ${r.on?'on':''}" onclick="this.classList.toggle('on');showToast('Setting updated','green')"><div class="toggle-knob"></div></div></div>`).join('')}
+    </div>`,
+  notifications:`
+    <div class="settings-section">
+      <div class="settings-section-title">Notification Preferences</div>
+      <div class="settings-section-sub">Choose when and how to receive alerts</div>
+      ${[{label:'Policy renewal coming up (30 days)',sub:'Alert when policy expires within 30 days',on:true},{label:'Pending cancellation alert',sub:'Notify when a policy enters pending cancel',on:true},{label:'New lead assigned',sub:'Get notified when a lead is assigned to you',on:true},{label:'Payment received',sub:'Confirm when a payment is logged',on:true},{label:'Task overdue',sub:'Alert when a task passes its due date',on:true},{label:'New client added by agent',sub:'Admin notification for new client creation',on:false},{label:'Daily activity summary',sub:'Email digest of yesterday\'s activity each morning',on:false},{label:'Missed call alert',sub:'Notify on missed inbound calls',on:true}].map(r=>`<div class="settings-row"><div><div class="settings-row-label">${r.label}</div><div class="settings-row-sub">${r.sub}</div></div><div class="toggle-switch ${r.on?'on':''}" onclick="this.classList.toggle('on');showToast('Notification updated','green')"><div class="toggle-knob"></div></div></div>`).join('')}
+    </div>`,
+};
+
+function showSettingsTab(tab,btn){
+  document.querySelectorAll('.settings-tab').forEach(t=>t.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  else{const tabs=document.querySelectorAll('.settings-tab');if(tabs[0])tabs[0].classList.add('active');}
+  document.getElementById('settingsContent').innerHTML=settingsContent[tab]||'<div style="padding:40px;text-align:center;color:var(--text4)">Coming soon</div>';
+}
+
+// ═══════════════════════════════════════
+// PANEL CONTROLS
+// ═══════════════════════════════════════
+function openPanel(id){closeAllPanels();document.getElementById(id).classList.add('open');document.getElementById('panelOverlay').classList.add('open');}
+function closeAllPanels(){document.querySelectorAll('.slide-panel').forEach(p=>p.classList.remove('open'));document.getElementById('panelOverlay').classList.remove('open');}
+function openPendingCancelPanel(){renderPendingCancelPanel();openPanel('pendingCancelPanel');}
+function openCanceledPanel(){renderCanceledPanel();openPanel('canceledPanel');}
+function openCallsPanel(){renderCallsPanel();openPanel('allCallsPanel');}
+
+// ═══════════════════════════════════════
+// CLIENT MODAL
+// ═══════════════════════════════════════
+function openNewClientModal(){document.getElementById('newClientModal').classList.add('open');}
+function closeNewClientModal(){document.getElementById('newClientModal').classList.remove('open');}
+function confirmNewClient(){
+  const first=document.getElementById('nc_first').value.trim();
+  const last=document.getElementById('nc_last').value.trim();
+  if(!first||!last){showToast('First and last name are required','red');return;}
+  clientSeq++;
+  clients.unshift({id:'CLT-00'+clientSeq,first,last,phone:document.getElementById('nc_phone').value||'—',agent:document.getElementById('nc_agent').value,status:document.getElementById('nc_status').value,lobs:[],premium:0,since:new Date().toISOString().split('T')[0],city:document.getElementById('nc_city').value||'El Paso',zip:document.getElementById('nc_zip').value,color:AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)],lastViewed:new Date().toISOString()});
+  closeNewClientModal();clInit();
+  showToast('✓ Client created — #CLT-00'+clientSeq+' · '+first+' '+last,'green');
+  document.getElementById('newClientModal').querySelectorAll('input,select,textarea').forEach(el=>{if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
+  document.getElementById('spouseSection').style.display='none';
+}
+
+// ═══════════════════════════════════════
+// LEAD MODAL
+// ═══════════════════════════════════════
+function openAddLeadModal(){document.getElementById('addLeadModal').classList.add('open');}
+function closeAddLeadModal(){document.getElementById('addLeadModal').classList.remove('open');}
+function confirmAddLead(){
+  const first=document.getElementById('lead_first').value.trim();const last=document.getElementById('lead_last').value.trim();const lob=document.getElementById('lead_lob').value;
+  if(!first||!last||!lob){showToast('Please fill required fields','red');return;}
+  pipelineItems.push({id:++pipelineSeq,clientId:null,name:first+' '+last,lob,stage:'new_lead',agent:document.getElementById('lead_agent').value,premium:parseFloat(document.getElementById('lead_premium').value)||0,created:new Date().toISOString().split('T')[0]});
+  closeAddLeadModal();renderPipeline();showToast('✓ Lead added — '+first+' '+last,'green');
+  ['lead_first','lead_last','lead_phone','lead_premium','lead_notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('lead_lob').value='';
+}
+
+// ═══════════════════════════════════════
+// CONTACT MODAL
+// ═══════════════════════════════════════
+let contactSeq=100;
+function openAddContactModal(){document.getElementById('addContactModal').classList.add('open');}
+function closeAddContactModal(){document.getElementById('addContactModal').classList.remove('open');}
+function confirmAddContact(){
+  const first=document.getElementById('ct_first').value.trim();const last=document.getElementById('ct_last').value.trim();const cat=document.getElementById('ct_cat').value;
+  if(!first||!last||!cat){showToast('Name and category are required','red');return;}
+  contacts.unshift({id:'DIR'+(++contactSeq),first,last,company:document.getElementById('ct_company').value,title:document.getElementById('ct_title').value,cat,carrier:document.getElementById('ct_carrier').value,phone:document.getElementById('ct_phone').value,email:document.getElementById('ct_email').value,notes:document.getElementById('ct_notes').value,visibility:document.getElementById('ct_visibility').value,color:AVATAR_COLORS[Math.floor(Math.random()*AVATAR_COLORS.length)]});
+  closeAddContactModal();renderDirectory();showToast('✓ Contact added — '+first+' '+last,'green');
+  document.getElementById('addContactModal').querySelectorAll('input,select,textarea').forEach(el=>{if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
+}
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function formatDate(d){if(!d)return'—';const[y,m,day]=d.split('-');const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return months[parseInt(m)-1]+' '+parseInt(day)+', '+y;}
+function showToast(msg,type){const colors={green:'background:#ECFDF3;color:#027A48;border:1px solid #A7F3D0',red:'background:#FEF3F2;color:#9B1C1C;border:1px solid #FECACA',orange:'background:#FFFAEB;color:#92400E;border:1px solid #FDE68A',accent:'background:#EEF2FF;color:#1e3a8a;border:1px solid #BFDBFE'};const t=document.createElement('div');t.className='toast';t.style.cssText=colors[type]||colors.accent;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(8px)';t.style.transition='all .3s';setTimeout(()=>t.remove(),300);},2500);}
+
+document.addEventListener('click',e=>{
+  ['newClientModal','addLeadModal','addContactModal'].forEach(id=>{const el=document.getElementById(id);if(e.target===el)el.classList.remove('open');});
+});
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  clInit();
+  renderPipeline();
+  initDashboard();
+  showView('clients',document.getElementById('nav-clients'));
+});
+</script>
+</body>
+</html>
