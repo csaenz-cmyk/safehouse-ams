@@ -361,6 +361,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .pac-item:hover{background:var(--accent-light);}
 .pac-item-query{font-size:13px;color:var(--text);}
 
+/* PROFILE SIDE NAV — dark, matches main sidebar */
+.pnav-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;font-size:13px;font-weight:500;color:rgba(255,255,255,.55);background:none;border:none;cursor:pointer;text-align:left;border-radius:8px;transition:background .15s,color .15s;white-space:nowrap;}
+.pnav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9);}
+.pnav-item:hover svg{stroke:rgba(255,255,255,.9);}
+.pnav-item svg{stroke:rgba(255,255,255,.4);flex-shrink:0;transition:stroke .15s;}
+.pnav-active{background:var(--accent)!important;color:white!important;}
+.pnav-active svg{stroke:white!important;}
+/* Remove old profile-nav-item styles */
+.profile-nav-item{display:none;}
+
 /* ═══════════════════════════════════════
    PROFILE VIEW STYLES
 ═══════════════════════════════════════ */
@@ -2052,49 +2062,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div id="settingsContent"></div>
     </div>
 
-  </div><!-- content -->
-</div><!-- main -->
-</div><!-- app -->
 
-
-<!-- PROFILE VIEW (full-screen overlay) -->
-<div id="view-profile" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;">
-  <!-- Profile Topbar -->
-  <div style="height:56px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:10px;position:sticky;top:0;z-index:10;">
-    <button class="topbar-btn btn-outline" onclick="closeProfileView()" style="gap:5px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
-      Back
-    </button>
-    <div class="breadcrumb">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
-      Clients
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
-      <strong id="profileViewClientName">Client Profile</strong>
-    </div>
-    <div style="flex:1"></div>
-    <button class="topbar-btn btn-outline" id="profileCallBtn" onclick="showToast('Calling…','accent')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
-      Call
-    </button>
-    <button class="topbar-btn btn-outline" onclick="profileShowTab('sms')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      SMS
-    </button>
-    <button class="topbar-btn btn-outline" onclick="profileShowTab('email')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      Email
-    </button>
-    <button class="topbar-btn btn-primary" onclick="openNewPolicyModal()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      New Policy
-    </button>
-  </div>
-  <!-- Profile Content -->
-  <div class="content" style="max-width:none">
-        New Policy
-      </button>
-    </div>
-
+<!-- PROFILE VIEW — regular view inside main sidebar layout -->
+<div class="view" id="view-profile">
     <!-- CONTENT -->
     <div class="content">
 
@@ -2129,11 +2099,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
               Llamar
             </button>
-            <button class="qa-btn" onclick="showTab('sms')">
+            <button class="qa-btn" onclick="profileShowTab('sms')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               SMS
             </button>
-            <button class="qa-btn" onclick="showTab('email')">
+            <button class="qa-btn" onclick="profileShowTab('email')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               Email
             </button>
@@ -2494,47 +2464,47 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
         <!-- Main Tabs Card -->
         <div class="card">
           <div class="tabs-bar" id="mainTabs">
-            <button class="tab-btn active" onclick="showTab('overview')">
+            <button class="tab-btn active" onclick="profileShowTab('overview')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
               Overview
             </button>
-            <button class="tab-btn" onclick="showTab('polizas')">
+            <button class="tab-btn" onclick="profileShowTab('polizas')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               Policies <span class="tab-count">3</span>
             </button>
-            <button class="tab-btn" onclick="showTab('cotizaciones')">
+            <button class="tab-btn" onclick="profileShowTab('cotizaciones')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
               Quotes <span class="tab-count">5</span>
             </button>
-            <button class="tab-btn" onclick="showTab('tasks')">
+            <button class="tab-btn" onclick="profileShowTab('tasks')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
               Tasks <span class="tab-count">4</span>
             </button>
-            <button class="tab-btn" onclick="showTab('llamadas')">
+            <button class="tab-btn" onclick="profileShowTab('llamadas')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81"/></svg>
               Calls <span class="tab-count">8</span>
             </button>
-            <button class="tab-btn" onclick="showTab('sms')">
+            <button class="tab-btn" onclick="profileShowTab('sms')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               SMS <span class="tab-count">14</span>
             </button>
-            <button class="tab-btn" onclick="showTab('email')">
+            <button class="tab-btn" onclick="profileShowTab('email')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               Emails <span class="tab-count">6</span>
             </button>
-            <button class="tab-btn" onclick="showTab('pagos')">
+            <button class="tab-btn" onclick="profileShowTab('pagos')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
               Payments <span class="tab-count">7</span>
             </button>
-            <button class="tab-btn" onclick="showTab('documentos')">
+            <button class="tab-btn" onclick="profileShowTab('documentos')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
               Documents <span class="tab-count">4</span>
             </button>
-            <button class="tab-btn" onclick="showTab('notas')">
+            <button class="tab-btn" onclick="profileShowTab('notas')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
               Notes <span class="tab-count">4</span>
             </button>
-            <button class="tab-btn" onclick="showTab('timeline')">
+            <button class="tab-btn" onclick="profileShowTab('timeline')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               Timeline
             </button>
@@ -4108,13 +4078,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       </div>
 
       <!-- View all link -->
-      <button class="topbar-btn btn-ghost" style="width:100%;justify-content:center;font-size:12px;color:var(--accent)" onclick="closeTaskPanel();showTab('tasks')">
+      <button class="topbar-btn btn-ghost" style="width:100%;justify-content:center;font-size:12px;color:var(--accent)" onclick="closeTaskPanel();profileShowTab('tasks')">
         View all tasks in Tasks tab →
       </button>
 
     </div>
   </div>
 </div>
+</div><!-- view-profile -->
+
+  </div><!-- content -->
+</div><!-- main -->
+</div><!-- app -->
+
+
+<!-- PROFILE VIEW (full-screen overlay) -->
+
 
 <!-- ═══════════════════════════════════════════════════════════
      NEW POLICY MODAL
@@ -5608,29 +5587,67 @@ let tasksData=[
 // PROFILE VIEW NAVIGATION
 // ═══════════════════════════════════════
 let currentProfileClientId = null;
+function profileSetNav(el) {
+  document.querySelectorAll('.profile-nav-item').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function pnavSetActive(el) {
+  document.querySelectorAll('.pnav-item').forEach(b => b.classList.remove('pnav-active'));
+  el.classList.add('pnav-active');
+}
 function openProfileView(clientId) {
   const c = clients.find(x => x.id === clientId);
   if (!c) { showToast('Client not found', 'red'); return; }
   currentProfileClientId = clientId;
-  // Update profile header
-  document.getElementById('profileViewClientName').textContent = c.first + ' ' + c.last;
-  // Update client hero in profile
+
+  // ── Topbar breadcrumb: Clients > Name
+  const clientsIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>';
+  document.getElementById('topbarBreadcrumb').innerHTML =
+    clientsIcon +
+    '<span onclick="showView(\'clients\',document.getElementById(\'nav-clients\'))" style="cursor:pointer;color:var(--text3)">Clients</span>' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="9 18 15 12 9 6"/></svg>' +
+    '<strong id="profileViewClientName">' + c.first + ' ' + c.last + '</strong>';
+  // Topbar actions for profile
+  document.getElementById('topbarActions').innerHTML =
+    '<button class="topbar-btn btn-outline" onclick="showToast(\'Calling ' + c.first + '…\',\'accent\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg> Call</button>' +
+    '<button class="topbar-btn btn-outline" onclick="profileShowTab(\'sms\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> SMS</button>' +
+    '<button class="topbar-btn btn-outline" onclick="profileShowTab(\'email\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</button>' +
+    '<button class="topbar-btn btn-primary" onclick="openNewPolicyModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Policy</button>';
+
+  // ── Hero card
   const heroName = document.querySelector('#view-profile .client-name');
   if (heroName) heroName.textContent = c.first + ' ' + c.last;
   const heroId = document.querySelector('#view-profile .client-id');
   if (heroId) heroId.textContent = '#' + c.id;
   const heroAvatar = document.querySelector('#view-profile .client-avatar');
-  if (heroAvatar) heroAvatar.innerHTML = c.first[0] + c.last[0] + '<div class="status-dot active"></div>';
-  // Show profile view
-  document.getElementById('view-profile').style.display = 'block';
-  document.body.style.overflow = 'hidden';
-  // Init profile tabs
-  if (typeof profileShowTab === 'function') profileShowTab('overview');
+  if (heroAvatar) heroAvatar.innerHTML = (c.first[0]||'') + (c.last[0]||'') + '<div class="status-dot active"></div>';
+  // Status badge
+  const statusBadge = document.getElementById('clientStatusBadge');
+  if (statusBadge) {
+    const isActive = c.status === 'Active Client';
+    statusBadge.style.background = isActive ? 'var(--green-light)' : 'var(--orange-light)';
+    statusBadge.style.color = isActive ? 'var(--green)' : 'var(--orange)';
+    statusBadge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span> ${c.status}`;
+  }
+  // Info rows
+  document.querySelectorAll('#view-profile .info-row').forEach(row => {
+    const label = row.querySelector('.info-label');
+    const val = row.querySelector('.info-value');
+    if (!label || !val) return;
+    if (label.textContent.trim() === 'Created') val.textContent = formatDate(c.since);
+    if (label.textContent.trim() === 'Full Name') val.textContent = c.first + ' ' + c.last;
+  });
+  // Agent
+  const agentNameEl = document.querySelector('#view-profile .agent-name');
+  if (agentNameEl) agentNameEl.textContent = c.agent || '—';
+
+  // ── Switch to profile view (keeps sidebar visible, highlights Clients nav)
+  showView('profile', document.getElementById('nav-clients'));
+  profileShowTab('overview');
   if (typeof renderProductFunnel === 'function') setTimeout(renderProductFunnel, 100);
 }
 function closeProfileView() {
-  document.getElementById('view-profile').style.display = 'none';
-  document.body.style.overflow = '';
+  showView('clients', document.getElementById('nav-clients'));
   currentProfileClientId = null;
 }
 
@@ -5831,7 +5848,9 @@ function showView(viewName,navEl){
     directory:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
     settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
   };
-  document.getElementById('topbarBreadcrumb').innerHTML=(icMap[viewName]||'')+'<strong>'+(bc[viewName]||viewName)+'</strong>';
+  if(viewName!=='profile'){
+    document.getElementById('topbarBreadcrumb').innerHTML=(icMap[viewName]||'')+'<strong>'+(bc[viewName]||viewName)+'</strong>';
+  }
   const acts={
     clients:'<button class="topbar-btn btn-primary" onclick="openNewClientModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Client</button>',
     pipeline:'<button class="topbar-btn btn-primary" onclick="openAddLeadModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Lead</button>',
@@ -6461,14 +6480,15 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ═══════════════════════════════════════
   // ─── TABS ───────────────────────────────────────────────
   function profileShowTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    const content = document.getElementById('tab-' + tabId);
+    const profileEl = document.getElementById('view-profile');
+    if (!profileEl) return;
+    profileEl.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    profileEl.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    const content = profileEl.querySelector('#tab-' + tabId);
     if (content) content.classList.add('active');
-    document.querySelectorAll('.tab-btn').forEach(b => {
-      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + tabId + "'")) {
-        b.classList.add('active');
-      }
+    profileEl.querySelectorAll('.tab-btn').forEach(b => {
+      const oc = b.getAttribute('onclick') || '';
+      if (oc.includes("'" + tabId + "'") || oc.includes('"' + tabId + '"')) b.classList.add('active');
     });
   }
 
