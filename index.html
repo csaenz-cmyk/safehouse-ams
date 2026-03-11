@@ -918,8 +918,12 @@ async function syncFromSupabase(){
     // Load pipeline
     try{
       const {data:dbPipeline,error:pe}=await sb.from('pipeline').select('*').order('created_at',{ascending:false});
-      if(!pe&&dbPipeline&&dbPipeline.length>0){
-        pipelineItems=dbPipeline.map(r=>({...r.data,id:r.id}));
+      if(!pe&&dbPipeline){
+        if(dbPipeline.length>0){
+          pipelineItems=dbPipeline.map(r=>({...r.data,id:r.id}));
+        } else {
+          pipelineItems=[]; // Empty — don't show sample data
+        }
         renderPipeline();
       }
     }catch(e){console.warn('pipeline load error:',e);}
@@ -1464,17 +1468,21 @@ function openClientProfile(id){
         <div style="font-size:13px;font-weight:700;color:var(--text)">Tasks (${tasksData.filter(t=>t.clientId===c.id).length})</div>
         <button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 10px" onclick="openTasksPanel('${c.id}','${c.first} ${c.last}')">View All + Add</button>
       </div>
-      ${tasksData.filter(t=>t.clientId===c.id).slice(0,3).map(t=>{
-        const today=new Date().toISOString().split('T')[0];
-        const overdue=!t.done&&t.due<today;
-        const prioColor={Urgent:'var(--red)',High:'var(--orange)',Normal:'var(--accent)'};
-        return`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
-          <div class="task-check ${t.done?'done':''}" style="border-color:${t.done?'var(--green)':prioColor[t.priority]||'var(--accent)'}"></div>
-          <div style="flex:1"><div style="font-size:12px;font-weight:600;${t.done?'text-decoration:line-through;color:var(--text4)':''}">${t.title}</div><div style="font-size:10px;color:var(--text4)">${t.agent.split(' ')[0]}</div></div>
-          <div style="font-size:10px;font-weight:700;color:${overdue?'var(--red)':t.done?'var(--green)':'var(--text4)'}">${overdue?'⚠️ Overdue':t.done?'✓ Done':formatDate(t.due)}</div>
-        </div>`;
-      }).join('')||`<div style="font-size:12px;color:var(--text4);text-align:center;padding:12px">No tasks for this client</div>`}
+      <div id="clientTasksQuick"></div>
     </div>`;
+  // Render tasks separately to avoid nested backtick issues
+  const today=new Date().toISOString().split('T')[0];
+  const clientTasks=tasksData.filter(t=>t.clientId===c.id).slice(0,3);
+  const prioColor={Urgent:'var(--red)',High:'var(--orange)',Normal:'var(--accent)'};
+  document.getElementById('clientTasksQuick').innerHTML=clientTasks.length?clientTasks.map(t=>{
+    const overdue=!t.done&&t.due<today;
+    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">'
+      +'<div class="task-check '+(t.done?'done':'')+'" style="border-color:'+(t.done?'var(--green)':prioColor[t.priority]||'var(--accent)')+'"></div>'
+      +'<div style="flex:1"><div style="font-size:12px;font-weight:600;'+(t.done?'text-decoration:line-through;color:var(--text4)':'')+'">'+t.title+'</div>'
+      +'<div style="font-size:10px;color:var(--text4)">'+t.agent.split(' ')[0]+'</div></div>'
+      +'<div style="font-size:10px;font-weight:700;color:'+(overdue?'var(--red)':t.done?'var(--green)':'var(--text4)')+'">'+
+        (overdue?'⚠️ Overdue':t.done?'✓ Done':formatDate(t.due))+'</div></div>';
+  }).join(''):'<div style="font-size:12px;color:var(--text4);text-align:center;padding:12px">No tasks for this client</div>';
   openPanel('policyDetailPanel');
 }
 
