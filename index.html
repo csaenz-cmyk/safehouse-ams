@@ -1876,9 +1876,6 @@ function confirmAddLead(){
   showToast('✓ Lead added — '+first+' '+last,'green');
   document.getElementById('addLeadModal').querySelectorAll('input,select').forEach(el=>{if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
 }
-  closeAddLeadModal();renderPipeline();showToast('✓ Lead added — '+first+' '+last,'green');
-  ['lead_first','lead_last','lead_phone','lead_premium','lead_notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('lead_lob').value='';
-}
 
 // ═══════════════════════════════════════
 // CONTACT MODAL
