@@ -2531,36 +2531,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
             <div style="padding:18px 18px 20px;display:flex;flex-direction:column;gap:16px">
 
               <!-- Smart Alerts inside Overview -->
-              <div id="alertsBar" style="display:flex;flex-direction:column;gap:6px">
-                <div class="alert-item alert-red">
-                  <span class="alert-icon">⚠️</span>
-                  <span class="alert-text"><strong>Failed payment detected</strong> — Auto Progressive monthly payment of $187.00 was declined today. Immediate action required.</span>
-                  <button class="alert-close" onclick="this.closest('.alert-item').remove()">✕</button>
-                </div>
-                <div class="alert-item alert-orange">
-                  <span class="alert-icon">⚠️</span>
-                  <span class="alert-text"><strong>Home renewal due in 10 days</strong> — Policy GIC-HO-20230498 expires Mar 10. Send renewal quote.</span>
-                  <button class="alert-close" onclick="this.closest('.alert-item').remove()">✕</button>
-                </div>
-                <div class="alert-item alert-blue">
-                  <span class="alert-icon">🔔</span>
-                  <span class="alert-text"><strong>No contact in 30 days</strong> — Last interaction was Feb 6. Active follow-up recommended.</span>
-                  <button class="alert-close" onclick="this.closest('.alert-item').remove()">✕</button>
-                </div>
-              </div>
+              <div id="alertsBar" style="display:flex;flex-direction:column;gap:6px"></div>
 
-              <!-- KPI Stats row -->
+              <!-- KPI Stats row — populated by openProfileView() -->
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
                 <div style="padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-                  <div style="font-size:22px;font-weight:800;color:var(--green)">3</div>
+                  <div id="ov_policies" style="font-size:22px;font-weight:800;color:var(--green)">0</div>
                   <div style="font-size:10px;color:var(--text4);margin-top:2px;font-weight:500">Active Policies</div>
                 </div>
                 <div style="padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-                  <div style="font-size:22px;font-weight:800;color:var(--text)">8</div>
+                  <div id="ov_calls" style="font-size:22px;font-weight:800;color:var(--text)">0</div>
                   <div style="font-size:10px;color:var(--text4);margin-top:2px;font-weight:500">Total Calls</div>
                 </div>
                 <div style="padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-                  <div style="font-size:22px;font-weight:800;color:var(--orange)">2</div>
+                  <div id="ov_tasks" style="font-size:22px;font-weight:800;color:var(--orange)">0</div>
                   <div style="font-size:10px;color:var(--text4);margin-top:2px;font-weight:500">Pending Tasks</div>
                 </div>
               </div>
@@ -2568,81 +2552,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
               <!-- Revenue + LTV row -->
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
                 <div style="padding:14px;background:var(--green-light);border:1px solid #A7F3D0;border-radius:var(--radius)">
-                  <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.07em">Total Commission</div>
-                  <div style="font-size:22px;font-weight:800;color:var(--green);margin-top:3px">$338.44</div>
-                  <div style="font-size:11px;color:var(--green);opacity:.7;margin-top:2px">Generated to date</div>
+                  <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.07em">Total Premium</div>
+                  <div id="ov_premium" style="font-size:22px;font-weight:800;color:var(--green);margin-top:3px">$0</div>
+                  <div style="font-size:11px;color:var(--green);opacity:.7;margin-top:2px">Annual written premium</div>
                 </div>
                 <div style="padding:14px;background:var(--accent-light);border:1px solid #C7D7FF;border-radius:var(--radius)">
                   <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em">Est. LTV</div>
-                  <div style="font-size:22px;font-weight:800;color:var(--accent);margin-top:3px">$4,062</div>
-                  <div style="font-size:11px;color:var(--accent);opacity:.7;margin-top:2px">Annually · 62% of max</div>
+                  <div id="ov_ltv" style="font-size:22px;font-weight:800;color:var(--accent);margin-top:3px">—</div>
+                  <div style="font-size:11px;color:var(--accent);opacity:.7;margin-top:2px">Estimated lifetime value</div>
                 </div>
               </div>
 
-              <!-- Payments grid -->
-              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
-                <div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-                  <div style="font-size:16px;font-weight:800;color:var(--text)">$438</div>
-                  <div style="font-size:10px;color:var(--text4);margin-top:2px;font-weight:500">Premium/mo</div>
-                </div>
-                <div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-                  <div style="font-size:16px;font-weight:800;color:var(--green)">2/3</div>
-                  <div style="font-size:10px;color:var(--text4);margin-top:2px;font-weight:500">Payments OK</div>
-                </div>
-                <div style="padding:10px;background:var(--red-light);border:1px solid #FECACA;border-radius:var(--radius);text-align:center">
-                  <div style="font-size:16px;font-weight:800;color:var(--red)">1</div>
-                  <div style="font-size:10px;color:var(--red);margin-top:2px;font-weight:500">Failed</div>
-                </div>
-                <div style="padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
-                  <div style="font-size:16px;font-weight:800;color:var(--text)">5</div>
-                  <div style="font-size:10px;color:var(--text4);margin-top:2px;font-weight:500">Documents</div>
-                </div>
-              </div>
-
-              <!-- LTV bar -->
-              <div style="padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius)">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-                  <span style="font-size:12px;font-weight:600;color:var(--text2)">LTV Progress</span>
-                  <span style="font-size:12px;font-weight:700;color:var(--accent)">62%</span>
-                </div>
-                <div style="height:6px;background:var(--border);border-radius:10px;overflow:hidden">
-                  <div style="width:62%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:10px"></div>
-                </div>
-                <div style="font-size:10px;color:var(--text4);margin-top:5px">62% of estimated maximum potential</div>
-              </div>
-
-              <!-- AI Assistant inside Overview -->
-              <div style="border:1px solid #E8DEFF;border-radius:var(--radius);overflow:hidden">
+              <!-- AI Assistant placeholder — will be activated when AI is connected -->
+              <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
                 <div style="padding:12px 14px 10px;background:var(--purple-light);border-bottom:1px solid #E8DEFF;display:flex;align-items:center;gap:8px">
                   <div style="width:28px;height:28px;border-radius:7px;background:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                     <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><circle cx="12" cy="16" r=".5" fill="white"/></svg>
                   </div>
-                  <div>
+                  <div style="flex:1">
                     <div style="font-size:13px;font-weight:700;color:var(--purple)">AI Assistant</div>
-                    <div style="font-size:11px;color:var(--purple);opacity:.7">Automated client analysis</div>
+                    <div style="font-size:11px;color:var(--purple);opacity:.7">Client analysis — coming soon</div>
                   </div>
                 </div>
-                <div style="padding:14px;display:flex;flex-direction:column;gap:10px;background:white">
-                  <!-- Lead temp -->
-                  <div style="padding:10px 12px;background:var(--purple-light);border-radius:var(--radius-sm);border:1px solid #E8DEFF">
-                    <div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">🔥 Lead Temperature</div>
-                    <div style="display:flex;align-items:center;gap:10px">
-                      <div style="flex:1;height:6px;background:var(--border);border-radius:10px;overflow:hidden">
-                        <div style="width:75%;height:100%;background:linear-gradient(90deg,var(--orange),var(--red));border-radius:10px"></div>
-                      </div>
-                      <span style="font-size:12px;font-weight:700;color:var(--orange);white-space:nowrap">🔥 Hot</span>
-                    </div>
-                  </div>
-                  <!-- Next action -->
-                  <div style="padding:10px 12px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border)">
-                    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">💡 Suggested Next Action</div>
-                    <div style="font-size:12px;color:var(--text2);line-height:1.5">Call today before 4 PM to resolve the failed payment. High risk of cancellation if not addressed.</div>
-                  </div>
-                  <!-- Summary -->
-                  <div style="padding:10px 12px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border)">
-                    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">📋 Client Summary</div>
-                    <div style="font-size:12px;color:var(--text2);line-height:1.5">Client has 3 active policies. Good payment history except for the most recent. Upcoming home renewal is at risk.</div>
-                  </div>
+                <div style="padding:20px;text-align:center;color:var(--text4)">
+                  <div style="font-size:12px">AI analysis will be available once policies and call data are connected.</div>
                 </div>
               </div>
 
@@ -2670,357 +2603,95 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
             <!-- Policy Cards -->
             <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px" id="policyCardsList">
-
-              <!-- Card 1: Auto Progressive -->
-              <div class="poliza-card poliza-clickable" onclick="openPolicyDetail(0)" style="cursor:pointer">
-                <div class="poliza-header">
-                  <div class="poliza-carrier-logo" style="background:linear-gradient(135deg,#3B5BDB,#4C6EF5)">PRG</div>
-                  <div class="poliza-info" style="flex:1">
-                    <div style="display:flex;align-items:center;gap:8px">
-                      <div class="poliza-tipo">🚗 Auto — New Business</div>
-                      <span class="badge badge-green" style="font-size:10px"><span class="dot"></span> Active</span>
-                    </div>
-                    <div class="poliza-num">PRG-TX-20241182-A</div>
-                    <div style="font-size:10px;color:var(--text4);margin-top:2px">Progressive · 1 Year · Direct Billing</div>
-                  </div>
-                  <div style="text-align:right;flex-shrink:0">
-                    <div style="font-size:16px;font-weight:800;color:var(--text)">$2,244</div>
-                    <div style="font-size:10px;color:var(--text4)">Annual premium</div>
-                    <span class="badge badge-orange" style="font-size:9px;margin-top:4px;display:inline-block">Renews in 43d</span>
-                  </div>
-                </div>
-                <div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-                  <div class="poliza-field"><label>Written Premium</label><span>$2,244/yr</span></div>
-                  <div class="poliza-field"><label>Agency Fees</label><span style="color:var(--green)">$125</span></div>
-                  <div class="poliza-field"><label>Agent</label><span>Ana Gutierrez</span></div>
-                  <div class="poliza-field"><label>Effective</label><span>Jan 15, 2025</span></div>
-                  <div class="poliza-field"><label>Expiration</label><span>Jan 15, 2026</span></div>
-                  <div class="poliza-field"><label>Policy Term</label><span>1 Year</span></div>
-                </div>
-                <div style="margin-top:8px;display:flex;justify-content:flex-end">
-                  <span style="font-size:10px;color:var(--accent);font-weight:600">Click to open full policy →</span>
-                </div>
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div style="font-size:13px;font-weight:600">No policies yet</div>
+                <div style="font-size:12px;margin-top:4px">Click "+ New Policy" to add one</div>
               </div>
-
-              <!-- Card 2: GEICO Home -->
-              <div class="poliza-card poliza-clickable" onclick="openPolicyDetail(1)" style="cursor:pointer">
-                <div class="poliza-header">
-                  <div class="poliza-carrier-logo" style="background:linear-gradient(135deg,#2E7D32,#43A047)">GIC</div>
-                  <div class="poliza-info" style="flex:1">
-                    <div style="display:flex;align-items:center;gap:8px">
-                      <div class="poliza-tipo">🏠 Home — Renewal</div>
-                      <span class="badge badge-red" style="font-size:10px">Expired</span>
-                    </div>
-                    <div class="poliza-num">GIC-HO-20230498</div>
-                    <div style="font-size:10px;color:var(--text4);margin-top:2px">GEICO · 1 Year · Agency Billing</div>
-                  </div>
-                  <div style="text-align:right;flex-shrink:0">
-                    <div style="font-size:16px;font-weight:800;color:var(--text)">$1,240</div>
-                    <div style="font-size:10px;color:var(--text4)">Annual premium</div>
-                    <span class="badge badge-red" style="font-size:9px;margin-top:4px;display:inline-block">Expired Mar 3</span>
-                  </div>
-                </div>
-                <div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-                  <div class="poliza-field"><label>Written Premium</label><span>$1,240/yr</span></div>
-                  <div class="poliza-field"><label>Agency Fees</label><span style="color:var(--green)">$200</span></div>
-                  <div class="poliza-field"><label>Agent</label><span>Ana Gutierrez</span></div>
-                  <div class="poliza-field"><label>Effective</label><span>Mar 3, 2024</span></div>
-                  <div class="poliza-field"><label>Expiration</label><span>Mar 3, 2025</span></div>
-                  <div class="poliza-field"><label>Policy Term</label><span>1 Year</span></div>
-                </div>
-                <div style="margin-top:8px;display:flex;justify-content:flex-end">
-                  <span style="font-size:10px;color:var(--accent);font-weight:600">Click to open full policy →</span>
-                </div>
-              </div>
-
-              <!-- Card 3: AIG Life -->
-              <div class="poliza-card poliza-clickable" onclick="openPolicyDetail(2)" style="cursor:pointer">
-                <div class="poliza-header">
-                  <div class="poliza-carrier-logo" style="background:linear-gradient(135deg,#B91C1C,#EF4444)">AIG</div>
-                  <div class="poliza-info" style="flex:1">
-                    <div style="display:flex;align-items:center;gap:8px">
-                      <div class="poliza-tipo">❤️ Life — New Business</div>
-                      <span class="badge badge-green" style="font-size:10px"><span class="dot"></span> Active</span>
-                    </div>
-                    <div class="poliza-num">AIG-LF-20241095</div>
-                    <div style="font-size:10px;color:var(--text4);margin-top:2px">AIG · 20-Year Term · Direct Billing</div>
-                  </div>
-                  <div style="text-align:right;flex-shrink:0">
-                    <div style="font-size:16px;font-weight:800;color:var(--text)">$768</div>
-                    <div style="font-size:10px;color:var(--text4)">Annual premium</div>
-                    <span class="badge badge-blue" style="font-size:9px;margin-top:4px;display:inline-block">In Good Standing</span>
-                  </div>
-                </div>
-                <div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-                  <div class="poliza-field"><label>Written Premium</label><span>$64/mo</span></div>
-                  <div class="poliza-field"><label>Agency Fees</label><span style="color:var(--green)">$0</span></div>
-                  <div class="poliza-field"><label>Agent</label><span>Ana Gutierrez</span></div>
-                  <div class="poliza-field"><label>Face Amount</label><span>$500,000</span></div>
-                  <div class="poliza-field"><label>Effective</label><span>Jun 1, 2024</span></div>
-                  <div class="poliza-field"><label>Policy Term</label><span>20-Year Term</span></div>
-                </div>
-                <div style="margin-top:8px;display:flex;justify-content:flex-end">
-                  <span style="font-size:10px;color:var(--accent);font-weight:600">Click to open full policy →</span>
-                </div>
-              </div>
-
             </div>
           </div>
 
           <!-- TAB: COTIZACIONES -->
           <div class="tab-content" id="tab-cotizaciones">
-            <div class="card-body">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
-                <span style="font-size:12px; color:var(--text3)">5 cotizaciones registradas</span>
-                <button class="topbar-btn btn-outline" style="font-size:12px; padding:5px 12px">+ Nueva cotización</button>
-              </div>
-
-              <div class="cot-card">
-                <div class="cot-header">
-                  <div>
-                    <div class="cot-carrier">Progressive — Auto</div>
-                    <div style="font-size:11px;color:var(--text4)">Agente: Ana Gutierrez</div>
-                  </div>
-                  <div style="text-align:right">
-                    <span class="badge badge-green">Vendida</span>
-                    <div class="cot-date" style="margin-top:4px">12 Ene 2025</div>
-                  </div>
-                </div>
-                <div class="cot-row"><span class="cot-label">Premium</span><span class="cot-val">$187/mo</span></div>
-                <div class="cot-row"><span class="cot-label">Deducible</span><span class="cot-val">$500</span></div>
-                <div class="cot-row"><span class="cot-label">Cobertura</span><span class="cot-val">Full Coverage · 30/60/25k</span></div>
-              </div>
-
-              <div class="cot-card">
-                <div class="cot-header">
-                  <div>
-                    <div class="cot-carrier">Dairyland — Auto</div>
-                    <div style="font-size:11px;color:var(--text4)">Agente: Ana Gutierrez</div>
-                  </div>
-                  <div style="text-align:right">
-                    <span class="badge badge-gray">No vendida</span>
-                    <div class="cot-date" style="margin-top:4px">10 Ene 2025</div>
-                  </div>
-                </div>
-                <div class="cot-row"><span class="cot-label">Premium</span><span class="cot-val">$214/mo</span></div>
-                <div class="cot-row"><span class="cot-label">Deducible</span><span class="cot-val">$500</span></div>
-                <div class="cot-row"><span class="cot-label">Cobertura</span><span class="cot-val">Full Coverage · 25/50/25k</span></div>
-              </div>
-
-              <div class="cot-card">
-                <div class="cot-header">
-                  <div>
-                    <div class="cot-carrier">State Farm — Hogar</div>
-                    <div style="font-size:11px;color:var(--text4)">Agente: Ana Gutierrez</div>
-                  </div>
-                  <div style="text-align:right">
-                    <span class="badge badge-orange">Pendiente</span>
-                    <div class="cot-date" style="margin-top:4px">5 Feb 2025</div>
-                  </div>
-                </div>
-                <div class="cot-row"><span class="cot-label">Premium</span><span class="cot-val">$1,080/yr</span></div>
-                <div class="cot-row"><span class="cot-label">Deducible</span><span class="cot-val">$1,000</span></div>
-                <div class="cot-row"><span class="cot-label">Cobertura</span><span class="cot-val">HO-3 · $280,000</span></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- TAB: LLAMADAS -->
-          <div class="tab-content" id="tab-llamadas">
-            <div class="call-item">
-              <div class="call-direction call-out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-              <div class="call-info">
-                <div class="call-agent">Ana Gutierrez → María</div>
-                <div class="call-detail">Saliente · Hoy, 10:22 AM · RingCentral</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-                <div class="call-duration">04:17</div>
-                <span class="badge badge-green" style="font-size:10px">Contestó</span>
-              </div>
-            </div>
-            <div class="call-item">
-              <div class="call-direction call-missed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="7" x2="7" y2="17"/><polyline points="17 17 7 17 7 7"/></svg></div>
-              <div class="call-info">
-                <div class="call-agent">Ana Gutierrez → María</div>
-                <div class="call-detail">Saliente · Ayer, 3:45 PM · RingCentral</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-                <div class="call-duration">—</div>
-                <span class="badge badge-red" style="font-size:10px">No contestó</span>
-              </div>
-            </div>
-            <div class="call-item">
-              <div class="call-direction call-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="17" x2="7" y2="7"/><polyline points="7 17 7 7 17 7"/></svg></div>
-              <div class="call-info">
-                <div class="call-agent">María → Safe House</div>
-                <div class="call-detail">Entrante · 28 Feb, 11:10 AM · RingCentral</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-                <div class="call-duration">07:54</div>
-                <span class="badge badge-green" style="font-size:10px">Contestó</span>
-              </div>
-            </div>
-            <div class="call-item">
-              <div class="call-direction call-out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-              <div class="call-info">
-                <div class="call-agent">Carlos Reyes → María</div>
-                <div class="call-detail">Saliente · 26 Feb, 9:00 AM · RingCentral</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-                <div class="call-duration">02:30</div>
-                <span class="badge badge-green" style="font-size:10px">Contestó</span>
-              </div>
-            </div>
-            <div style="padding:12px 16px; border-top:1px solid var(--border); display:flex; justify-content:center;">
-              <button class="topbar-btn btn-ghost" style="font-size:12px">Ver todas las llamadas (8)</button>
-            </div>
-          </div>
-
-          <!-- TAB: SMS -->
-          <div class="tab-content" id="tab-sms">
-            <div class="ai-suggestion">
-              <span class="ai-icon">✨</span>
-              <span class="ai-text"><strong>Sugerencia IA:</strong> "Hola María, te recuerdo que tu póliza de hogar vence el 3 de marzo. ¿Deseas renovarla? Puedo enviarte una cotización actualizada."</span>
-              <button class="ai-use-btn" onclick="useAiSuggestion()">Usar</button>
-            </div>
-            <div class="message-thread">
-              <div>
-                <div class="msg-bubble msg-outbound">Hola María, te llamo para confirmar la información de tu cotización de auto. ¿Tienes un momento ahora?</div>
-                <div class="msg-time" style="color:var(--text4);font-size:10px;text-align:right;margin-top:3px">Hoy 9:15 AM · Ana G.</div>
-              </div>
-              <div>
-                <div class="msg-bubble msg-inbound">Sí claro, ¿cuándo me llamas?</div>
-                <div class="msg-time" style="color:var(--text4);font-size:10px;margin-top:3px">Hoy 9:22 AM</div>
-              </div>
-              <div>
-                <div class="msg-bubble msg-outbound">Te llamo en 10 minutos. Gracias María 😊</div>
-                <div class="msg-time" style="color:var(--text4);font-size:10px;text-align:right;margin-top:3px">Hoy 9:23 AM · Ana G.</div>
-              </div>
-              <div>
-                <div class="msg-bubble msg-inbound">Perfecto, aquí espero</div>
-                <div class="msg-time" style="color:var(--text4);font-size:10px;margin-top:3px">Hoy 9:24 AM</div>
-              </div>
-            </div>
-            <div class="message-composer" style="border-top:1px solid var(--border)">
-              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
-                <textarea class="composer-input" rows="2" placeholder="Escribe un mensaje SMS..." id="smsInput"></textarea>
-                <div id="smsAttachPreview" style="display:none;padding:4px 8px;background:var(--accent-light);border-radius:var(--radius-sm);font-size:11px;color:var(--accent);display:flex;align-items:center;gap:6px">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-                  <span id="smsAttachName">documento.pdf</span>
-                  <button onclick="clearSmsAttach()" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:12px;padding:0;margin-left:auto">✕</button>
-                </div>
-              </div>
-              <div style="display:flex;flex-direction:column;gap:6px">
-                <button class="topbar-btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="sendSms()">Enviar</button>
-                <button class="topbar-btn btn-ghost" style="padding:6px 14px;font-size:11px" onclick="getAiReply()">✨ IA</button>
-                <button class="topbar-btn btn-outline" style="padding:6px 8px;font-size:11px" onclick="openAttachPicker('sms')" title="Adjuntar documento">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- TAB: EMAIL -->
-          <div class="tab-content" id="tab-email">
-            <div style="padding:10px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:flex-end;">
-              <button class="topbar-btn btn-primary" style="font-size:12px; padding:6px 14px" onclick="openEmailCompose()">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Nuevo email
+            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:12px;color:var(--text3)" id="cotCount">0 quotes on record</span>
+              <button class="topbar-btn btn-primary" style="font-size:11px;padding:4px 12px" onclick="showToast('New quote — coming soon','accent')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Quote
               </button>
             </div>
-            <div class="email-item">
-              <div class="email-header">
-                <div class="email-from">Safe House → María</div>
-                <div class="email-date">Hoy, 10:30 AM</div>
+            <div id="cotList" style="padding:16px">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div style="font-size:13px;font-weight:600">No quotes yet</div>
+                <div style="font-size:12px;margin-top:4px">Quotes added here will appear automatically</div>
               </div>
-              <div class="email-subject">Confirmación de cotización — Auto Progressive</div>
-              <div class="email-preview">Estimada María, adjuntamos el resumen de tu cotización de seguro de auto con Progressive...</div>
-            </div>
-            <div class="email-item">
-              <div class="email-header">
-                <div class="email-from">María → Safe House</div>
-                <div class="email-date">Ayer, 2:14 PM</div>
-              </div>
-              <div class="email-subject">Re: Documentos solicitados</div>
-              <div class="email-preview">Hola, adjunto mi licencia y comprobante de domicilio como me indicaron...</div>
-            </div>
-            <div class="email-item">
-              <div class="email-header">
-                <div class="email-from">Safe House → María</div>
-                <div class="email-date">27 Feb, 4:00 PM</div>
-              </div>
-              <div class="email-subject">Recordatorio: Renovación de póliza de hogar</div>
-              <div class="email-preview">Tu póliza de hogar con GEICO vence el 3 de marzo. Te recomendamos renovar antes de esa fecha...</div>
-            </div>
-            <div class="email-item">
-              <div class="email-header">
-                <div class="email-from">Safe House → María</div>
-                <div class="email-date">15 Ene 2025</div>
-              </div>
-              <div class="email-subject">✅ Tu póliza está activa — Progressive Auto</div>
-              <div class="email-preview">Felicitaciones María, tu póliza de auto ha sido emitida exitosamente. Número de póliza: PRG-TX-20241182-A...</div>
             </div>
           </div>
-
-          <!-- TAB: PAGOS -->
+          <div class="tab-content" id="tab-llamadas">
+            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:12px;color:var(--text3)" id="callCount">0 calls on record</span>
+              <button class="topbar-btn btn-outline" style="font-size:11px;padding:4px 12px" onclick="showToast('Calling...','accent')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+                New Call
+              </button>
+            </div>
+            <div id="callsList" style="padding:16px">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.14 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+                <div style="font-size:13px;font-weight:600">No calls logged</div>
+                <div style="font-size:12px;margin-top:4px">Call history from RingCentral will sync here</div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-content" id="tab-sms">
+            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:12px;color:var(--text3)">SMS conversation</span>
+              <button class="topbar-btn btn-primary" style="font-size:11px;padding:4px 12px" onclick="showToast('Open SMS...','accent')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                New SMS
+              </button>
+            </div>
+            <div style="padding:16px;text-align:center;padding:32px 16px;color:var(--text4)">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <div style="font-size:13px;font-weight:600">No messages yet</div>
+              <div style="font-size:12px;margin-top:4px">SMS from RingCentral will sync here</div>
+            </div>
+          </div>
+          <div class="tab-content" id="tab-email">
+            <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:flex-end">
+              <button class="topbar-btn btn-primary" style="font-size:12px;padding:6px 14px" onclick="openEmailCompose()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Compose Email
+              </button>
+            </div>
+            <div id="emailList" style="display:flex;flex-direction:column">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <div style="font-size:13px;font-weight:600">No emails yet</div>
+                <div style="font-size:12px;margin-top:4px">Emails sent from this client will appear here</div>
+              </div>
+            </div>
+          </div>
           <div class="tab-content" id="tab-pagos">
             <div class="send-link-row">
-              <button class="topbar-btn btn-outline" style="font-size:12px;flex:1" onclick="alert('Generando link de pago...')">
+              <button class="topbar-btn btn-outline" style="font-size:12px;flex:1" onclick="alert('Generating payment link...')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                Cobrar ahora
+                Send Payment Link
               </button>
-              <button class="topbar-btn btn-outline" style="font-size:12px;flex:1" onclick="alert('Enviando link por SMS...')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                Enviar link
+              <button class="topbar-btn btn-outline" style="font-size:12px;flex:1" onclick="alert('Log payment...')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Log Payment
               </button>
             </div>
-            <div class="payment-item">
-              <div class="payment-icon" style="background:var(--green-light)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <div id="paymentsList" style="display:flex;flex-direction:column">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                <div style="font-size:13px;font-weight:600">No payments recorded</div>
+                <div style="font-size:12px;margin-top:4px">Payment history will appear here once connected</div>
               </div>
-              <div class="payment-info">
-                <div class="payment-desc">Down Payment — Auto Progressive</div>
-                <div class="payment-meta">15 Ene 2025 · Visa ····4521 · Ana Gutierrez</div>
-              </div>
-              <div class="payment-amount payment-pos">+$374.00</div>
-            </div>
-            <div class="payment-item">
-              <div class="payment-icon" style="background:var(--green-light)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div class="payment-info">
-                <div class="payment-desc">Mensualidad — Auto Progressive</div>
-                <div class="payment-meta">15 Feb 2025 · ACH · Autopago</div>
-              </div>
-              <div class="payment-amount payment-pos">+$187.00</div>
-            </div>
-            <div class="payment-item">
-              <div class="payment-icon" style="background:var(--green-light)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div class="payment-info">
-                <div class="payment-desc">Service Fee</div>
-                <div class="payment-meta">15 Ene 2025 · Visa ····4521</div>
-              </div>
-              <div class="payment-amount payment-pos">+$25.00</div>
-            </div>
-            <div class="payment-item">
-              <div class="payment-icon" style="background:var(--red-light)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </div>
-              <div class="payment-info">
-                <div class="payment-desc">Mensualidad fallida — Auto Progressive</div>
-                <div class="payment-meta">15 Mar 2025 · Tarjeta declinada</div>
-              </div>
-              <div class="payment-amount payment-neg">—$187.00</div>
-            </div>
-            <div style="padding:12px 16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:12px; color:var(--text3)">Total cobrado: <strong style="color:var(--green)">$586.00</strong></span>
-              <span style="font-size:12px; color:var(--red)">Pendiente: <strong>$187.00</strong></span>
             </div>
           </div>
-
-          <!-- TAB: DOCUMENTOS -->
           <div class="tab-content" id="tab-documentos">
             <!-- Toolbar -->
             <div style="padding:10px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
@@ -3056,551 +2727,36 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
             <!-- Document list -->
             <div id="docsList">
-
-              <div class="doc-item" data-cat="Signed Application">
-                <div class="doc-icon" style="background:var(--accent-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="doc-info">
-                  <div class="doc-name">Aplicación firmada — Auto Progressive</div>
-                  <div class="doc-meta">
-                    <span class="doc-cat-chip">✍️ Signed Application</span>
-                    <span>PDF · 2.1 MB · 15 Ene 2025</span>
-                    <span class="doc-visibility admin">🔒 Admin</span>
-                  </div>
-                </div>
-                <span class="badge badge-green" style="flex-shrink:0">Firmado ✓</span>
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div style="font-size:13px;font-weight:600">No documents yet</div>
+                <div style="font-size:12px;margin-top:4px">Upload documents using the button above</div>
               </div>
-
-              <div class="doc-item" data-cat="Driver's License">
-                <div class="doc-icon" style="background:var(--green-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="doc-info">
-                  <div class="doc-name">ID / Licencia de manejo</div>
-                  <div class="doc-meta">
-                    <span class="doc-cat-chip">👤 Driver's License</span>
-                    <span>JPG · 540 KB · 12 Ene 2025</span>
-                    <span class="doc-visibility agent">👁 Agente</span>
-                  </div>
-                </div>
-                <span class="badge badge-blue" style="flex-shrink:0">Verificado</span>
-              </div>
-
-              <div class="doc-item" data-cat="Signed Endorsement">
-                <div class="doc-icon" style="background:var(--orange-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="doc-info">
-                  <div class="doc-name">Consent to Rate — Hogar GEICO</div>
-                  <div class="doc-meta">
-                    <span class="doc-cat-chip">✍️ Signed Endorsement</span>
-                    <span>PDF · 890 KB · 3 Mar 2024</span>
-                    <span class="doc-visibility agent">👁 Agente</span>
-                  </div>
-                </div>
-                <span class="badge badge-orange" style="flex-shrink:0">Firma pendiente</span>
-              </div>
-
-              <div class="doc-item" data-cat="Proof of Address">
-                <div class="doc-icon" style="background:var(--accent-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="doc-info">
-                  <div class="doc-name">Comprobante de domicilio</div>
-                  <div class="doc-meta">
-                    <span class="doc-cat-chip">👤 Proof of Address</span>
-                    <span>PDF · 1.2 MB · 28 Feb 2025</span>
-                    <span class="doc-visibility public">🌐 Cliente</span>
-                  </div>
-                </div>
-                <span class="badge badge-blue" style="flex-shrink:0">Verificado</span>
-              </div>
-
-              <div class="doc-item" data-cat="Down Payment Confirmation">
-                <div class="doc-icon" style="background:var(--green-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="doc-info">
-                  <div class="doc-name">Down Payment Receipt — $374</div>
-                  <div class="doc-meta">
-                    <span class="doc-cat-chip">💳 Down Payment Confirmation</span>
-                    <span>PDF · 320 KB · 15 Ene 2025</span>
-                    <span class="doc-visibility public">🌐 Cliente</span>
-                  </div>
-                </div>
-                <span class="badge badge-green" style="flex-shrink:0">Confirmado</span>
-              </div>
-
             </div>
           </div>
 
           <!-- TAB: ACTIVIDAD -->
           <div class="tab-content" id="tab-actividad">
-            <div class="activity-feed">
-              <div class="activity-item">
-                <div class="act-icon" style="background:var(--green-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81"/></svg>
-                </div>
-                <div class="act-body">
-                  <div class="act-title"><strong>Llamada completada</strong> — 4 min 17 seg</div>
-                  <div class="act-meta"><span>Ana Gutierrez</span><span>·</span><span>Auto Progressive</span></div>
-                </div>
-                <div class="act-time">Hoy 10:22</div>
-              </div>
-              <div class="activity-item">
-                <div class="act-icon" style="background:var(--accent-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                </div>
-                <div class="act-body">
-                  <div class="act-title"><strong>SMS enviado</strong> — Confirmación de llamada</div>
-                  <div class="act-meta"><span>Ana Gutierrez</span></div>
-                </div>
-                <div class="act-time">Hoy 9:23</div>
-              </div>
-              <div class="activity-item">
-                <div class="act-icon" style="background:var(--orange-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                </div>
-                <div class="act-body">
-                  <div class="act-title"><strong>Pago fallido</strong> — Tarjeta declinada</div>
-                  <div class="act-meta"><span>Auto Progressive</span><span>·</span><span>$187.00</span></div>
-                </div>
-                <div class="act-time">Hoy 8:00</div>
-              </div>
-              <div class="activity-item">
-                <div class="act-icon" style="background:var(--purple-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                </div>
-                <div class="act-body">
-                  <div class="act-title"><strong>Email enviado</strong> — Recordatorio renovación hogar</div>
-                  <div class="act-meta"><span>Auto-sistema</span></div>
-                </div>
-                <div class="act-time">27 Feb</div>
-              </div>
-              <div class="activity-item">
-                <div class="act-icon" style="background:var(--green-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="act-body">
-                  <div class="act-title"><strong>Documento firmado</strong> — Aplicación Auto Progressive</div>
-                  <div class="act-meta"><span>Cliente</span></div>
-                </div>
-                <div class="act-time">15 Ene</div>
-              </div>
-              <div class="activity-item">
-                <div class="act-icon" style="background:var(--green-light)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <div class="act-body">
-                  <div class="act-title"><strong>Póliza emitida</strong> — Auto Progressive PRG-TX-20241182-A</div>
-                  <div class="act-meta"><span>Ana Gutierrez</span><span>·</span><span>$374 cobrado</span></div>
-                </div>
-                <div class="act-time">15 Ene</div>
+            <div id="activityFeed" style="display:flex;flex-direction:column">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <div style="font-size:13px;font-weight:600">No activity yet</div>
+                <div style="font-size:12px;margin-top:4px">Actions on this client will be logged here</div>
               </div>
             </div>
           </div>
-
-          <!-- TAB: NOTAS -->
           <div class="tab-content" id="tab-notas">
             <div style="padding:10px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:12px;color:var(--text3)">4 notes on record</span>
+              <span style="font-size:12px;color:var(--text3)" id="notesCount">0 notes on record</span>
               <button class="topbar-btn btn-primary" style="font-size:12px;padding:6px 14px" onclick="openNoteModal()">+ New Note</button>
             </div>
-            <div id="notesList">
-              <div class="note-item">
-                <div class="note-header">
-                  <span class="note-tag" style="background:var(--red-light);color:var(--red)">🔴 Urgent</span>
-                  <span class="note-author">Ana Gutierrez</span>
-                  <span class="note-date">Today 10:30 AM</span>
-                </div>
-                <div class="note-text">Client reported card was changed. Needs to update payment method before next billing on the 15th. Call today or tomorrow at the latest.</div>
-              </div>
-              <div class="note-item">
-                <div class="note-header">
-                  <span class="note-tag" style="background:var(--orange-light);color:var(--orange)">🟡 Follow-up</span>
-                  <span class="note-author">Carlos Reyes</span>
-                  <span class="note-date">Feb 26</span>
-                </div>
-                <div class="note-text">Spoke with husband (Roberto). Says María is interested in adding a second vehicle. Quote Honda Civic 2019. Call back next week.</div>
-              </div>
-              <div class="note-item">
-                <div class="note-header">
-                  <span class="note-tag" style="background:var(--accent-light);color:var(--accent)">🔵 General</span>
-                  <span class="note-author">Ana Gutierrez</span>
-                  <span class="note-date">Jan 15</span>
-                </div>
-                <div class="note-text">Very friendly client. Prefers SMS contact. Best call window 10 AM–1 PM. Do not call after 5 PM.</div>
-              </div>
-              <div class="note-item">
-                <div class="note-header">
-                  <span class="note-tag" style="background:var(--green-light);color:var(--green)">🟢 Sale</span>
-                  <span class="note-author">Ana Gutierrez</span>
-                  <span class="note-date">Jan 12</span>
-                </div>
-                <div class="note-text">Referral from Juan Torres (#CLT-00388). Came in interested in auto and home. Sold both policies in the same call.</div>
+            <div id="notesList" style="display:flex;flex-direction:column;gap:1px">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <div style="font-size:13px;font-weight:600">No notes yet</div>
+                <div style="font-size:12px;margin-top:4px">Add a note to keep track of important details</div>
               </div>
             </div>
-          </div>
-
-          <!-- ═══ TAB: TIMELINE ══════════════════════════════════ -->
-          <div class="tab-content" id="tab-timeline">
-            <div style="padding:16px 18px 20px">
-              <div style="display:flex;flex-direction:column;gap:0">
-
-                <!-- Timeline items -->
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--red)"></div><div class="tl-full-bar"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--red-light);color:var(--red)">💳 Payment</span>
-                      <span class="tl-full-time">Today · 8:00 AM</span>
-                    </div>
-                    <div class="tl-full-title">Failed Payment — $187.00 declined</div>
-                    <div class="tl-full-sub">Auto Progressive monthly · Card ending 4821</div>
-                  </div>
-                </div>
-
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--green)"></div><div class="tl-full-bar"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--green-light);color:var(--green)">📞 Call</span>
-                      <span class="tl-full-time">Today · 10:22 AM</span>
-                    </div>
-                    <div class="tl-full-title">Inbound call completed — 4 min 17 sec</div>
-                    <div class="tl-full-sub">Agent: Ana Gutierrez · Regarding Auto Progressive renewal</div>
-                  </div>
-                </div>
-
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--accent)"></div><div class="tl-full-bar"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--accent-light);color:var(--accent)">💬 SMS</span>
-                      <span class="tl-full-time">Today · 9:23 AM</span>
-                    </div>
-                    <div class="tl-full-title">SMS sent — Call confirmation</div>
-                    <div class="tl-full-sub">Agent: Ana Gutierrez</div>
-                  </div>
-                </div>
-
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--purple)"></div><div class="tl-full-bar"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--purple-light);color:var(--purple)">📧 Email</span>
-                      <span class="tl-full-time">Feb 27</span>
-                    </div>
-                    <div class="tl-full-title">Email sent — Home renewal reminder</div>
-                    <div class="tl-full-sub">Auto-system · GIC-HO-20230498</div>
-                  </div>
-                </div>
-
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--orange)"></div><div class="tl-full-bar"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--orange-light);color:var(--orange)">📋 Quote</span>
-                      <span class="tl-full-time">Feb 22</span>
-                    </div>
-                    <div class="tl-full-title">New quote presented — Home Renewal State Farm</div>
-                    <div class="tl-full-sub">Agent: Ana Gutierrez · $412/mo</div>
-                  </div>
-                </div>
-
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--green)"></div><div class="tl-full-bar"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--green-light);color:var(--green)">✍️ Signature</span>
-                      <span class="tl-full-time">Jan 15</span>
-                    </div>
-                    <div class="tl-full-title">Document signed — Signed Application Auto Progressive</div>
-                    <div class="tl-full-sub">Signed by client via e-signature portal</div>
-                  </div>
-                </div>
-
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--green)"></div><div class="tl-full-bar"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--green-light);color:var(--green)">📄 Policy</span>
-                      <span class="tl-full-time">Jan 15</span>
-                    </div>
-                    <div class="tl-full-title">Policy issued — Auto Progressive PRG-TX-20241182-A</div>
-                    <div class="tl-full-sub">Agent: Ana Gutierrez · Down payment $374 collected</div>
-                  </div>
-                </div>
-
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--green)"></div><div class="tl-full-bar"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--green-light);color:var(--green)">📄 Policy</span>
-                      <span class="tl-full-time">Jan 12</span>
-                    </div>
-                    <div class="tl-full-title">Policy issued — GEICO Home GIC-HO-20230498</div>
-                    <div class="tl-full-sub">Agent: Ana Gutierrez · $251/mo</div>
-                  </div>
-                </div>
-
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--accent)"></div><div class="tl-full-bar"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--accent-light);color:var(--accent)">🏷️ Stage</span>
-                      <span class="tl-full-time">Jan 12</span>
-                    </div>
-                    <div class="tl-full-title">Stage changed → Sold ✓</div>
-                    <div class="tl-full-sub">Agent: Ana Gutierrez · Funnel updated</div>
-                  </div>
-                </div>
-
-                <div class="tl-full-item">
-                  <div class="tl-full-line"><div class="tl-full-dot" style="background:var(--border2)"></div></div>
-                  <div class="tl-full-body">
-                    <div class="tl-full-row">
-                      <span class="tl-type-chip" style="background:var(--surface2);color:var(--text3)">👤 Client</span>
-                      <span class="tl-full-time">Jan 12, 2024</span>
-                    </div>
-                    <div class="tl-full-title">Client created in system</div>
-                    <div class="tl-full-sub">Referred by Juan Torres (#CLT-00388)</div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <!-- ═══ TAB: TASKS ═════════════════════════════════════ -->
-          <div class="tab-content" id="tab-tasks">
-            <!-- Toolbar -->
-            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <div class="tasks-view-toggle">
-                <button class="tvt-btn active" id="btnTasksTabList" onclick="setTasksTabView('list')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="3" cy="18" r="1"/></svg>
-                  List
-                </button>
-                <button class="tvt-btn" id="btnTasksTabKanban" onclick="setTasksTabView('kanban')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="5" height="15" rx="1"/></svg>
-                  Kanban
-                </button>
-                <button class="tvt-btn" id="btnTasksTabCal" onclick="setTasksTabView('calendar')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                  Calendar
-                </button>
-              </div>
-              <select class="form-select" style="font-size:12px;padding:5px 10px;height:30px;max-width:130px">
-                <option>All statuses</option>
-                <option>Pending</option>
-                <option>In Progress</option>
-                <option>Completed</option>
-              </select>
-              <select class="form-select" style="font-size:12px;padding:5px 10px;height:30px;max-width:130px">
-                <option>All agents</option>
-                <option>Ana Gutierrez</option>
-                <option>Carlos Reyes</option>
-              </select>
-              <select class="form-select" style="font-size:12px;padding:5px 10px;height:30px;max-width:130px">
-                <option>All types</option>
-                <option>Renewal</option>
-                <option>Payment</option>
-                <option>Follow-up</option>
-                <option>Cancellation</option>
-              </select>
-              <select class="form-select" style="font-size:12px;padding:5px 10px;height:30px;max-width:130px">
-                <option>Any due date</option>
-                <option>Overdue</option>
-                <option>Today</option>
-                <option>This week</option>
-                <option>This month</option>
-              </select>
-              <button class="topbar-btn btn-primary" style="font-size:12px;padding:5px 14px;margin-left:auto" onclick="openTaskModal()">+ New Task</button>
-            </div>
-
-            <!-- List view -->
-            <div id="tasksTabList" class="task-list-full">
-              <div class="task-row-full" onclick="openTaskDetail(0)">
-                <div class="task-check-lg" onclick="event.stopPropagation();toggleTaskLg(this)"></div>
-                <div class="task-row-body">
-                  <div class="task-row-title">Confirm payment method</div>
-                  <div class="task-row-note">Client changed card. Update before the 15th.</div>
-                  <div class="task-row-meta">
-                    <span class="task-type-badge type-payment">Missing Payment</span>
-                    <span class="task-priority priority-high">High</span>
-                    <span style="font-size:11px;color:var(--text4)">Ana Gutierrez</span>
-                    <span class="task-date-chip overdue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Today — Overdue</span>
-                  </div>
-                </div>
-              </div>
-              <div class="task-row-full" onclick="openTaskDetail(1)">
-                <div class="task-check-lg" onclick="event.stopPropagation();toggleTaskLg(this)"></div>
-                <div class="task-row-body">
-                  <div class="task-row-title">Send home renewal quote</div>
-                  <div class="task-row-note">State Farm quote pending. Compare with current GEICO.</div>
-                  <div class="task-row-meta">
-                    <span class="task-type-badge type-renewal">Renewal</span>
-                    <span class="task-priority priority-med">Medium</span>
-                    <span style="font-size:11px;color:var(--text4)">Ana Gutierrez</span>
-                    <span class="task-date-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Mar 10</span>
-                  </div>
-                </div>
-              </div>
-              <div class="task-row-full" onclick="openTaskDetail(2)">
-                <div class="task-check-lg inprog" onclick="event.stopPropagation()"></div>
-                <div class="task-row-body">
-                  <div class="task-row-title">Quote second vehicle</div>
-                  <div class="task-row-note">Honda Civic 2019. Client wants to add to same plan.</div>
-                  <div class="task-row-meta">
-                    <span class="task-type-badge type-followup">Follow-up</span>
-                    <span class="task-priority priority-med">Medium</span>
-                    <span style="font-size:11px;color:var(--text4)">Carlos Reyes</span>
-                    <span class="task-date-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Mar 15</span>
-                  </div>
-                </div>
-              </div>
-              <div class="task-row-full" onclick="openTaskDetail(3)" style="opacity:.55">
-                <div class="task-check-lg done" onclick="event.stopPropagation()"></div>
-                <div class="task-row-body">
-                  <div class="task-row-title" style="text-decoration:line-through;color:var(--text4)">Request driver's license</div>
-                  <div class="task-row-meta">
-                    <span class="task-type-badge type-other">Other</span>
-                    <span class="task-priority priority-low">Low</span>
-                    <span class="task-date-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Completed Jan 12</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Kanban view -->
-            <div id="tasksTabKanban" style="display:none">
-              <div class="kanban-board" id="mainKanbanBoard">
-                <div class="kanban-col" data-col="pending">
-                  <div class="kanban-col-header">
-                    <div class="kanban-col-dot" style="background:#94A3B8"></div>
-                    <span class="kanban-col-title">Pending</span>
-                    <span class="kanban-col-count" id="kcount-pending">2</span>
-                  </div>
-                  <div class="kanban-cards" id="kcol-pending"
-                    ondragover="kDragOver(event)" ondragleave="kDragLeave(event)" ondrop="kDrop(event,'pending')">
-                    <div class="kanban-card" draggable="true" data-taskid="0"
-                      ondragstart="kDragStart(event)" onclick="openTaskDetail(0)">
-                      <div class="kanban-card-title">Confirm payment method</div>
-                      <div class="kanban-card-meta">
-                        <span class="task-type-badge type-payment">Missing Payment</span>
-                        <span class="task-priority priority-high" style="font-size:10px">High</span>
-                      </div>
-                      <div class="kanban-card-date" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Today ⚠️</div>
-                    </div>
-                    <div class="kanban-card" draggable="true" data-taskid="1"
-                      ondragstart="kDragStart(event)" onclick="openTaskDetail(1)">
-                      <div class="kanban-card-title">Send home renewal quote</div>
-                      <div class="kanban-card-meta">
-                        <span class="task-type-badge type-renewal">Renewal</span>
-                        <span class="task-priority priority-med" style="font-size:10px">Med</span>
-                      </div>
-                      <div class="kanban-card-date" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Mar 10</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="kanban-col" data-col="inprog">
-                  <div class="kanban-col-header">
-                    <div class="kanban-col-dot" style="background:var(--accent)"></div>
-                    <span class="kanban-col-title">In Progress</span>
-                    <span class="kanban-col-count" id="kcount-inprog">1</span>
-                  </div>
-                  <div class="kanban-cards" id="kcol-inprog"
-                    ondragover="kDragOver(event)" ondragleave="kDragLeave(event)" ondrop="kDrop(event,'inprog')">
-                    <div class="kanban-card" draggable="true" data-taskid="2"
-                      ondragstart="kDragStart(event)" onclick="openTaskDetail(2)">
-                      <div class="kanban-card-title">Quote second vehicle</div>
-                      <div class="kanban-card-meta">
-                        <span class="task-type-badge type-followup">Follow-up</span>
-                        <span class="task-priority priority-med" style="font-size:10px">Med</span>
-                      </div>
-                      <div class="kanban-card-date" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Mar 15</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="kanban-col" data-col="done">
-                  <div class="kanban-col-header">
-                    <div class="kanban-col-dot" style="background:var(--green)"></div>
-                    <span class="kanban-col-title">Completed</span>
-                    <span class="kanban-col-count" id="kcount-done">1</span>
-                  </div>
-                  <div class="kanban-cards" id="kcol-done"
-                    ondragover="kDragOver(event)" ondragleave="kDragLeave(event)" ondrop="kDrop(event,'done')">
-                    <div class="kanban-card" draggable="true" data-taskid="3" style="opacity:.65"
-                      ondragstart="kDragStart(event)" onclick="openTaskDetail(3)">
-                      <div class="kanban-card-title" style="text-decoration:line-through;color:var(--text4)">Request driver's license</div>
-                      <div class="kanban-card-meta"><span class="task-type-badge type-other">Other</span></div>
-                      <div class="kanban-card-date" style="margin-top:6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Jan 12 ✓</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Calendar view -->
-            <div id="tasksTabCalendar" style="display:none;padding:16px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-                <button class="icon-btn" id="calPrevBtn" onclick="calNavigate(-1)" style="width:32px;height:32px;border:1px solid var(--border2)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <div style="font-size:14px;font-weight:700;color:var(--text)" id="calMonthLabel"></div>
-                <button class="icon-btn" id="calNextBtn" onclick="calNavigate(1)" style="width:32px;height:32px;border:1px solid var(--border2)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
-              </div>
-              <!-- Day headers -->
-              <div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div>
-            </div>
-          </div>
-
-        </div><!-- end main tabs card -->
-      </div><!-- end col-center -->
-
-      <!-- ─── COL RIGHT (slim) ──────────────────────────── -->
-      <div class="col-right">
-
-        <!-- Product Sales Funnel -->
-        <div class="card" id="productFunnelCard">
-          <div class="card-header" style="cursor:default">
-            <div class="card-icon" style="background:var(--orange-light)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-            </div>
-            <div style="flex:1">
-              <div class="card-title">Sales Pipeline</div>
-              <div class="card-subtitle" id="funnelProductCount">3 active products</div>
-            </div>
-            <button class="icon-btn" onclick="openAddProductModal()" title="Add product interest" style="margin-right:4px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </button>
-            <button class="icon-btn" id="funnelMinimizeBtn" onclick="toggleFunnelMinimize()" title="Minimize / Expand" style="transition:transform .2s">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="18 15 12 9 6 15"/></svg>
-            </button>
-          </div>
-
-          <!-- Collapsible body -->
-          <div id="funnelBody">
-          <div id="aiRecsBar" style="padding:10px 14px;background:linear-gradient(135deg,#EEF2FF,#F5F3FF);border-bottom:1px solid #C7D7FF;display:flex;flex-direction:column;gap:8px">
-            <div style="display:flex;align-items:center;gap:7px">
-              <div style="width:22px;height:22px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="12" height="12"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              </div>
-              <span style="font-size:11px;font-weight:700;color:var(--accent)">AI Product Recommendations</span>
-              <span style="font-size:10px;color:var(--text4);margin-left:auto" id="aiRecsStatus">Based on client profile</span>
-            </div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap" id="aiRecChips">
-              <!-- Chips rendered by JS -->
-            </div>
-            <div style="font-size:10px;color:var(--text4);line-height:1.5" id="aiRecsReason"></div>
-          </div>
-
-          <!-- Product funnel cards list -->
-          <div style="padding:10px 12px;display:flex;flex-direction:column;gap:8px" id="productFunnelList">
-            <!-- Rendered by JS -->
           </div>
           </div><!-- end funnelBody -->
         </div>
@@ -5594,6 +4750,17 @@ function openProfileView(clientId) {
     statusBadge.style.color = isActive ? 'var(--green)' : 'var(--orange)';
     statusBadge.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span> ${c.status}`;
   }
+  // Overview KPIs
+  const clientPolicies = (samplePolicies||[]).filter(p=>p.clientId===id);
+  const clientTasks = tasksData.filter(t=>t.clientId===id && !t.done);
+  const annualPremium = c.premium || 0;
+  const el_ov = (eid,v) => { const e=document.getElementById(eid); if(e) e.textContent=v; };
+  el_ov('ov_policies', clientPolicies.length);
+  el_ov('ov_calls', '0');
+  el_ov('ov_tasks', clientTasks.length);
+  el_ov('ov_premium', annualPremium ? '$'+annualPremium.toLocaleString() : '$0');
+  el_ov('ov_ltv', annualPremium ? '$'+(annualPremium*8).toLocaleString() : '—');
+
   // ── Populate all info fields from client data
   const sv = id => { const el = document.getElementById(id); if(el) return el; };
   const setv = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val||'—'; };
@@ -8152,4 +7319,19 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 </script>
 </body>
-</html>
+</html><div class="tab-content" id="tab-timeline">
+            <div id="timelineFeed" style="padding:16px 18px 20px">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div style="font-size:13px;font-weight:600">No timeline events yet</div>
+                <div style="font-size:12px;margin-top:4px">Client events and milestones will appear here</div>
+              </div>
+            </div>
+          </div>
+          <div id="docList" style="display:flex;flex-direction:column;gap:1px">
+              <div style="text-align:center;padding:32px 16px;color:var(--text4)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div style="font-size:13px;font-weight:600">No documents yet</div>
+                <div style="font-size:12px;margin-top:4px">Upload or attach documents to this client</div>
+              </div>
+            </div>
