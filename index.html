@@ -72,9 +72,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .btn-green{background:var(--green);color:white;}
 .btn-green:hover{background:#0d9b5a;}
 .topbar-btn svg{width:15px;height:15px;}
-.content{flex:1;overflow-y:auto;padding:20px 24px 32px;min-height:0;}
+.content{flex:1;padding:20px 24px 32px;min-height:0;}
 .view{display:none;}
-.view.active{display:block;}
+.view.active{display:flex;flex-direction:column;flex:1;overflow-y:auto;min-height:0;}
 
 /* CARDS */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;}
@@ -5466,19 +5466,10 @@ const AVATAR_COLORS=['#1B4FD8','#7F56D9','#F79009','#12B76A','#F04438','#0BA5EC'
 let clientSeq=1009;
 
 // Recently viewed (simulate)
-let recentlyViewed=['CLT-00412','CLT-00390','CLT-00435','CLT-00430','CLT-00415','CLT-00401','CLT-00440','CLT-00425'];
+let recentlyViewed=[];
 
 let clients=[
-  {id:'CLT-00412',first:'María',last:'López Hernández',phone:'(915) 341-7387',agent:'Ana Gutierrez',status:'Active Client',lobs:['auto','home','life'],premium:4252,since:'2025-01-15',city:'El Paso',zip:'79912',color:'#1B4FD8',lastViewed:'2026-03-10T14:30:00'},
-  {id:'CLT-00390',first:'Carlos',last:'Reyes',phone:'(915) 208-4411',agent:'Jennifer Fierro',status:'Active Client',lobs:['auto','renters'],premium:2100,since:'2024-08-03',city:'El Paso',zip:'79905',color:'#7F56D9',lastViewed:'2026-03-10T13:45:00'},
-  {id:'CLT-00401',first:'Sandra',last:'Morales',phone:'(915) 555-0192',agent:'Marina Contreras',status:'Active Client',lobs:['home','life'],premium:2008,since:'2024-11-20',city:'El Paso',zip:'79901',color:'#F79009',lastViewed:'2026-03-10T11:20:00'},
-  {id:'CLT-00415',first:'Josefa',last:'Rodriguez',phone:'(915) 341-7387',agent:'Ana Gutierrez',status:'Active Client',lobs:['auto'],premium:1880,since:'2026-02-25',city:'El Paso',zip:'79905',color:'#12B76A',lastViewed:'2026-03-10T10:05:00'},
-  {id:'CLT-00388',first:'Miguel',last:'Torres Vega',phone:'(915) 400-8823',agent:'Jennifer Fierro',status:'Inactive',lobs:['auto'],premium:0,since:'2023-06-10',city:'El Paso',zip:'79930',color:'#F04438',lastViewed:'2026-03-09T16:10:00'},
-  {id:'CLT-00420',first:'Lucía',last:'Hernández',phone:'(915) 622-1140',agent:'Marina Contreras',status:'Lead',lobs:['auto','business'],premium:3500,since:'2026-03-01',city:'El Paso',zip:'79902',color:'#0BA5EC',lastViewed:'2026-03-09T15:00:00'},
-  {id:'CLT-00425',first:'Roberto',last:'Fuentes',phone:'(915) 745-9900',agent:'Ana Gutierrez',status:'Prospect',lobs:['home'],premium:1200,since:'2026-03-05',city:'El Paso',zip:'79912',color:'#9E165F',lastViewed:'2026-03-09T14:30:00'},
-  {id:'CLT-00430',first:'Diana',last:'Castillo',phone:'(915) 333-6677',agent:'Jennifer Fierro',status:'Active Client',lobs:['life','home'],premium:2850,since:'2025-09-18',city:'El Paso',zip:'79915',color:'#027A48',lastViewed:'2026-03-09T11:00:00'},
-  {id:'CLT-00435',first:'Pablo',last:'Ortega',phone:'(915) 881-2244',agent:'Marina Contreras',status:'Active Client',lobs:['auto','home','motorcycle'],premium:3900,since:'2025-04-12',city:'El Paso',zip:'79936',color:'#1B4FD8',lastViewed:'2026-03-08T10:30:00'},
-  {id:'CLT-00440',first:'Elena',last:'Guzmán',phone:'(915) 229-5511',agent:'Ana Gutierrez',status:'Lead',lobs:['auto'],premium:1500,since:'2026-03-08',city:'El Paso',zip:'79903',color:'#7F56D9',lastViewed:'2026-03-08T09:45:00'},
+  // Data loaded from Supabase
 ];
 
 const LOB_META={
@@ -5505,82 +5496,40 @@ const STAGE_META=[
 
 let pipelineSeq=20;
 let pipelineItems=[
-  {id:1,clientId:'CLT-00440',name:'Elena Guzmán',lob:'auto',stage:'new_lead',agent:'Ana Gutierrez',premium:1500,created:'2026-03-08'},
-  {id:2,clientId:'CLT-00425',name:'Roberto Fuentes',lob:'home',stage:'quoted',agent:'Ana Gutierrez',premium:1200,created:'2026-03-05'},
-  {id:3,clientId:'CLT-00420',name:'Lucía Hernández',lob:'business',stage:'contacted',agent:'Marina Contreras',premium:3500,created:'2026-03-01'},
-  {id:4,clientId:'CLT-00420',name:'Lucía Hernández',lob:'auto',stage:'follow_up',agent:'Marina Contreras',premium:1800,created:'2026-03-01'},
-  {id:5,clientId:null,name:'Juan Vargas',lob:'auto',stage:'attempted',agent:'Jennifer Fierro',premium:900,created:'2026-03-07'},
-  {id:6,clientId:null,name:'Carmen Soto',lob:'home',stage:'new_lead',agent:'Jennifer Fierro',premium:1400,created:'2026-03-09'},
-  {id:7,clientId:null,name:'Alex Mendoza',lob:'renters',stage:'quoted',agent:'Ana Gutierrez',premium:600,created:'2026-03-06'},
-  {id:8,clientId:'CLT-00412',name:'María López',lob:'motorcycle',stage:'follow_up',agent:'Ana Gutierrez',premium:400,created:'2026-03-04'},
-  {id:9,clientId:null,name:'Patricia Leal',lob:'commercial_auto',stage:'contacted',agent:'Marina Contreras',premium:800,created:'2026-03-08'},
-  {id:10,clientId:null,name:'Marcos Jiménez',lob:'motorcycle',stage:'new_lead',agent:'Jennifer Fierro',premium:700,created:'2026-03-10'},
+  // Data loaded from Supabase
 ];
 
 // SAMPLE POLICIES (for demo click-through)
 const samplePolicies=[
-  {id:'PRG-AU-2024-1182',client:'María López Hernández',clientId:'CLT-00412',lob:'auto',carrier:'Progressive',premium:2244,effective:'2025-01-15',expiry:'2026-01-15',status:'Active',agent:'Ana Gutierrez',vehicles:[{year:2020,make:'Toyota',model:'Camry',vin:'4T1B11HK0KU763456',plate:'ABC-1234'}],drivers:[{name:'María López',dob:'1985-06-12',lic:'TX-DL-8849234'}],deductible:'$500 comp / $500 coll',liability:'100/300/100',coverage:'Full Coverage'},
-  {id:'GIC-HO-2023-0498',client:'María López Hernández',clientId:'CLT-00412',lob:'home',carrier:'Gainsco',premium:1440,effective:'2025-03-01',expiry:'2026-03-01',status:'Active',agent:'Ana Gutierrez',address:'1423 Shadow Mountain Dr, El Paso TX 79912',dwelling:280000,deductible:'$2,500',liability:'$100,000',replacement:'Replacement Cost'},
-  {id:'AIG-LF-2022-0133',client:'Carlos Reyes',clientId:'CLT-00390',lob:'life',carrier:'AIG Life',premium:456,effective:'2022-08-01',expiry:'2032-08-01',status:'Active',agent:'Jennifer Fierro',faceAmount:250000,beneficiary:'Ana Reyes (wife)',type:'20-Year Term'},
-  {id:'ALL-AU-2023-0871',client:'Pablo Ortega',clientId:'CLT-00435',lob:'auto',carrier:'Allstate',premium:2100,effective:'2025-04-12',expiry:'2026-04-12',status:'Active',agent:'Marina Contreras',vehicles:[{year:2019,make:'Ford',model:'F-150',vin:'1FTEW1EP7KFA12345',plate:'XYZ-9876'}],drivers:[{name:'Pablo Ortega',dob:'1978-11-22',lic:'TX-DL-5512988'}],deductible:'$1,000 comp / $1,000 coll',liability:'50/100/50',coverage:'Full Coverage'},
-  {id:'MET-RN-2024-1204',client:'Carlos Reyes',clientId:'CLT-00390',lob:'renters',carrier:'MetLife',premium:420,effective:'2024-08-03',expiry:'2025-08-03',status:'Pending Renewal',agent:'Jennifer Fierro',address:'220 N Kansas St Apt 4B, El Paso TX 79905',personalProp:25000,liability:100000,deductible:'$500'},
+  // Data loaded from Supabase
 ];
 
 // PENDING CANCELLATIONS
 const pendingCancellations=[
-  {id:'PC001',client:'María López Hernández',clientId:'CLT-00412',policy:'PRG-AU-2024-1182',lob:'auto',agent:'Ana Gutierrez',reason:'Non-Payment',requestDate:'2026-03-05',cancelDate:'2026-03-20',premium:2244,notes:'3rd notice sent. Client promised payment by March 15.'},
-  {id:'PC002',client:'Carlos Reyes',clientId:'CLT-00390',policy:'ALL-AU-2023-0871',lob:'auto',agent:'Jennifer Fierro',reason:'Client Request',requestDate:'2026-03-08',cancelDate:'2026-03-25',premium:1650,notes:'Client switching to Progressive direct.'},
-  {id:'PC003',client:'Pablo Ortega',clientId:'CLT-00435',policy:'GIC-HO-2023-0199',lob:'home',agent:'Marina Contreras',reason:'Non-Payment',requestDate:'2026-03-01',cancelDate:'2026-03-15',premium:1800,notes:'2nd notice. Issue with escrow.'},
-  {id:'PC004',client:'Sandra Morales',clientId:'CLT-00401',policy:'MET-LF-2022-1044',lob:'life',agent:'Marina Contreras',reason:'Underwriting',requestDate:'2026-03-07',cancelDate:'2026-03-30',premium:768,notes:'Carrier flagged undisclosed medical condition.'},
-  {id:'PC005',client:'Diana Castillo',clientId:'CLT-00430',policy:'AIG-HL-2025-0612',lob:'home',agent:'Jennifer Fierro',reason:'Switched Carrier',requestDate:'2026-03-09',cancelDate:'2026-04-01',premium:960,notes:'Client enrolled in employer plan.'},
+  // Data loaded from Supabase
 ];
+
 
 // CANCELED
 const canceledPolicies=[
-  {id:'CX001',client:'Miguel Torres Vega',clientId:'CLT-00388',policy:'STF-AU-2022-1038',lob:'auto',agent:'Jennifer Fierro',reason:'Non-Payment',cancelDate:'2026-03-02',premium:1450,notes:'Multiple NSF. Sent to collections.'},
-  {id:'CX002',client:'Josefa Rodriguez',clientId:'CLT-00415',policy:'ALL-AU-2023-0871',lob:'auto',agent:'Ana Gutierrez',reason:'Client Request',cancelDate:'2026-02-28',premium:980,notes:'Client moved out of state.'},
-  {id:'CX003',client:'Carlos Reyes',clientId:'CLT-00390',policy:'MET-RN-2023-1204',lob:'renters',agent:'Jennifer Fierro',reason:'Address Change',cancelDate:'2026-02-20',premium:450,notes:'Moved. New address being verified.'},
-  {id:'CX004',client:'Lucía Hernández',clientId:'CLT-00420',policy:'PRG-AU-2025-1188',lob:'auto',agent:'Marina Contreras',reason:'Underwriting',cancelDate:'2026-02-15',premium:1780,notes:'DUI discovered during renewal review.'},
-  {id:'CX005',client:'Elena Guzmán',clientId:'CLT-00440',policy:'GIC-AU-2026-0011',lob:'auto',agent:'Ana Gutierrez',reason:'Non-Payment',cancelDate:'2026-03-08',premium:1200,notes:'New business, first payment returned.'},
-  {id:'CX006',client:'Pablo Ortega',clientId:'CLT-00435',policy:'HAR-MO-2023-1055',lob:'motorcycle',agent:'Marina Contreras',reason:'Client Request',cancelDate:'2026-01-30',premium:620,notes:'Sold motorcycle.'},
+  // Data loaded from Supabase
 ];
+
 
 // CALLS
 const callsData=[
-  {id:1,type:'inbound',client:'María López Hernández',clientId:'CLT-00412',phone:'(915) 341-7387',agent:'Ana Gutierrez',duration:'4:32',time:'2026-03-10T09:15:00',notes:'Payment question'},
-  {id:2,type:'outbound',client:'Carlos Reyes',clientId:'CLT-00390',phone:'(915) 208-4411',agent:'Jennifer Fierro',duration:'2:18',time:'2026-03-10T09:45:00',notes:'Renewal follow-up'},
-  {id:3,type:'missed',client:'Unknown',clientId:null,phone:'(915) 400-8823',agent:'Marina Contreras',duration:'0:00',time:'2026-03-10T10:02:00',notes:''},
-  {id:4,type:'inbound',client:'Sandra Morales',clientId:'CLT-00401',phone:'(915) 555-0192',agent:'Marina Contreras',duration:'6:44',time:'2026-03-10T10:30:00',notes:'Policy change request'},
-  {id:5,type:'outbound',client:'Elena Guzmán',clientId:'CLT-00440',phone:'(915) 229-5511',agent:'Ana Gutierrez',duration:'1:55',time:'2026-03-10T11:00:00',notes:'Quote follow-up'},
-  {id:6,type:'missed',client:'Pablo Ortega',clientId:'CLT-00435',phone:'(915) 881-2244',agent:'Jennifer Fierro',duration:'0:00',time:'2026-03-10T11:22:00',notes:''},
-  {id:7,type:'inbound',client:'Diana Castillo',clientId:'CLT-00430',phone:'(915) 333-6677',agent:'Jennifer Fierro',duration:'3:10',time:'2026-03-10T13:05:00',notes:'Cancellation inquiry'},
-  {id:8,type:'outbound',client:'Josefa Rodriguez',clientId:'CLT-00415',phone:'(915) 341-7387',agent:'Ana Gutierrez',duration:'0:55',time:'2026-03-09T14:30:00',notes:'Reminder call'},
-  {id:9,type:'inbound',client:'Roberto Fuentes',clientId:'CLT-00425',phone:'(915) 745-9900',agent:'Ana Gutierrez',duration:'8:12',time:'2026-03-09T15:00:00',notes:'New home quote'},
-  {id:10,type:'outbound',client:'Lucía Hernández',clientId:'CLT-00420',phone:'(915) 622-1140',agent:'Marina Contreras',duration:'3:45',time:'2026-03-08T10:15:00',notes:'Commercial quote details'},
+  // Data loaded from Supabase
 ];
 
 // DIRECTORY
 let contacts=[
-  {id:'DIR001',first:'Marcus',last:'Johnson',company:'Progressive Insurance',title:'Territory Sales Manager',cat:'Carrier Rep',carrier:'Progressive',phone:'(915) 200-4400',email:'mjohnson@progressive.com',color:'#1B4FD8',notes:'Our main Progressive rep. Call for appointment & binding questions.',visibility:'Shared'},
-  {id:'DIR002',first:'Patricia',last:'Vega',company:'Allstate Agency Support',title:'Agency Liaison',cat:'Carrier Rep',carrier:'Allstate',phone:'(915) 300-8811',email:'pvega@allstate.com',color:'#F04438',notes:'Contact for Allstate commercial & homeowners binding.',visibility:'Shared'},
-  {id:'DIR003',first:'Roberto',last:'Sánchez',company:'Sánchez Auto Sales',title:'Finance Manager',cat:'Referral Partner',carrier:'',phone:'(915) 588-7700',email:'rsanchez@sanchezmotors.com',color:'#12B76A',notes:'Sends 3–5 auto referrals per month. Reciprocal. Prefers text.',visibility:'Shared'},
-  {id:'DIR004',first:'Lisa',last:'Torres',company:'Starwood Realty',title:'Realtor',cat:'Referral Partner',carrier:'',phone:'(915) 400-2233',email:'lisa@starwoodrealty.com',color:'#7F56D9',notes:'Sends homeowners referrals on closings. Works El Paso west side.',visibility:'Shared'},
-  {id:'DIR005',first:'Daniel',last:'Morales',company:'Law Office of Morales',title:'Attorney',cat:'Attorney',carrier:'',phone:'(915) 222-5555',email:'dmorales@moraleslaw.com',color:'#F79009',notes:'Auto accident cases. Good for client referrals both ways.',visibility:'Shared'},
-  {id:'DIR006',first:'Sara',last:'Gutierrez',company:'BBVA Bank El Paso',title:'Mortgage Loan Officer',cat:'Lender',carrier:'',phone:'(915) 700-1100',email:'sgutierrez@bbva.com',color:'#0BA5EC',notes:'Sends homeowners leads with new mortgage clients.',visibility:'Shared'},
-  {id:'DIR007',first:'Kevin',last:'Smith',company:'TechFix Solutions',title:'IT Support',cat:'Vendor',carrier:'',phone:'(915) 455-8877',email:'kevin@techfixep.com',color:'#9E165F',notes:'Handles office computers and network. $75/hr, quick response.',visibility:'Private'},
+  // Data loaded from Supabase
 ];
 
 // TASKS DATA
 let taskSeq=20;
 let tasksData=[
-  {id:1,title:'Confirm payment method',client:'María López Hernández',clientId:'CLT-00412',agent:'Ana Gutierrez',due:'2026-03-08',priority:'Urgent',done:false,notes:'NSF check, needs new payment method'},
-  {id:2,title:'Follow-up quote renters insurance',client:'Elena Guzmán',clientId:'CLT-00440',agent:'Jennifer Fierro',due:'2026-03-10',priority:'High',done:false,notes:'Sent quote last week, no response'},
-  {id:3,title:'Request copy of driver license',client:'Roberto Fuentes',clientId:'CLT-00425',agent:'Marina Contreras',due:'2026-03-09',priority:'Normal',done:false,notes:'Needed for new auto policy'},
-  {id:4,title:'Send renewal documents',client:'Carlos Reyes',clientId:'CLT-00390',agent:'Jennifer Fierro',due:'2026-03-15',priority:'Normal',done:false,notes:'Renters policy up for renewal'},
-  {id:5,title:'Policy endorsement — add vehicle',client:'Pablo Ortega',clientId:'CLT-00435',agent:'Marina Contreras',due:'2026-03-12',priority:'High',done:false,notes:'New 2024 Ram 1500 purchased'},
-  {id:6,title:'Call about pending cancellation',client:'Sandra Morales',clientId:'CLT-00401',agent:'Marina Contreras',due:'2026-03-11',priority:'Urgent',done:false,notes:'Life policy pending cancel'},
-  {id:7,title:'Send welcome email',client:'Diana Castillo',clientId:'CLT-00430',agent:'Jennifer Fierro',due:'2026-03-05',priority:'Normal',done:true,notes:''},
-  {id:8,title:'Verify address change',client:'Miguel Torres Vega',clientId:'CLT-00388',agent:'Ana Gutierrez',due:'2026-03-03',priority:'Normal',done:true,notes:''},
+  // Data loaded from Supabase
 ];
 
 // ═══════════════════════════════════════
@@ -6161,60 +6110,88 @@ function pcDrop(e,stage){e.preventDefault();e.currentTarget.closest('.pipeline-c
 // DASHBOARD
 // ═══════════════════════════════════════
 function initDashboard(){
-  const totalPrem=clients.reduce((s,c)=>s+c.premium,0);
-  const activeCount=clients.filter(c=>c.status==='Active Client').length;
-  const openLeads=pipelineItems.filter(p=>!['sold','lost','not_interested'].includes(p.stage)).length;
-  const policies=clients.reduce((s,c)=>s+c.lobs.length,0);
+  const totalPrem = clients.reduce((s,c)=>s+c.premium,0);
+  const activeCount = clients.filter(c=>c.status==='Active Client').length;
+  const openLeads = pipelineItems.filter(p=>!['sold','lost','not_interested'].includes(p.stage)).length;
+  const policies = clients.reduce((s,c)=>s+(c.lobs?c.lobs.length:0),0);
   const trendLabel={up:'↑ +12%',down:'↓ -5%',flat:'→ Stable'};
   const trendClass={up:'trend-up',down:'trend-down',flat:'trend-flat'};
   const kpis=[
-    {label:'Annual Premium',value:'$'+totalPrem.toLocaleString(),sub:'+12% vs last mo',trend:'up',icon:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',ic:'var(--accent)',bg:'var(--accent-light)',act:''},
-    {label:'Active Clients',value:activeCount,sub:clients.length+' total',trend:'up',icon:'<circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>',ic:'var(--green)',bg:'var(--green-light)',act:"showView('clients',document.getElementById('nav-clients'))"},
+    {label:'Annual Premium',value:totalPrem?'$'+totalPrem.toLocaleString():'$0',sub:'All active clients',trend:'flat',icon:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',ic:'var(--accent)',bg:'var(--accent-light)',act:''},
+    {label:'Active Clients',value:activeCount,sub:clients.length+' total',trend:'flat',icon:'<circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>',ic:'var(--green)',bg:'var(--green-light)',act:"showView('clients',document.getElementById('nav-clients'))"},
     {label:'Open Leads',value:openLeads,sub:pipelineItems.length+' in pipeline',trend:'flat',icon:'<path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>',ic:'var(--orange)',bg:'var(--orange-light)',act:"showView('pipeline',document.getElementById('nav-pipeline'))"},
-    {label:'Total Policies',value:policies,sub:'across all clients',trend:'up',icon:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>',ic:'var(--purple)',bg:'var(--purple-light)',act:''},
+    {label:'Total Policies',value:policies,sub:'across all clients',trend:'flat',icon:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>',ic:'var(--purple)',bg:'var(--purple-light)',act:''},
   ];
   document.getElementById('dashKpiRow').innerHTML=kpis.map(k=>`<div class="dash-kpi" onclick="${k.act}" style="${k.act?'':'cursor:default'}"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:32px;height:32px;border-radius:8px;background:${k.bg};display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="${k.ic}" stroke-width="2" width="15" height="15">${k.icon}</svg></div><div class="dash-kpi-label" style="margin:0">${k.label}</div>${k.act?'<svg viewBox="0 0 24 24" fill="none" stroke="var(--text4)" stroke-width="2" width="11" height="11" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>':''}</div><div class="dash-kpi-value">${k.value}</div><div class="dash-kpi-sub"><span class="dash-kpi-trend ${trendClass[k.trend]}">${trendLabel[k.trend]}</span>${k.sub}</div></div>`).join('');
 
-  // Agent performance
-  document.getElementById('agentPerfList').innerHTML=[{name:'Ana Gutierrez',role:'Senior Agent',color:'#7F56D9',p:8,t:10},{name:'Jennifer Fierro',role:'Agent',color:'#12B76A',p:6,t:10},{name:'Marina Contreras',role:'Agent',color:'#F79009',p:5,t:10}].map(a=>`<div class="agent-perf-row"><div class="agent-avatar2" style="background:${a.color}">${a.name.split(' ').map(w=>w[0]).join('')}</div><div style="flex:1"><div class="agent-perf-name">${a.name}</div><div class="agent-perf-role">${a.role}</div><div style="margin-top:6px;display:flex;align-items:center;gap:8px"><div class="agent-bar-wrap"><div class="agent-bar" style="width:${Math.round(a.p/a.t*100)}%;background:${a.color}"></div></div></div></div><div class="agent-perf-stat">${a.p}/${a.t}<div style="font-size:10px;color:var(--text4);font-weight:400">policies</div></div></div>`).join('');
+  // Agent performance — from agents list if available
+  const agentNames=[...new Set(clients.map(c=>c.agent).filter(Boolean))];
+  const agentColors={'Ana Gutierrez':'#7F56D9','Jennifer Fierro':'#12B76A','Marina Contreras':'#F79009','Christian Saenz':'#1B4FD8'};
+  if(agentNames.length){
+    document.getElementById('agentPerfList').innerHTML=agentNames.map(name=>{
+      const agentClients=clients.filter(c=>c.agent===name);
+      const color=agentColors[name]||'#1B4FD8';
+      const initials=name.split(' ').map(w=>w[0]).join('');
+      return`<div class="agent-perf-row"><div class="agent-avatar2" style="background:${color}">${initials}</div><div style="flex:1"><div class="agent-perf-name">${name}</div><div class="agent-perf-role">Agent</div><div style="margin-top:6px;display:flex;align-items:center;gap:8px"><div class="agent-bar-wrap"><div class="agent-bar" style="width:${Math.min(agentClients.length/Math.max(clients.length,1)*100,100)}%;background:${color}"></div></div></div></div><div class="agent-perf-stat">${agentClients.length}<div style="font-size:10px;color:var(--text4);font-weight:400">clients</div></div></div>`;
+    }).join('');
+  } else {
+    document.getElementById('agentPerfList').innerHTML='<div style="padding:20px;text-align:center;color:var(--text4);font-size:13px">No agent data yet</div>';
+  }
 
-  // Activity feed
-  document.getElementById('dashActivityFeed').innerHTML=[
-    {icon:'<circle cx="12" cy="7" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/>',bg:'var(--accent-light)',ic:'var(--accent)',text:'Ana created a new policy for <strong>María López</strong> — Auto PRG',time:'2m ago'},
-    {icon:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',bg:'var(--green-light)',ic:'var(--green)',text:'Payment received from <strong>Carlos Reyes</strong> — $1,050',time:'18m ago'},
-    {icon:'<path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>',bg:'var(--orange-light)',ic:'var(--orange)',text:'Jennifer moved <strong>Juan Vargas</strong> Auto → Quoted',time:'1h ago'},
-    {icon:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>',bg:'var(--purple-light)',ic:'var(--purple)',text:'Endorsement saved for <strong>María López</strong> — Add Vehicle',time:'2h ago'},
-    {icon:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',bg:'var(--red-light)',ic:'var(--red)',text:'<strong>PENDING CANCEL:</strong> Pablo Ortega — Home GIC (Mar 15)',time:'4h ago'},
-  ].map(a=>`<div class="dash-activity-item"><div class="dash-act-dot" style="background:${a.bg}"><svg viewBox="0 0 24 24" fill="none" stroke="${a.ic}" stroke-width="2">${a.icon}</svg></div><div style="flex:1"><div class="dash-act-text">${a.text}</div></div><div class="dash-act-time">${a.time}</div></div>`).join('');
+  // Activity feed — from recent client/pipeline actions
+  document.getElementById('dashActivityFeed').innerHTML=clients.length?
+    clients.slice(0,5).map(c=>`<div class="dash-activity-item"><div class="dash-act-dot" style="background:var(--accent-light)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg></div><div style="flex:1"><div class="dash-act-text">Client <strong>${c.first} ${c.last}</strong> — ${c.status}</div></div><div class="dash-act-time">${formatDate(c.since)}</div></div>`).join('')
+    :'<div style="padding:20px;text-align:center;color:var(--text4);font-size:13px">No recent activity</div>';
 
-  // Bar chart
-  const months=['Oct','Nov','Dec','Jan','Feb','Mar'],vals=[12,18,14,22,19,27],maxV=Math.max(...vals);
-  document.getElementById('dashTotalPolicies').textContent=27;
-  document.getElementById('dashBarChart').innerHTML=vals.map((v,i)=>`<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:80px"><div style="font-size:10px;color:var(--text4)">${v}</div><div style="width:100%;border-radius:4px 4px 0 0;background:${i===vals.length-1?'var(--accent)':'var(--border2)'};height:${Math.round(v/maxV*60)}px"></div></div>`).join('');
+  // Bar chart — policies per month (real: group clients by since date)
+  const now=new Date();
+  const months=[];const vals=[];
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push(d.toLocaleString('en',{month:'short'}));vals.push(clients.filter(c=>{const s=new Date(c.since);return s.getFullYear()===d.getFullYear()&&s.getMonth()===d.getMonth();}).length);}
+  const maxV=Math.max(...vals,1);
+  document.getElementById('dashTotalPolicies').textContent=clients.length;
+  document.getElementById('dashBarChart').innerHTML=vals.map((v,i)=>`<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:80px"><div style="font-size:10px;color:var(--text4)">${v||''}</div><div style="width:100%;border-radius:4px 4px 0 0;background:${i===vals.length-1?'var(--accent)':'var(--border2)'};height:${Math.max(Math.round(v/maxV*60),2)}px"></div></div>`).join('');
   document.getElementById('dashBarLabels').innerHTML=months.map((m,i)=>`<div style="text-align:center;font-size:10px;color:${i===months.length-1?'var(--accent)':'var(--text4)'};font-weight:${i===months.length-1?700:400}">${m}</div>`).join('');
 
-  // Renewals
-  document.getElementById('renewalTable').innerHTML=`<thead><tr><th>Client</th><th>Policy</th><th>LOB</th><th>Premium</th><th>Days</th><th>Agent</th></tr></thead><tbody>${[
-    {client:'María López',policy:'GIC-HO-0498',lob:'🏠',premium:'$1,240',days:5,agent:'Ana'},
-    {client:'Carlos Reyes',policy:'STF-AU-0881',lob:'🚗',premium:'$1,650',days:12,agent:'Jennifer'},
-    {client:'Sandra Morales',policy:'AIG-LF-0133',lob:'❤️',premium:'$768',days:18,agent:'Marina'},
-    {client:'Pablo Ortega',policy:'PRG-AU-1077',lob:'🚗',premium:'$2,100',days:24,agent:'Marina'},
-  ].map(r=>{const ug=r.days<=7?['badge-red','🔴']:r.days<=14?['badge-orange','🟡']:['badge-green','🟢'];return`<tr onclick="showToast('Opening renewal for ${r.client}','accent')"><td style="font-weight:600;font-size:12px">${r.client}</td><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text4)">${r.policy}</td><td>${r.lob}</td><td style="font-weight:700;font-size:12px">${r.premium}</td><td><span class="urgent-badge ${ug[0]}">${ug[1]} ${r.days}d</span></td><td style="font-size:12px;color:var(--text3)">${r.agent}</td></tr>`;}).join('')}</tbody>`;
+  // Renewals — from pipelineItems or real policy data
+  const renewalRows=pipelineItems.filter(p=>p.stage==='quoted'||p.stage==='follow_up').slice(0,5);
+  document.getElementById('renewalTable').innerHTML=renewalRows.length?
+    `<thead><tr><th>Client</th><th>LOB</th><th>Premium</th><th>Stage</th><th>Agent</th></tr></thead><tbody>${renewalRows.map(r=>{const m=LOB_META[r.lob]||{};return`<tr onclick="showView('pipeline',document.getElementById('nav-pipeline'))"><td style="font-weight:600;font-size:12px">${r.name}</td><td>${m.icon||'📋'} ${m.label||r.lob}</td><td style="font-weight:700;font-size:12px">$${(r.premium||0).toLocaleString()}</td><td><span class="badge badge-orange">Follow-up</span></td><td style="font-size:12px;color:var(--text3)">${(r.agent||'').split(' ')[0]}</td></tr>`;}).join('')}</tbody>`
+    :'<thead><tr><th>Client</th><th>LOB</th><th>Premium</th><th>Stage</th><th>Agent</th></tr></thead><tbody><tr><td colspan="5" style="text-align:center;color:var(--text4);padding:20px">No renewals pending</td></tr></tbody>';
 
-  // Tasks
-  document.getElementById('dashTasksOverview').innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${[{label:'Overdue',count:3,bg:'var(--red-light)',color:'var(--red)'},{label:'Due Today',count:2,bg:'var(--orange-light)',color:'var(--orange)'},{label:'This Week',count:8,bg:'var(--accent-light)',color:'var(--accent)'},{label:'Completed',count:14,bg:'var(--green-light)',color:'var(--green)'}].map(t=>`<div class="task-chip" style="background:${t.bg};color:${t.color}"><div style="font-size:20px;font-weight:700;line-height:1">${t.count}</div><div style="font-size:10px;font-weight:600;margin-top:1px">${t.label}</div></div>`).join('')}</div><div style="font-size:12px;color:var(--text3);font-weight:500;margin-bottom:8px">Overdue</div>${[{t:'Confirm payment method',c:'María López',a:'Ana'},{t:'Follow-up quote renters',c:'Elena Guzmán',a:'Jennifer'},{t:'Request DL copy',c:'Roberto Fuentes',a:'Marina'}].map(x=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)"><div style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0"></div><div style="flex:1"><div style="font-size:12px;font-weight:600">${x.t}</div><div style="font-size:10px;color:var(--text4)">${x.c} · ${x.a}</div></div></div>`).join('')}`;
+  // Tasks summary
+  const today=new Date().toISOString().split('T')[0];
+  const overdueTasks=tasksData.filter(t=>!t.done&&t.due<today);
+  const todayTasks=tasksData.filter(t=>!t.done&&t.due===today);
+  const weekTasks=tasksData.filter(t=>!t.done&&t.due>=today);
+  const doneTasks=tasksData.filter(t=>t.done);
+  document.getElementById('dashTasksOverview').innerHTML=
+    `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${[
+      {label:'Overdue',count:overdueTasks.length,bg:'var(--red-light)',color:'var(--red)'},
+      {label:'Due Today',count:todayTasks.length,bg:'var(--orange-light)',color:'var(--orange)'},
+      {label:'This Week',count:weekTasks.length,bg:'var(--accent-light)',color:'var(--accent)'},
+      {label:'Completed',count:doneTasks.length,bg:'var(--green-light)',color:'var(--green)'}
+    ].map(t=>`<div class="task-chip" style="background:${t.bg};color:${t.color}"><div style="font-size:20px;font-weight:700;line-height:1">${t.count}</div><div style="font-size:10px;font-weight:600;margin-top:1px">${t.label}</div></div>`).join('')}</div>`+
+    (overdueTasks.length?
+      `<div style="font-size:12px;color:var(--text3);font-weight:500;margin-bottom:8px">Overdue</div>`+
+      overdueTasks.slice(0,3).map(x=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)"><div style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0"></div><div style="flex:1"><div style="font-size:12px;font-weight:600">${x.title}</div><div style="font-size:10px;color:var(--text4)">${x.client||''} · ${(x.agent||'').split(' ')[0]}</div></div></div>`).join('')
+      :'<div style="font-size:13px;color:var(--text4);text-align:center;padding:16px 0">✓ No overdue tasks</div>');
 
   // Pipeline snap
   const snap=STAGE_META.filter(s=>!['sold','not_interested','lost'].includes(s.id));
-  document.getElementById('dashPipelineSnap').innerHTML=snap.map(s=>{const count=pipelineItems.filter(p=>p.stage===s.id).length;return`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="showView('pipeline',document.getElementById('nav-pipeline'))"><div style="width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0"></div><div style="flex:1;font-size:12px;color:var(--text2)">${s.label}</div><div style="width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;background:${s.color};width:${Math.min(count/5*100,100)}%"></div></div><div style="font-size:12px;font-weight:700;min-width:16px;text-align:right">${count}</div></div>`;}).join('')+`<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text4)">Sold this period</span><span style="font-weight:700;color:var(--green)">$${pipelineItems.filter(p=>p.stage==='sold').reduce((s,p)=>s+p.premium,0).toLocaleString()}</span></div>`;
+  document.getElementById('dashPipelineSnap').innerHTML=snap.map(s=>{const count=pipelineItems.filter(p=>p.stage===s.id).length;return`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="showView('pipeline',document.getElementById('nav-pipeline'))"><div style="width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0"></div><div style="flex:1;font-size:12px;color:var(--text2)">${s.label}</div><div style="width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;background:${s.color};width:${Math.min(count/5*100,100)}%"></div></div><div style="font-size:12px;font-weight:700;min-width:16px;text-align:right">${count}</div></div>`;}).join('')+
+    `<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text4)">Sold this period</span><span style="font-weight:700;color:var(--green)">$${pipelineItems.filter(p=>p.stage==='sold').reduce((s,p)=>s+(p.premium||0),0).toLocaleString()}</span></div>`;
 
-  // Pending cancel preview
+  // Pending cancel
   document.getElementById('pendingCancelSubtitle').textContent=pendingCancellations.length+' pending';
-  document.getElementById('pendingCancelList').innerHTML=pendingCancellations.slice(0,3).map(p=>{const m=LOB_META[p.lob]||{};const d=Math.ceil((new Date(p.cancelDate)-new Date())/(86400000));const ug=d<=5?['var(--red-light)','var(--red)']:d<=10?['var(--orange-light)','var(--orange)']:['var(--surface2)','var(--text3)'];return`<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openPendingCancelPanel()"><div style="width:8px;height:8px;border-radius:50%;background:${ug[1]};flex-shrink:0"></div><div style="flex:1"><div style="font-size:12px;font-weight:600">${p.client}</div><div style="font-size:10px;color:var(--text4)">${p.policy} · ${m.icon||''} ${p.reason}</div></div><div style="text-align:right"><div style="font-size:10px;font-weight:700;color:${ug[1]}">${d}d left</div></div></div>`;}).join('');
+  document.getElementById('pendingCancelList').innerHTML=pendingCancellations.length?
+    pendingCancellations.slice(0,3).map(p=>{const m=LOB_META[p.lob]||{};const d=Math.ceil((new Date(p.cancelDate)-new Date())/86400000);const ug=d<=5?['var(--red-light)','var(--red)']:d<=10?['var(--orange-light)','var(--orange)']:['var(--surface2)','var(--text3)'];return`<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openPendingCancelPanel()"><div style="width:8px;height:8px;border-radius:50%;background:${ug[1]};flex-shrink:0"></div><div style="flex:1"><div style="font-size:12px;font-weight:600">${p.client}</div><div style="font-size:10px;color:var(--text4)">${p.policy} · ${m.icon||''} ${p.reason}</div></div><div style="text-align:right"><div style="font-size:10px;font-weight:700;color:${ug[1]}">${d}d left</div></div></div>`;}).join('')
+    :'<div style="padding:16px;text-align:center;color:var(--text4);font-size:12px">No pending cancellations</div>';
 
   // Canceled preview
   document.getElementById('canceledSubtitle').textContent='Last 30 days · '+canceledPolicies.length+' canceled';
-  document.getElementById('canceledPolicyList').innerHTML=canceledPolicies.slice(0,3).map(p=>{const m=LOB_META[p.lob]||{};return`<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openCanceledPanel()"><div style="flex:1"><div style="font-size:12px;font-weight:600">${p.client}</div><div style="font-size:10px;color:var(--text4)">${p.policy} · ${m.icon||''} ${p.reason}</div></div><div style="font-size:10px;color:var(--text3)">${formatDate(p.cancelDate)}</div></div>`;}).join('');
+  document.getElementById('canceledPolicyList').innerHTML=canceledPolicies.length?
+    canceledPolicies.slice(0,3).map(p=>{const m=LOB_META[p.lob]||{};return`<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openCanceledPanel()"><div style="flex:1"><div style="font-size:12px;font-weight:600">${p.client}</div><div style="font-size:10px;color:var(--text4)">${p.policy} · ${m.icon||''} ${p.reason}</div></div><div style="font-size:10px;color:var(--text3)">${formatDate(p.cancelDate)}</div></div>`;}).join('')
+    :'<div style="padding:16px;text-align:center;color:var(--text4);font-size:12px">No canceled policies</div>';
 
   renderDashCalls();
 }
